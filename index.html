@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHREE SHYAM FASHION - Garment Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- html2pdf Library for Direct PDF Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #046a58;
+            --primary-light: #0d9488;
+            --accent: #f59e0b;
+            --bg-glass: rgba(15, 23, 42, 0.35); /* Fully transparent glass effect */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* 3D Khatu Shyam Baba Background (shyam.jpg) */
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+                        url('shyam.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+        }
+
+        /* 3D Main Header */
+        header {
+            text-align: center;
+            padding: 18px;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            color: #ffffff;
+            font-size: 2.2rem;
+            letter-spacing: 2px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.6);
+            font-weight: 700;
+        }
+
+        header p {
+            color: #e2e8f0;
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        /* App Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(15, 23, 42, 0.6);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background: linear-gradient(135deg, #046a58 0%, #0d9488 100%);
+            border-color: #f59e0b;
+            transform: translateY(-2px);
+        }
+
+        /* Transparent Glass Container */
+        .tab-content {
+            display: none;
+            background: var(--bg-glass);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        h2 {
+            color: #f59e0b;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            border-bottom: 3px solid #f59e0b;
+            padding-bottom: 5px;
+            display: inline-block;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.9);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.88rem;
+            color: #ffffff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+        }
+
+        .input-group input {
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            font-size: 0.9rem;
+            outline: none;
+            background: rgba(15, 23, 42, 0.55);
+            color: #ffffff;
+        }
+
+        .input-group input::placeholder { color: #cbd5e1; }
+        .input-group input:focus { border-color: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
+
+        /* Transparent Size Table */
+        .size-matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: rgba(15, 23, 42, 0.55);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .size-matrix-table th, .size-matrix-table td {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 8px 10px;
+            text-align: center;
+            font-size: 0.88rem;
+            color: #ffffff;
+        }
+
+        .size-matrix-table th { background: rgba(15, 23, 42, 0.8); color: #f59e0b; }
+
+        .size-matrix-table input {
+            width: 65px;
+            padding: 6px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            background: rgba(15, 23, 42, 0.6);
+            color: #ffffff;
+        }
+
+        .btn-group-form {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #046a58 0%, #0d9488 100%);
+            color: white;
+            border: none;
+            padding: 12px 22px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            transition: all 0.2s;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(13, 148, 136, 0.5);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #475569 0%, #334155 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Invoice Preview Box (Solid White for crisp PDF/Print output) */
+        .invoice-box {
+            background: #ffffff;
+            color: #1e293b;
+            border: 1px solid #046a58;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .invoice-header-bg {
+            background: #046a58;
+            color: white;
+            padding: 12px 15px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-align: center;
+            border-radius: 6px 6px 0 0;
+            margin: -20px -20px 15px -20px;
+            letter-spacing: 1px;
+        }
+
+        .inv-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 15px;
+        }
+
+        .inv-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .inv-table th, .inv-table td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+
+        .inv-table th { background: #046a58; color: white; }
+
+        .inv-totals {
+            float: right;
+            width: 280px;
+            font-size: 0.88rem;
+        }
+
+        .inv-totals div {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+
+        .grand-total {
+            font-weight: 700;
+            color: #046a58;
+            font-size: 1rem;
+            border-bottom: 2px solid #046a58 !important;
+        }
+
+        .clear { clear: both; }
+
+        .bank-upi-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            border-top: 1px solid #cbd5e1;
+            padding-top: 12px;
+            margin-top: 15px;
+            font-size: 0.8rem;
+        }
+
+        .signatures {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 1px solid #cbd5e1;
+            font-size: 0.85rem;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .history-table th, .history-table td {
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 10px;
+            font-size: 0.85rem;
+            text-align: left;
+            color: #ffffff;
+        }
+
+        .history-table th { background: rgba(15, 23, 42, 0.85); color: #f59e0b; }
+
+        .btn-view {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        @media print {
+            body { background: white !important; padding: 0 !important; }
+            header, .nav-tabs, .btn-action, .btn-reset, .tab-content:not(#reports), h2, #historySection {
+                display: none !important;
+            }
+            #reports { display: block !important; padding: 0 !important; box-shadow: none !important; background: white !important; }
+            .invoice-box { border: none !important; padding: 0 !important; box-shadow: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 3D Header -->
+        <header>
+            <h1>SHREE SHYAM FASHION</h1>
+            <p>Garment Production, Fabricator & Cutting Management System</p>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab(event, 'billTab')">📝 Fabricator / Jobwork Bill</button>
+            <button class="tab-btn" onclick="switchTab(event, 'cutTab')">✂️ Cutting Calculator</button>
+            <button class="tab-btn" onclick="switchTab(event, 'reports')">🖨️ Final Invoice & Saved Bills</button>
+        </div>
+
+        <!-- TAB 1: BILL ENTRY -->
+        <div id="billTab" class="tab-content active">
+            <h2>कारीगर बिल एवं साइज़ वार एंट्री</h2>
+            <form id="invoiceForm" onsubmit="generateInvoice(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>कुर्ती का नाम (Design Name)</label>
+                        <input type="text" id="prodName" placeholder="उदा: V-Gala Kurti" required>
+                    </div>
+                    <div class="input-group">
+                        <label>कारीगर / Karigar Name</label>
+                        <input type="text" id="clientName" placeholder="उदा: रामेश्वर जी" required>
+                    </div>
+                    <div class="input-group">
+                        <label>कलर (Color)</label>
+                        <input type="text" id="prodColor" placeholder="उदा: Red / Green" required>
+                    </div>
+                    <div class="input-group">
+                        <label>इनवॉइस नंबर (Invoice No)</label>
+                        <input type="text" id="invNo" value="SSF-001" required>
+                    </div>
+                </div>
+
+                <label style="font-weight: 600; font-size: 0.9rem; color:#f59e0b; text-shadow:0 1px 3px rgba(0,0,0,0.8);">साइज़ वाइज क्वांटिटी दर्ज करें:</label>
+                <div style="overflow-x: auto;">
+                    <table class="size-matrix-table">
+                        <thead>
+                            <tr>
+                                <th>साइज़</th>
+                                <th>S</th>
+                                <th>M</th>
+                                <th>L</th>
+                                <th>XL</th>
+                                <th>2XL</th>
+                                <th>3XL</th>
+                                <th>4XL</th>
+                                <th>5XL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Qty (Pcs)</strong></td>
+                                <td><input type="number" id="qty_s" value="0" min="0" oninput="calculateTotals()"></td>
+                                <td><input type="number" id="qty_m" value="0" min="0" oninput="calculateTotals()"></td>
+                                <td><input type="number" id="qty_l" value="0" min="0" oninput="calculateTotals()"></td>
+                                <td><input type="number" id="qty_xl" value="0" min="0" oninput="calculateTotals()"></td>
+                                <td><input type="number" id="qty_2xl" value="0" min="0" oninput="calculateTotals()"></td>
+                                <td><input type="number" id="qty_3xl" value="0" min="0" oninput="calculateTotals()"></td>
+                                <td><input type="number" id="qty_4xl" value="0" min="0" oninput="calculateTotals()"></td>
+                                <td><input type="number" id="qty_5xl" value="0" min="0" oninput="calculateTotals()"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-grid" style="margin-top: 10px;">
+                    <div class="input-group">
+                        <label>रेट प्रति पीस (₹)</label>
+                        <input type="number" id="uniformRate" step="0.5" value="50" min="0" oninput="calculateTotals()" required>
+                    </div>
+                    <div class="input-group">
+                        <label>कुल पीस (Total Pcs)</label>
+                        <input type="text" id="displayTotalQty" readonly value="0 Pcs" style="background:rgba(15,23,42,0.8); font-weight:bold; color:#fff;">
+                    </div>
+                    <div class="input-group">
+                        <label>कुल राशि (Total Amount ₹)</label>
+                        <input type="text" id="displayTotalAmt" readonly value="₹ 0.00" style="background:rgba(15,23,42,0.8); font-weight:bold; color:#f59e0b;">
+                    </div>
+                </div>
+
+                <div class="btn-group-form">
+                    <button type="submit" class="btn-action">💾 बिल सेव करें एवं प्रिंट देखें</button>
+                    <button type="button" class="btn-reset" onclick="resetFormOnly()">🔄 Clear Form (नया बिल भरें)</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- TAB 2: CUTTING CALCULATOR -->
+        <div id="cutTab" class="tab-content">
+            <h2>कटिंग एवं कपड़े का हिसाब</h2>
+            <form id="cutForm" onsubmit="calculateCutting(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>कपड़े का नाम</label>
+                        <input type="text" id="cutFabric" placeholder="उदा: Rayon 14KG" required>
+                    </div>
+                    <div class="input-group">
+                        <label>कुल कपड़ा (Meter)</label>
+                        <input type="number" id="cutMeters" step="0.01" placeholder="उदा: 500" required>
+                    </div>
+                    <div class="input-group">
+                        <label>1 कुर्ती एवरेज (Meter)</label>
+                        <input type="number" id="cutAvg" step="0.01" placeholder="उदा: 2.15" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-action">⚡ हिसाब निकालें</button>
+            </form>
+            <div id="cutResultBox" style="display:none; margin-top:15px; background:rgba(15,23,42,0.7); padding:15px; border-radius:8px; border-left:5px solid #f59e0b; color:#fff;">
+                <p>कुल कपड़ा: <span id="resM"></span> mtr | पीस बनेंगे: <strong id="resPcs" style="color:#f59e0b; font-size:1.2rem;"></strong> | बचा कपड़ा: <span id="resLeft"></span> mtr</p>
+            </div>
+        </div>
+
+        <!-- TAB 3: PRINT & SAVED BILLS -->
+        <div id="reports" class="tab-content">
+            <h2>इनवॉइस प्रिंट एवं सुरक्षित बिल रिकॉर्ड</h2>
+            
+            <!-- Invoice Box to be downloaded as PDF -->
+            <div id="invoicePrintArea" class="invoice-box">
+                <div class="invoice-header-bg">SHREE SHYAM FASHION - Garment Manufacture Invoice</div>
+                <div class="inv-grid-2">
+                    <div>
+                        <strong>Billed By:</strong><br>
+                        <strong>SHREE SHYAM FASHION</strong><br>
+                        Jaipur, Rajasthan
+                    </div>
+                    <div style="text-align: right;">
+                        <strong>Billed To:</strong><br>
+                        <span id="pClient">--</span><br>
+                        Invoice No: <span id="pInvNo">--</span><br>
+                        Date: <span id="pDate">--</span>
+                    </div>
+                </div>
+
+                <table class="inv-table">
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Product Description</th>
+                            <th>Rate (₹)</th>
+                            <th>Qty</th>
+                            <th>Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoiceTableBody">
+                        <tr><td colspan="5" style="text-align:center;">कोई बिल सेलेक्ट नहीं है।</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="inv-totals">
+                    <div class="grand-total"><span>Total Amount:</span> <span id="pGrandTotal">₹0.00</span></div>
+                </div>
+                <div class="clear"></div>
+
+                <div class="bank-upi-section">
+                    <div><strong>Bank:</strong> SBI | A/C Holder: Babita Kumawat</div>
+                    <div><strong>UPI:</strong> Google Pay / PhonePe</div>
+                </div>
+                <div class="signatures">
+                    <div>Seal / Stamp</div>
+                    <div>Authorized Signature</div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 12px; margin-top: 15px; flex-wrap: wrap;">
+                <button onclick="downloadPDF()" class="btn-action" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">📥 Download Bill (PDF)</button>
+                <button onclick="window.print()" class="btn-action" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);">🖨️ A4 Paper Print</button>
+            </div>
+
+            <!-- Saved Bills Table -->
+            <div id="historySection" style="margin-top: 30px;">
+                <h3 style="color:#f59e0b; margin-bottom:10px; text-shadow:0 1px 3px rgba(0,0,0,0.8);">📂 सेव किए हुए पुराने बिल (Saved History)</h3>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Inv No</th>
+                            <th>कारीगर का नाम</th>
+                            <th>प्रोडक्ट नाम</th>
+                            <th>कुल पीस</th>
+                            <th>कुल अमाउंट</th>
+                            <th>एक्शन</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let savedInvoices = JSON.parse(localStorage.getItem('ssf_bills')) || [];
+
+        window.onload = function() {
+            renderHistory();
+            if(savedInvoices.length > 0) {
+                document.getElementById('invNo').value = "SSF-00" + (savedInvoices.length + 1);
+            }
+        };
+
+        function switchTab(evt, tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        function calculateTotals() {
+            const sizes = ['s', 'm', 'l', 'xl', '2xl', '3xl', '4xl', '5xl'];
+            let totalQty = 0;
+            sizes.forEach(sz => {
+                totalQty += parseInt(document.getElementById('qty_' + sz).value) || 0;
+            });
+            let rate = parseFloat(document.getElementById('uniformRate').value) || 0;
+            document.getElementById('displayTotalQty').value = totalQty + " Pcs";
+            document.getElementById('displayTotalAmt').value = "₹ " + (totalQty * rate).toFixed(2);
+        }
+
+        function resetFormOnly() {
+            document.getElementById('prodName').value = '';
+            document.getElementById('clientName').value = '';
+            document.getElementById('prodColor').value = '';
+            const sizes = ['s', 'm', 'l', 'xl', '2xl', '3xl', '4xl', '5xl'];
+            sizes.forEach(sz => {
+                document.getElementById('qty_' + sz).value = 0;
+            });
+            calculateTotals();
+        }
+
+        function generateInvoice(e) {
+            e.preventDefault();
+            const prodName = document.getElementById('prodName').value;
+            const clientName = document.getElementById('clientName').value;
+            const prodColor = document.getElementById('prodColor').value;
+            const invNo = document.getElementById('invNo').value;
+            const rate = parseFloat(document.getElementById('uniformRate').value) || 0;
+
+            const sizes = ['S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'];
+            const sizeIds = ['s', 'm', 'l', 'xl', '2xl', '3xl', '4xl', '5xl'];
+
+            let items = [];
+            let totalQty = 0;
+            let subTotal = 0;
+
+            for (let i = 0; i < sizes.length; i++) {
+                let qty = parseInt(document.getElementById('qty_' + sizeIds[i]).value) || 0;
+                if (qty > 0) {
+                    let amt = qty * rate;
+                    totalQty += qty;
+                    subTotal += amt;
+                    items.push({ size: sizes[i], qty: qty, rate: rate, amt: amt });
+                }
+            }
+
+            if (items.length === 0) {
+                alert("कृपया कम से कम किसी एक साइज़ की क्वांटिटी भरें!");
+                return;
+            }
+
+            const billData = {
+                invNo, clientName, prodName, prodColor, items, totalQty, subTotal,
+                date: new Date().toLocaleDateString('hi-IN')
+            };
+
+            savedInvoices.unshift(billData);
+            localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
+
+            renderHistory();
+            displayInvoice(billData);
+
+            document.getElementById('invNo').value = "SSF-00" + (savedInvoices.length + 1);
+            resetFormOnly();
+
+            switchTab({ currentTarget: document.querySelectorAll('.tab-btn')[2] }, 'reports');
+            alert("बिल सुरक्षित (Save) हो गया है!");
+        }
+
+        function displayInvoice(bill) {
+            document.getElementById('pClient').innerText = bill.clientName;
+            document.getElementById('pInvNo').innerText = bill.invNo;
+            document.getElementById('pDate').innerText = bill.date;
+
+            let tbodyHtml = '';
+            bill.items.forEach((item, index) => {
+                tbodyHtml += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${bill.prodName} [${bill.prodColor}] - Size: <strong>${item.size}</strong></td>
+                        <td>₹${item.rate.toFixed(2)}</td>
+                        <td>${item.qty}</td>
+                        <td>₹${item.amt.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('invoiceTableBody').innerHTML = tbodyHtml;
+            document.getElementById('pGrandTotal').innerText = "₹" + bill.subTotal.toFixed(2);
+        }
+
+        // Direct Download PDF Function
+        function downloadPDF() {
+            const element = document.getElementById('invoicePrintArea');
+            const invNo = document.getElementById('pInvNo').innerText || 'Invoice';
+            const opt = {
+                margin:       10,
+                filename:     `Shree_Shyam_Fashion_${invNo}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().from(element).set(opt).save();
+        }
+
+        function renderHistory() {
+            const tbody = document.getElementById('historyTbody');
+            tbody.innerHTML = '';
+            savedInvoices.forEach((bill, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${bill.invNo}</strong></td>
+                        <td>${bill.clientName}</td>
+                        <td>${bill.prodName}</td>
+                        <td>${bill.totalQty} Pcs</td>
+                        <td>₹${bill.subTotal.toFixed(2)}</td>
+                        <td>
+                            <button class="btn-view" onclick="viewBill(${idx})">View/Print</button>
+                            <button class="btn-delete" onclick="deleteBill(${idx})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function viewBill(index) {
+            displayInvoice(savedInvoices[index]);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function deleteBill(index) {
+            if (confirm("क्या आप इस सेव किए बिल को लिस्ट से डिलीट करना चाहते हैं?")) {
+                savedInvoices.splice(index, 1);
+                localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
+                renderHistory();
+            }
+        }
+
+        function calculateCutting(e) {
+            e.preventDefault();
+            const m = parseFloat(document.getElementById('cutMeters').value);
+            const a = parseFloat(document.getElementById('cutAvg').value);
+            if (a <= 0) return;
+            const pcs = Math.floor(m / a);
+            const left = (m - (pcs * a)).toFixed(2);
+
+            document.getElementById('resM').innerText = m;
+            document.getElementById('resPcs').innerText = pcs;
+            document.getElementById('resLeft').innerText = left;
+            document.getElementById('cutResultBox').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
