@@ -322,7 +322,8 @@
 
         .history-table th { background: rgba(15, 23, 42, 0.85); color: #f59e0b; }
 
-        .btn-view { background: #2563eb; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        .btn-view { background: #2563eb; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-right: 4px; }
+        .btn-edit { background: #d97706; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-right: 4px; }
         .btn-delete { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
 
         @media print {
@@ -381,8 +382,9 @@
 
         <!-- TAB 1: BILL ENTRY -->
         <div id="billTab" class="tab-content active">
-            <h2>Fabricator Bill & Size Entry</h2>
+            <h2 id="formTitle">Fabricator Bill & Size Entry</h2>
             <form id="invoiceForm" onsubmit="generateInvoice(event)">
+                <input type="hidden" id="editIndex" value="-1">
                 <div class="form-grid">
                     <div class="input-group">
                         <label>Item Name (आइटम का नाम)</label>
@@ -466,7 +468,7 @@
                 </div>
 
                 <div class="btn-group-form">
-                    <button type="submit" class="btn-action">💾 चालान सेव करें एवं प्रिंट देखें</button>
+                    <button type="submit" id="submitBtn" class="btn-action">💾 चालान सेव करें एवं प्रिंट देखें</button>
                     <button type="button" class="btn-reset" onclick="resetFormOnly()">🔄 Clear Form</button>
                 </div>
             </form>
@@ -595,7 +597,7 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            evt.currentTarget.classList.add('active');
+            if(evt && evt.currentTarget) evt.currentTarget.classList.add('active');
         }
 
         function calculateTotals() {
@@ -617,12 +619,13 @@
                     currentPhotoData = evt.target.result;
                 };
                 reader.readAsDataURL(file);
-            } else {
-                currentPhotoData = "";
             }
         }
 
         function resetFormOnly() {
+            document.getElementById('editIndex').value = "-1";
+            document.getElementById('formTitle').innerText = "Fabricator Bill & Size Entry";
+            document.getElementById('submitBtn').innerText = "💾 चालान सेव करें एवं प्रिंट देखें";
             document.getElementById('prodName').value = '';
             document.getElementById('styleNo').value = '';
             document.getElementById('clientName').value = '';
@@ -635,10 +638,14 @@
                 document.getElementById('qty_' + sz).value = 0;
             });
             calculateTotals();
+            if(savedInvoices.length > 0) {
+                document.getElementById('invNo').value = "SSF-00" + (savedInvoices.length + 1);
+            }
         }
 
         function generateInvoice(e) {
             e.preventDefault();
+            const editIndex = parseInt(document.getElementById('editIndex').value);
             const prodName = document.getElementById('prodName').value;
             const styleNo = document.getElementById('styleNo').value;
             const clientName = document.getElementById('clientName').value;
@@ -670,24 +677,72 @@
                 return;
             }
 
+            let photoToSave = currentPhotoData;
+            if (editIndex !== -1 && !photoToSave) {
+                photoToSave = savedInvoices[editIndex].photo || "";
+            }
+
             const billData = {
                 invNo, clientName, clientPhone, prodName, styleNo, prodColor, givenDate, items, totalQty, subTotal,
-                photo: currentPhotoData,
-                date: new Date().toLocaleDateString('hi-IN')
+                photo: photoToSave,
+                date: (editIndex !== -1) ? savedInvoices[editIndex].date : new Date().toLocaleDateString('hi-IN')
             };
 
-            savedInvoices.unshift(billData);
+            if (editIndex !== -1) {
+                savedInvoices[editIndex] = billData;
+                alert("चालान सफलतापूर्वक अपडेट (Edit) हो गया है!");
+            } else {
+                savedInvoices.unshift(billData);
+                alert("चालान सुरक्षित (Save) हो गया है!");
+            }
+
             localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
             syncToCloud();
 
             renderHistory();
             displayInvoice(billData);
 
-            document.getElementById('invNo').value = "SSF-00" + (savedInvoices.length + 1);
             resetFormOnly();
 
-            switchTab({ currentTarget: document.querySelectorAll('.tab-btn')[2] }, 'reports');
-            alert("चालान सुरक्षित (Save) हो गया है!");
+            switchTab(null, 'reports');
+            document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        }
+
+        function editBill(index) {
+            const bill = savedInvoices[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('formTitle').innerText = `✏️ Edit Challan (${bill.invNo})`;
+            document.getElementById('submitBtn').innerText = "💾 चालान अपडेट करें (Update)";
+
+            document.getElementById('prodName').value = bill.prodName;
+            document.getElementById('styleNo').value = bill.styleNo || '';
+            document.getElementById('clientName').value = bill.clientName;
+            document.getElementById('clientPhone').value = bill.clientPhone || '';
+            document.getElementById('prodColor').value = bill.prodColor || '';
+            document.getElementById('givenDate').value = bill.givenDate || '';
+            document.getElementById('invNo').value = bill.invNo;
+            
+            currentPhotoData = bill.photo || "";
+
+            const sizes = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
+            const sizeIds = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
+
+            sizeIds.forEach(sz => document.getElementById('qty_' + sz).value = 0);
+
+            if (bill.items && bill.items.length > 0) {
+                document.getElementById('uniformRate').value = bill.items[0].rate;
+                bill.items.forEach(item => {
+                    let szLower = item.size.toLowerCase();
+                    if(document.getElementById('qty_' + szLower)) {
+                        document.getElementById('qty_' + szLower).value = item.qty;
+                    }
+                });
+            }
+
+            calculateTotals();
+            switchTab(null, 'billTab');
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function displayInvoice(bill) {
@@ -753,6 +808,7 @@
                         <td>₹${bill.subTotal.toFixed(2)}</td>
                         <td>
                             <button class="btn-view" onclick="viewBill(${idx})">View/Print</button>
+                            <button class="btn-edit" onclick="editBill(${idx})">✏️ Edit</button>
                             <button class="btn-delete" onclick="deleteBill(${idx})">Delete</button>
                         </td>
                     </tr>
