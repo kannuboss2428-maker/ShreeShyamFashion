@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHREE SHYAM FASHION - Garment Management System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- html2pdf Library for Direct PDF Download -->
+    <title>SHREE SHYAM FASHION - Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
             --primary: #046a58;
-            --primary-light: #0d9488;
-            --accent: #f59e0b;
-            --bg-glass: rgba(15, 23, 42, 0.35); /* Fully transparent glass effect */
+            --primary-dark: #02382e;
+            --accent: #d97706;
+            --bg-glass: rgba(15, 23, 42, 0.4);
         }
 
         * {
@@ -22,7 +21,6 @@
             font-family: 'Poppins', sans-serif;
         }
 
-        /* 3D Khatu Shyam Baba Background (shyam.jpg) */
         body {
             background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
                         url('shyam.jpg') no-repeat center center fixed;
@@ -37,11 +35,10 @@
             margin: 0 auto;
         }
 
-        /* 3D Main Header */
         header {
             text-align: center;
             padding: 18px;
-            background: rgba(15, 23, 42, 0.5);
+            background: rgba(15, 23, 42, 0.6);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 16px;
@@ -51,19 +48,12 @@
 
         header h1 {
             color: #ffffff;
-            font-size: 2.2rem;
+            font-size: 2.3rem;
             letter-spacing: 2px;
-            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.6);
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.9), 0 0 20px rgba(245, 158, 11, 0.6);
             font-weight: 700;
         }
 
-        header p {
-            color: #e2e8f0;
-            font-size: 0.9rem;
-            margin-top: 4px;
-        }
-
-        /* App Navigation Tabs */
         .nav-tabs {
             display: flex;
             gap: 12px;
@@ -73,7 +63,7 @@
         }
 
         .tab-btn {
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.7);
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(8px);
@@ -83,21 +73,17 @@
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
         .tab-btn.active, .tab-btn:hover {
             background: linear-gradient(135deg, #046a58 0%, #0d9488 100%);
             border-color: #f59e0b;
-            transform: translateY(-2px);
         }
 
-        /* Transparent Glass Container */
         .tab-content {
             display: none;
             background: var(--bg-glass);
             backdrop-filter: blur(6px);
-            -webkit-backdrop-filter: blur(6px);
             padding: 25px;
             border-radius: 16px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
@@ -144,19 +130,15 @@
             border: 1px solid rgba(255, 255, 255, 0.4);
             font-size: 0.9rem;
             outline: none;
-            background: rgba(15, 23, 42, 0.55);
+            background: rgba(15, 23, 42, 0.65);
             color: #ffffff;
         }
 
-        .input-group input::placeholder { color: #cbd5e1; }
-        .input-group input:focus { border-color: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.5); }
-
-        /* Transparent Size Table */
         .size-matrix-table {
             width: 100%;
             border-collapse: collapse;
             margin: 15px 0;
-            background: rgba(15, 23, 42, 0.55);
+            background: rgba(15, 23, 42, 0.65);
             border-radius: 8px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -170,7 +152,7 @@
             color: #ffffff;
         }
 
-        .size-matrix-table th { background: rgba(15, 23, 42, 0.8); color: #f59e0b; }
+        .size-matrix-table th { background: rgba(15, 23, 42, 0.9); color: #f59e0b; }
 
         .size-matrix-table input {
             width: 65px;
@@ -178,7 +160,7 @@
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 6px;
-            background: rgba(15, 23, 42, 0.6);
+            background: rgba(15, 23, 42, 0.7);
             color: #ffffff;
         }
 
@@ -198,12 +180,6 @@
             font-weight: 600;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            transition: all 0.2s;
-        }
-
-        .btn-action:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(13, 148, 136, 0.5);
         }
 
         .btn-reset {
@@ -216,25 +192,24 @@
             cursor: pointer;
         }
 
-        /* Invoice Preview Box (Solid White for crisp PDF/Print output) */
+        /* Invoice Box - Dark & Bold Printing Style */
         .invoice-box {
             background: #ffffff;
-            color: #1e293b;
-            border: 1px solid #046a58;
-            border-radius: 10px;
+            color: #000000;
+            border: 2px solid #000000;
+            border-radius: 8px;
             padding: 20px;
             margin-top: 15px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
         .invoice-header-bg {
-            background: #046a58;
+            background: #000000;
             color: white;
             padding: 12px 15px;
-            font-size: 1.25rem;
+            font-size: 1.4rem;
             font-weight: 700;
             text-align: center;
-            border-radius: 6px 6px 0 0;
+            border-radius: 4px 4px 0 0;
             margin: -20px -20px 15px -20px;
             letter-spacing: 1px;
         }
@@ -243,10 +218,11 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
-            font-size: 0.85rem;
-            margin-bottom: 15px;
-            border-bottom: 1px solid #cbd5e1;
-            padding-bottom: 15px;
+            font-size: 0.88rem;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #000000;
+            padding-bottom: 12px;
+            font-weight: 600;
         }
 
         .inv-table {
@@ -256,31 +232,32 @@
         }
 
         .inv-table th, .inv-table td {
-            border: 1px solid #cbd5e1;
+            border: 1px solid #000000;
             padding: 8px 12px;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
+            font-weight: 600;
         }
 
-        .inv-table th { background: #046a58; color: white; }
+        .inv-table th { background: #000000; color: white; }
 
         .inv-totals {
             float: right;
-            width: 280px;
-            font-size: 0.88rem;
+            width: 320px;
+            font-size: 0.95rem;
+            font-weight: 700;
         }
 
         .inv-totals div {
             display: flex;
             justify-content: space-between;
-            padding: 4px 0;
-            border-bottom: 1px dashed #e2e8f0;
+            padding: 5px 0;
+            border-bottom: 1px solid #000;
         }
 
         .grand-total {
-            font-weight: 700;
-            color: #046a58;
-            font-size: 1rem;
-            border-bottom: 2px solid #046a58 !important;
+            color: #000000;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #000000 !important;
         }
 
         .clear { clear: both; }
@@ -289,19 +266,21 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
-            border-top: 1px solid #cbd5e1;
+            border-top: 2px solid #000000;
             padding-top: 12px;
             margin-top: 15px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
         .signatures {
             display: flex;
             justify-content: space-between;
-            margin-top: 30px;
-            padding-top: 15px;
-            border-top: 1px solid #cbd5e1;
-            font-size: 0.85rem;
+            margin-top: 25px;
+            padding-top: 12px;
+            border-top: 1px solid #000000;
+            font-size: 0.88rem;
+            font-weight: 600;
         }
 
         .history-table {
@@ -324,55 +303,35 @@
 
         .history-table th { background: rgba(15, 23, 42, 0.85); color: #f59e0b; }
 
-        .btn-view {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
-
-        .btn-delete {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.8rem;
-        }
+        .btn-view { background: #2563eb; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        .btn-delete { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
 
         @media print {
-            body { background: white !important; padding: 0 !important; }
+            body { background: white !important; padding: 0 !important; color: black !important; }
             header, .nav-tabs, .btn-action, .btn-reset, .tab-content:not(#reports), h2, #historySection {
                 display: none !important;
             }
             #reports { display: block !important; padding: 0 !important; box-shadow: none !important; background: white !important; }
-            .invoice-box { border: none !important; padding: 0 !important; box-shadow: none !important; }
+            .invoice-box { border: 2px solid black !important; padding: 10px !important; box-shadow: none !important; width: 100% !important; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <!-- 3D Header -->
         <header>
             <h1>SHREE SHYAM FASHION</h1>
-            <p>Garment Production, Fabricator & Cutting Management System</p>
         </header>
 
-        <!-- Navigation Tabs -->
         <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab(event, 'billTab')">📝 Fabricator / Jobwork Bill</button>
+            <button class="tab-btn active" onclick="switchTab(event, 'billTab')">📝 Fabricator Bill</button>
             <button class="tab-btn" onclick="switchTab(event, 'cutTab')">✂️ Cutting Calculator</button>
             <button class="tab-btn" onclick="switchTab(event, 'reports')">🖨️ Final Invoice & Saved Bills</button>
         </div>
 
         <!-- TAB 1: BILL ENTRY -->
         <div id="billTab" class="tab-content active">
-            <h2>कारीगर बिल एवं साइज़ वार एंट्री</h2>
+            <h2>Fabricator Bill & Size Entry</h2>
             <form id="invoiceForm" onsubmit="generateInvoice(event)">
                 <div class="form-grid">
                     <div class="input-group">
@@ -380,12 +339,24 @@
                         <input type="text" id="prodName" placeholder="उदा: V-Gala Kurti" required>
                     </div>
                     <div class="input-group">
-                        <label>कारीगर / Karigar Name</label>
-                        <input type="text" id="clientName" placeholder="उदा: रामेश्वर जी" required>
+                        <label>Fabricator Name (कारीगर)</label>
+                        <input type="text" id="clientName" placeholder="उदा: रमेश जी" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Fabricator Mobile No (फ़ोन नंबर)</label>
+                        <input type="text" id="clientPhone" placeholder="उदा: 98290XXXXX" required>
                     </div>
                     <div class="input-group">
                         <label>कलर (Color)</label>
                         <input type="text" id="prodColor" placeholder="उदा: Red / Green" required>
+                    </div>
+                    <div class="input-group">
+                        <label>माल जमा करवाने की तारीख (Given Date)</label>
+                        <input type="date" id="givenDate" required>
+                    </div>
+                    <div class="input-group">
+                        <label>माल मिलने की तारीख (Received Date)</label>
+                        <input type="date" id="receivedDate" required>
                     </div>
                     <div class="input-group">
                         <label>इनवॉइस नंबर (Invoice No)</label>
@@ -393,7 +364,7 @@
                     </div>
                 </div>
 
-                <label style="font-weight: 600; font-size: 0.9rem; color:#f59e0b; text-shadow:0 1px 3px rgba(0,0,0,0.8);">साइज़ वाइज क्वांटिटी दर्ज करें:</label>
+                <label style="font-weight: 600; font-size: 0.9rem; color:#f59e0b;">साइज़ वाइज क्वांटिटी दर्ज करें:</label>
                 <div style="overflow-x: auto;">
                     <table class="size-matrix-table">
                         <thead>
@@ -442,7 +413,7 @@
 
                 <div class="btn-group-form">
                     <button type="submit" class="btn-action">💾 बिल सेव करें एवं प्रिंट देखें</button>
-                    <button type="button" class="btn-reset" onclick="resetFormOnly()">🔄 Clear Form (नया बिल भरें)</button>
+                    <button type="button" class="btn-reset" onclick="resetFormOnly()">🔄 Clear Form</button>
                 </div>
             </form>
         </div>
@@ -476,20 +447,18 @@
         <div id="reports" class="tab-content">
             <h2>इनवॉइस प्रिंट एवं सुरक्षित बिल रिकॉर्ड</h2>
             
-            <!-- Invoice Box to be downloaded as PDF -->
             <div id="invoicePrintArea" class="invoice-box">
-                <div class="invoice-header-bg">SHREE SHYAM FASHION - Garment Manufacture Invoice</div>
+                <div class="invoice-header-bg">SHREE SHYAM FASHION</div>
                 <div class="inv-grid-2">
                     <div>
-                        <strong>Billed By:</strong><br>
-                        <strong>SHREE SHYAM FASHION</strong><br>
-                        Jaipur, Rajasthan
+                        <strong>Fabricator Name:</strong> <span id="pClient">--</span><br>
+                        <strong>Phone No:</strong> <span id="pPhone">--</span><br>
+                        <strong>Given Date:</strong> <span id="pGivenDate">--</span><br>
+                        <strong>Received Date:</strong> <span id="pRecDate">--</span>
                     </div>
                     <div style="text-align: right;">
-                        <strong>Billed To:</strong><br>
-                        <span id="pClient">--</span><br>
-                        Invoice No: <span id="pInvNo">--</span><br>
-                        Date: <span id="pDate">--</span>
+                        <strong>Invoice No:</strong> <span id="pInvNo">--</span><br>
+                        <strong>Date:</strong> <span id="pDate">--</span>
                     </div>
                 </div>
 
@@ -499,7 +468,7 @@
                             <th>S.No</th>
                             <th>Product Description</th>
                             <th>Rate (₹)</th>
-                            <th>Qty</th>
+                            <th>Qty (Pcs)</th>
                             <th>Amount (₹)</th>
                         </tr>
                     </thead>
@@ -509,13 +478,14 @@
                 </table>
 
                 <div class="inv-totals">
+                    <div><span>Total Qty of Kurti:</span> <span id="pGrandQty">0 Pcs</span></div>
                     <div class="grand-total"><span>Total Amount:</span> <span id="pGrandTotal">₹0.00</span></div>
                 </div>
                 <div class="clear"></div>
 
                 <div class="bank-upi-section">
-                    <div><strong>Bank:</strong> SBI | A/C Holder: Babita Kumawat</div>
-                    <div><strong>UPI:</strong> Google Pay / PhonePe</div>
+                    <div><strong>Bank:</strong> Bank of Baroda<br><strong>Holder Name:</strong> Vijay Kumawat<br><strong>A/C:</strong> 3xxxxxxxxx | <strong>IFSC:</strong> BARB0xxxxx</div>
+                    <div><strong>UPI Payment:</strong> shreeshyamfashion@barodapay</div>
                 </div>
                 <div class="signatures">
                     <div>Seal / Stamp</div>
@@ -528,15 +498,14 @@
                 <button onclick="window.print()" class="btn-action" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);">🖨️ A4 Paper Print</button>
             </div>
 
-            <!-- Saved Bills Table -->
             <div id="historySection" style="margin-top: 30px;">
-                <h3 style="color:#f59e0b; margin-bottom:10px; text-shadow:0 1px 3px rgba(0,0,0,0.8);">📂 सेव किए हुए पुराने बिल (Saved History)</h3>
+                <h3 style="color:#f59e0b; margin-bottom:10px;">📂 सेव किए हुए पुराने बिल (Saved History)</h3>
                 <table class="history-table">
                     <thead>
                         <tr>
                             <th>Inv No</th>
-                            <th>कारीगर का नाम</th>
-                            <th>प्रोडक्ट नाम</th>
+                            <th>Fabricator Name</th>
+                            <th>Product Name</th>
                             <th>कुल पीस</th>
                             <th>कुल अमाउंट</th>
                             <th>एक्शन</th>
@@ -556,6 +525,9 @@
             if(savedInvoices.length > 0) {
                 document.getElementById('invNo').value = "SSF-00" + (savedInvoices.length + 1);
             }
+            // Set today date as default for dates
+            document.getElementById('givenDate').valueAsDate = new Date();
+            document.getElementById('receivedDate').valueAsDate = new Date();
         };
 
         function switchTab(evt, tabId) {
@@ -579,6 +551,7 @@
         function resetFormOnly() {
             document.getElementById('prodName').value = '';
             document.getElementById('clientName').value = '';
+            document.getElementById('clientPhone').value = '';
             document.getElementById('prodColor').value = '';
             const sizes = ['s', 'm', 'l', 'xl', '2xl', '3xl', '4xl', '5xl'];
             sizes.forEach(sz => {
@@ -591,7 +564,10 @@
             e.preventDefault();
             const prodName = document.getElementById('prodName').value;
             const clientName = document.getElementById('clientName').value;
+            const clientPhone = document.getElementById('clientPhone').value;
             const prodColor = document.getElementById('prodColor').value;
+            const givenDate = document.getElementById('givenDate').value;
+            const receivedDate = document.getElementById('receivedDate').value;
             const invNo = document.getElementById('invNo').value;
             const rate = parseFloat(document.getElementById('uniformRate').value) || 0;
 
@@ -618,7 +594,7 @@
             }
 
             const billData = {
-                invNo, clientName, prodName, prodColor, items, totalQty, subTotal,
+                invNo, clientName, clientPhone, prodName, prodColor, givenDate, receivedDate, items, totalQty, subTotal,
                 date: new Date().toLocaleDateString('hi-IN')
             };
 
@@ -637,6 +613,9 @@
 
         function displayInvoice(bill) {
             document.getElementById('pClient').innerText = bill.clientName;
+            document.getElementById('pPhone').innerText = bill.clientPhone || '--';
+            document.getElementById('pGivenDate').innerText = bill.givenDate || '--';
+            document.getElementById('pRecDate').innerText = bill.receivedDate || '--';
             document.getElementById('pInvNo').innerText = bill.invNo;
             document.getElementById('pDate').innerText = bill.date;
 
@@ -645,7 +624,7 @@
                 tbodyHtml += `
                     <tr>
                         <td>${index + 1}</td>
-                        <td>${bill.prodName} [${bill.prodColor}] - Size: <strong>${item.size}</strong></td>
+                        <td>${bill.prodName} [Color: ${bill.prodColor}] - Size: <strong>${item.size}</strong></td>
                         <td>₹${item.rate.toFixed(2)}</td>
                         <td>${item.qty}</td>
                         <td>₹${item.amt.toFixed(2)}</td>
@@ -654,10 +633,10 @@
             });
 
             document.getElementById('invoiceTableBody').innerHTML = tbodyHtml;
+            document.getElementById('pGrandQty').innerText = bill.totalQty + " Pcs";
             document.getElementById('pGrandTotal').innerText = "₹" + bill.subTotal.toFixed(2);
         }
 
-        // Direct Download PDF Function
         function downloadPDF() {
             const element = document.getElementById('invoicePrintArea');
             const invNo = document.getElementById('pInvNo').innerText || 'Invoice';
@@ -697,7 +676,7 @@
         }
 
         function deleteBill(index) {
-            if (confirm("क्या आप इस सेव किए बिल को लिस्ट से डिलीट करना चाहते हैं?")) {
+            if (confirm("क्या आप इस सेव किए बिल को डिलीट करना चाहते हैं?")) {
                 savedInvoices.splice(index, 1);
                 localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
                 renderHistory();
