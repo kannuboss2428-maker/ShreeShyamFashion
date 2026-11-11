@@ -130,7 +130,7 @@
             text-shadow: 0 1px 3px rgba(0,0,0,0.9);
         }
 
-        .input-group input {
+        .input-group input, .input-group select {
             padding: 10px 12px;
             border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.4);
@@ -138,6 +138,15 @@
             outline: none;
             background: rgba(15, 23, 42, 0.65);
             color: #ffffff;
+        }
+
+        .optional-section {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px dashed #f59e0b;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            margin-bottom: 15px;
         }
 
         .size-matrix-table {
@@ -248,13 +257,13 @@
         .inv-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .inv-table th, .inv-table td {
             border: 1.5px solid #000000 !important;
-            padding: 8px 10px;
-            font-size: 0.88rem;
+            padding: 7px 8px;
+            font-size: 0.85rem;
             font-weight: 700;
             color: #000000 !important;
             text-align: center;
@@ -263,7 +272,46 @@
         .inv-table th { 
             background: #000000 !important; 
             color: #ffffff !important;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Receive Tracker Table styling */
+        .receive-tracker-box {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .receive-header-title {
+            text-align: center;
+            font-weight: 800;
+            font-size: 0.95rem;
+            border: 1.5px solid #000;
+            border-bottom: none;
+            background: #e2e8f0;
+            padding: 5px;
+            text-transform: uppercase;
+        }
+
+        .receive-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+        }
+
+        .receive-table th, .receive-table td {
+            border: 1.5px solid #000000 !important;
+            padding: 6px 4px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: #000000 !important;
+            text-align: center;
+            height: 24px;
+        }
+
+        .receive-table th {
+            background: #f1f5f9 !important;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
@@ -271,7 +319,7 @@
         .inv-totals {
             float: right;
             width: 320px;
-            font-size: 0.98rem;
+            font-size: 0.95rem;
             font-weight: 800;
             color: #000000 !important;
         }
@@ -279,13 +327,13 @@
         .inv-totals div {
             display: flex;
             justify-content: space-between;
-            padding: 5px 0;
+            padding: 4px 0;
             border-bottom: 1.5px solid #000;
         }
 
         .grand-total {
             color: #000000 !important;
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             border-bottom: 2.5px solid #000000 !important;
         }
 
@@ -294,10 +342,10 @@
         .signatures {
             display: flex;
             justify-content: space-between;
-            margin-top: 35px;
-            padding-top: 12px;
+            margin-top: 25px;
+            padding-top: 10px;
             border-top: 1.5px solid #000000;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             font-weight: 700;
             color: #000000 !important;
         }
@@ -329,7 +377,7 @@
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 8mm;
+                margin: 6mm;
             }
             body { 
                 background: #ffffff !important; 
@@ -349,7 +397,7 @@
             }
             .invoice-box { 
                 border: 2px solid #000000 !important; 
-                padding: 15px !important; 
+                padding: 10px !important; 
                 box-shadow: none !important; 
                 width: 100% !important; 
                 color: #000000 !important;
@@ -361,6 +409,12 @@
             .inv-table th {
                 background: #000000 !important;
                 color: #ffffff !important;
+            }
+            .receive-header-title {
+                background: #e2e8f0 !important;
+            }
+            .receive-table th {
+                background: #f1f5f9 !important;
             }
         }
     </style>
@@ -452,6 +506,24 @@
                     </table>
                 </div>
 
+                <!-- OPTIONAL DATE OF RECEIVE TRACKER TABLE SETUP -->
+                <div class="optional-section">
+                    <label style="font-weight:700; color:#f59e0b; display:block; margin-bottom:8px;">📦 नीचे माल प्राप्ति (Date of Receive) टेबल जोड़ें (Optional):</label>
+                    <div class="form-grid">
+                        <div class="input-group">
+                            <label>ट्रैकर टेबल दिखाएं?</label>
+                            <select id="enableTracker" onchange="toggleTrackerOptions()">
+                                <option value="no">No (नहीं दिखाएं)</option>
+                                <option value="yes">Yes (हाँ, दिखाएं)</option>
+                            </select>
+                        </div>
+                        <div class="input-group" id="rowsGroup" style="display:none;">
+                            <label>कितनी Rows (पंक्तियाँ) चाहिए?</label>
+                            <input type="number" id="trackerRowsCount" value="5" min="1" max="15">
+                        </div>
+                    </div>
+                </div>
+
                 <div class="form-grid" style="margin-top: 10px;">
                     <div class="input-group">
                         <label>रेट प्रति पीस (₹)</label>
@@ -505,7 +577,7 @@
             
             <div id="invoicePrintArea" class="invoice-box">
                 <div class="invoice-header-bg">SHREE SHYAM FASHION</div>
-                <div style="text-align:center; font-size:0.78rem; font-weight:700; margin-bottom:10px; border-bottom:2px solid #000; padding-bottom:6px; color:#000;">
+                <div style="text-align:center; font-size:0.75rem; font-weight:700; margin-bottom:8px; border-bottom:2px solid #000; padding-bottom:5px; color:#000;">
                     Address: Mal ki Dhani, Malpura Gate, Sanganer, Jaipur (Raj.) - 302029 | GSTIN: 08BYRPL4944B1Z7<br>
                     Owner: Vijay Kumawat (9680598849) | Co-Owner: Sanjay Kumawat (8559858776)
                 </div>
@@ -543,7 +615,32 @@
                     </tbody>
                 </table>
 
-                <div class="inv-totals">
+                <!-- OPTIONAL DATE OF RECEIVE TRACKER TABLE DISPLAY -->
+                <div id="receiveTrackerContainer" class="receive-tracker-box">
+                    <div class="receive-header-title">Date Of Receive</div>
+                    <table class="receive-table">
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>Challan No.</th>
+                                <th>S</th>
+                                <th>M</th>
+                                <th>L</th>
+                                <th>XL</th>
+                                <th>XXL</th>
+                                <th>3XL</th>
+                                <th>Date</th>
+                                <th>Total Pcs</th>
+                                <th>Signature</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receiveTrackerTbody">
+                            <!-- Dynamic rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="inv-totals" style="margin-top: 10px;">
                     <div><span>Total Qty:</span> <span id="pGrandQty">0 Pcs</span></div>
                     <div class="grand-total"><span>Total Amount:</span> <span id="pGrandTotal">₹0.00</span></div>
                 </div>
@@ -600,6 +697,11 @@
             if(evt && evt.currentTarget) evt.currentTarget.classList.add('active');
         }
 
+        function toggleTrackerOptions() {
+            const val = document.getElementById('enableTracker').value;
+            document.getElementById('rowsGroup').style.display = (val === 'yes') ? 'flex' : 'none';
+        }
+
         function calculateTotals() {
             const sizes = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
             let totalQty = 0;
@@ -632,6 +734,8 @@
             document.getElementById('clientPhone').value = '';
             document.getElementById('prodColor').value = '';
             document.getElementById('itemPhoto').value = '';
+            document.getElementById('enableTracker').value = 'no';
+            document.getElementById('rowsGroup').style.display = 'none';
             currentPhotoData = "";
             const sizes = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
             sizes.forEach(sz => {
@@ -654,6 +758,9 @@
             const givenDate = document.getElementById('givenDate').value;
             const invNo = document.getElementById('invNo').value;
             const rate = parseFloat(document.getElementById('uniformRate').value) || 0;
+            
+            const enableTracker = document.getElementById('enableTracker').value;
+            const trackerRowsCount = parseInt(document.getElementById('trackerRowsCount').value) || 5;
 
             const sizes = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
             const sizeIds = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
@@ -685,6 +792,7 @@
             const billData = {
                 invNo, clientName, clientPhone, prodName, styleNo, prodColor, givenDate, items, totalQty, subTotal,
                 photo: photoToSave,
+                tracker: { enable: enableTracker, rows: trackerRowsCount },
                 date: (editIndex !== -1) ? savedInvoices[editIndex].date : new Date().toLocaleDateString('hi-IN')
             };
 
@@ -722,11 +830,15 @@
             document.getElementById('givenDate').value = bill.givenDate || '';
             document.getElementById('invNo').value = bill.invNo;
             
+            if(bill.tracker) {
+                document.getElementById('enableTracker').value = bill.tracker.enable || 'no';
+                document.getElementById('trackerRowsCount').value = bill.tracker.rows || 5;
+                document.getElementById('rowsGroup').style.display = (bill.tracker.enable === 'yes') ? 'flex' : 'none';
+            }
+
             currentPhotoData = bill.photo || "";
 
-            const sizes = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
             const sizeIds = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
-
             sizeIds.forEach(sz => document.getElementById('qty_' + sz).value = 0);
 
             if (bill.items && bill.items.length > 0) {
@@ -775,8 +887,37 @@
                     </tr>
                 `;
             });
-
             document.getElementById('invoiceTableBody').innerHTML = tbodyHtml;
+
+            // Render Optional Receive Tracker Table
+            const trackerContainer = document.getElementById('receiveTrackerContainer');
+            const trackerTbody = document.getElementById('receiveTrackerTbody');
+            trackerTbody.innerHTML = '';
+
+            if (bill.tracker && bill.tracker.enable === 'yes') {
+                trackerContainer.style.display = 'block';
+                let rowCount = bill.tracker.rows || 5;
+                for (let r = 1; r <= rowCount; r++) {
+                    trackerTbody.innerHTML += `
+                        <tr>
+                            <td>${r}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    `;
+                }
+            } else {
+                trackerContainer.style.display = 'none';
+            }
+
             document.getElementById('pGrandQty').innerText = bill.totalQty + " Pcs";
             document.getElementById('pGrandTotal').innerText = "₹" + bill.subTotal.toFixed(2);
         }
@@ -785,7 +926,7 @@
             const element = document.getElementById('invoicePrintArea');
             const invNo = document.getElementById('pInvNo').innerText || 'Challan';
             const opt = {
-                margin:       10,
+                margin:       8,
                 filename:     `Shree_Shyam_Fashion_${invNo}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },
