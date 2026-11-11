@@ -31,7 +31,7 @@
         }
 
         .container {
-            max-width: 1050px;
+            max-width: 1100px;
             margin: 0 auto;
         }
 
@@ -170,21 +170,6 @@
             color: #ffffff;
         }
 
-        .payment-mode-box {
-            background: rgba(15, 23, 42, 0.65);
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            margin-bottom: 15px;
-        }
-
-        .payment-mode-box label {
-            margin-right: 20px;
-            font-weight: 600;
-            cursor: pointer;
-            color: #fff;
-        }
-
         .btn-group-form {
             display: flex;
             gap: 12px;
@@ -213,7 +198,7 @@
             cursor: pointer;
         }
 
-        /* Invoice Screen & High-Contrast Dark Print Layout */
+        /* Invoice Screen & High-Contrast Print Layout */
         .invoice-box {
             background: #ffffff !important;
             color: #000000 !important;
@@ -239,8 +224,9 @@
         }
 
         .inv-grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             gap: 20px;
             font-size: 0.9rem;
             margin-bottom: 12px;
@@ -248,6 +234,15 @@
             padding-bottom: 12px;
             font-weight: 700;
             color: #000000 !important;
+        }
+
+        .item-photo-preview {
+            max-width: 90px;
+            max-height: 90px;
+            border: 1px solid #000;
+            border-radius: 4px;
+            object-fit: cover;
+            display: none;
         }
 
         .inv-table {
@@ -258,16 +253,17 @@
 
         .inv-table th, .inv-table td {
             border: 1.5px solid #000000 !important;
-            padding: 8px 12px;
-            font-size: 0.9rem;
+            padding: 8px 10px;
+            font-size: 0.88rem;
             font-weight: 700;
             color: #000000 !important;
+            text-align: center;
         }
 
         .inv-table th { 
             background: #000000 !important; 
             color: #ffffff !important;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
@@ -295,22 +291,10 @@
 
         .clear { clear: both; }
 
-        .bank-upi-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            border-top: 2px solid #000000;
-            padding-top: 10px;
-            margin-top: 15px;
-            font-size: 0.88rem;
-            font-weight: 700;
-            color: #000000 !important;
-        }
-
         .signatures {
             display: flex;
             justify-content: space-between;
-            margin-top: 30px;
+            margin-top: 35px;
             padding-top: 12px;
             border-top: 1.5px solid #000000;
             font-size: 0.9rem;
@@ -341,7 +325,6 @@
         .btn-view { background: #2563eb; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
         .btn-delete { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
 
-        /* HIGH-CONTRAST SOLID BLACK A4 PRINT CSS */
         @media print {
             @page {
                 size: A4 portrait;
@@ -402,8 +385,16 @@
             <form id="invoiceForm" onsubmit="generateInvoice(event)">
                 <div class="form-grid">
                     <div class="input-group">
-                        <label>कुर्ती का नाम (Design Name)</label>
-                        <input type="text" id="prodName" placeholder="उदा: V-Gala Kurti" required>
+                        <label>Item Name (आइटम का नाम)</label>
+                        <input type="text" id="prodName" placeholder="उदा: Kurti / Suit" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Style No. (स्टाइल नंबर)</label>
+                        <input type="text" id="styleNo" placeholder="उदा: ST-101" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Print No. (प्रिंट नंबर)</label>
+                        <input type="text" id="prodColor" placeholder="उदा: PR-55 / Red" required>
                     </div>
                     <div class="input-group">
                         <label>Fabricator Name (कारीगर)</label>
@@ -414,20 +405,16 @@
                         <input type="text" id="clientPhone" placeholder="उदा: 98290XXXXX" required>
                     </div>
                     <div class="input-group">
-                        <label>कलर (Color)</label>
-                        <input type="text" id="prodColor" placeholder="उदा: Red / Green" required>
-                    </div>
-                    <div class="input-group">
                         <label>माल जमा करवाने की तारीख (Given Date)</label>
                         <input type="date" id="givenDate" required>
                     </div>
                     <div class="input-group">
-                        <label>माल मिलने की तारीख (Received Date)</label>
-                        <input type="date" id="receivedDate" required>
+                        <label>Challan No. (चालान नंबर)</label>
+                        <input type="text" id="invNo" value="SSF-001" required>
                     </div>
                     <div class="input-group">
-                        <label>इनवॉइस नंबर (Invoice No)</label>
-                        <input type="text" id="invNo" value="SSF-001" required>
+                        <label>Item Photo (Optional / ऐच्छिक फोटो)</label>
+                        <input type="file" id="itemPhoto" accept="image/*" onchange="previewUploadPhoto(event)">
                     </div>
                 </div>
 
@@ -463,15 +450,6 @@
                     </table>
                 </div>
 
-                <!-- Payment Mode Selection -->
-                <label style="font-weight: 600; font-size: 0.9rem; color:#f59e0b; display:block; margin-bottom:5px;">भुगतान का माध्यम (Payment Mode):</label>
-                <div class="payment-mode-box">
-                    <label><input type="radio" name="payMode" value="UPI" checked> UPI</label>
-                    <label><input type="radio" name="payMode" value="Google Pay"> Google Pay</label>
-                    <label><input type="radio" name="payMode" value="PhonePe"> PhonePe</label>
-                    <label><input type="radio" name="payMode" value="Cash"> Cash</label>
-                </div>
-
                 <div class="form-grid" style="margin-top: 10px;">
                     <div class="input-group">
                         <label>रेट प्रति पीस (₹)</label>
@@ -488,7 +466,7 @@
                 </div>
 
                 <div class="btn-group-form">
-                    <button type="submit" class="btn-action">💾 बिल सेव करें एवं प्रिंट देखें</button>
+                    <button type="submit" class="btn-action">💾 चालान सेव करें एवं प्रिंट देखें</button>
                     <button type="button" class="btn-reset" onclick="resetFormOnly()">🔄 Clear Form</button>
                 </div>
             </form>
@@ -508,7 +486,7 @@
                         <input type="number" id="cutMeters" step="0.01" placeholder="उदा: 500" required>
                     </div>
                     <div class="input-group">
-                        <label>1 कुर्ती एवरेज (Meter)</label>
+                        <label>1 पीस का Average (Meter)</label>
                         <input type="number" id="cutAvg" step="0.01" placeholder="उदा: 2.15" required>
                     </div>
                 </div>
@@ -521,7 +499,7 @@
 
         <!-- TAB 3: PRINT & SAVED BILLS -->
         <div id="reports" class="tab-content">
-            <h2>इनवॉइस प्रिंट एवं सुरक्षित बिल रिकॉर्ड</h2>
+            <h2>चालान प्रिंट एवं सुरक्षित रिकॉर्ड</h2>
             
             <div id="invoicePrintArea" class="invoice-box">
                 <div class="invoice-header-bg">SHREE SHYAM FASHION</div>
@@ -534,11 +512,13 @@
                     <div>
                         <strong>Fabricator Name:</strong> <span id="pClient">--</span><br>
                         <strong>Phone No:</strong> <span id="pPhone">--</span><br>
-                        <strong>Given Date:</strong> <span id="pGivenDate">--</span><br>
-                        <strong>Received Date:</strong> <span id="pRecDate">--</span>
+                        <strong>Given Date:</strong> <span id="pGivenDate">--</span>
+                    </div>
+                    <div>
+                        <img id="pPhotoImg" class="item-photo-preview" src="" alt="Photo">
                     </div>
                     <div style="text-align: right;">
-                        <strong>Invoice No:</strong> <span id="pInvNo">--</span><br>
+                        <strong>Challan No:</strong> <span id="pInvNo">--</span><br>
                         <strong>Date:</strong> <span id="pDate">--</span>
                     </div>
                 </div>
@@ -547,27 +527,26 @@
                     <thead>
                         <tr>
                             <th>S.No</th>
-                            <th>Product Description</th>
-                            <th>Rate (₹)</th>
+                            <th>Item</th>
+                            <th>Style No.</th>
+                            <th>Print No.</th>
+                            <th>Size</th>
                             <th>Qty (Pcs)</th>
+                            <th>Rate (₹)</th>
                             <th>Amount (₹)</th>
                         </tr>
                     </thead>
                     <tbody id="invoiceTableBody">
-                        <tr><td colspan="5" style="text-align:center;">कोई बिल सेलेक्ट नहीं है।</td></tr>
+                        <tr><td colspan="8" style="text-align:center;">कोई चालान सेलेक्ट नहीं है।</td></tr>
                     </tbody>
                 </table>
 
                 <div class="inv-totals">
-                    <div><span>Total Qty of Kurti:</span> <span id="pGrandQty">0 Pcs</span></div>
+                    <div><span>Total Qty:</span> <span id="pGrandQty">0 Pcs</span></div>
                     <div class="grand-total"><span>Total Amount:</span> <span id="pGrandTotal">₹0.00</span></div>
                 </div>
                 <div class="clear"></div>
 
-                <div class="bank-upi-section">
-                    <div><strong>Firm Details:</strong><br>SHREE SHYAM FASHION, Sanganer, Jaipur</div>
-                    <div><strong>Payment Mode:</strong> <span id="pPayMode" style="text-transform: uppercase; color: #000; font-weight:800;">--</span></div>
-                </div>
                 <div class="signatures">
                     <div>Seal / Stamp</div>
                     <div>Authorized Signature</div>
@@ -575,20 +554,21 @@
             </div>
 
             <div style="display: flex; gap: 12px; margin-top: 15px; flex-wrap: wrap;">
-                <button onclick="downloadPDF()" class="btn-action" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">📥 Download Bill (PDF)</button>
+                <button onclick="downloadPDF()" class="btn-action" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">📥 Download Challan (PDF)</button>
                 <button onclick="window.print()" class="btn-action" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);">🖨️ A4 Paper Print</button>
             </div>
 
             <div id="historySection" style="margin-top: 30px;">
-                <h3 style="color:#f59e0b; margin-bottom:10px;">📂 सेव किए हुए पुराने बिल (Saved History)</h3>
+                <h3 style="color:#f59e0b; margin-bottom:10px;">📂 सेव किए हुए पुराने चालान (Saved History)</h3>
                 <table class="history-table">
                     <thead>
                         <tr>
-                            <th>Inv No</th>
+                            <th>Challan No</th>
                             <th>Fabricator Name</th>
-                            <th>Product Name</th>
-                            <th>कुल पीस</th>
-                            <th>कुल अमाउंट</th>
+                            <th>Item</th>
+                            <th>Style No</th>
+                            <th>Total Pcs</th>
+                            <th>Total Amount</th>
                             <th>एक्शन</th>
                         </tr>
                     </thead>
@@ -601,6 +581,7 @@
     <script>
         const BIN_ID = "67c5195fe41b4d34e4995f3a"; 
         let savedInvoices = JSON.parse(localStorage.getItem('ssf_bills')) || [];
+        let currentPhotoData = "";
 
         window.onload = function() {
             fetchCloudData();
@@ -608,7 +589,6 @@
                 document.getElementById('invNo').value = "SSF-00" + (savedInvoices.length + 1);
             }
             document.getElementById('givenDate').valueAsDate = new Date();
-            document.getElementById('receivedDate').valueAsDate = new Date();
         };
 
         function switchTab(evt, tabId) {
@@ -629,11 +609,27 @@
             document.getElementById('displayTotalAmt').value = "₹ " + (totalQty * rate).toFixed(2);
         }
 
+        function previewUploadPhoto(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    currentPhotoData = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                currentPhotoData = "";
+            }
+        }
+
         function resetFormOnly() {
             document.getElementById('prodName').value = '';
+            document.getElementById('styleNo').value = '';
             document.getElementById('clientName').value = '';
             document.getElementById('clientPhone').value = '';
             document.getElementById('prodColor').value = '';
+            document.getElementById('itemPhoto').value = '';
+            currentPhotoData = "";
             const sizes = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
             sizes.forEach(sz => {
                 document.getElementById('qty_' + sz).value = 0;
@@ -644,19 +640,13 @@
         function generateInvoice(e) {
             e.preventDefault();
             const prodName = document.getElementById('prodName').value;
+            const styleNo = document.getElementById('styleNo').value;
             const clientName = document.getElementById('clientName').value;
             const clientPhone = document.getElementById('clientPhone').value;
             const prodColor = document.getElementById('prodColor').value;
             const givenDate = document.getElementById('givenDate').value;
-            const receivedDate = document.getElementById('receivedDate').value;
             const invNo = document.getElementById('invNo').value;
             const rate = parseFloat(document.getElementById('uniformRate').value) || 0;
-            
-            let payMode = "UPI";
-            const modes = document.getElementsByName('payMode');
-            for(let m of modes) {
-                if(m.checked) payMode = m.value;
-            }
 
             const sizes = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
             const sizeIds = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
@@ -681,7 +671,8 @@
             }
 
             const billData = {
-                invNo, clientName, clientPhone, prodName, prodColor, givenDate, receivedDate, payMode, items, totalQty, subTotal,
+                invNo, clientName, clientPhone, prodName, styleNo, prodColor, givenDate, items, totalQty, subTotal,
+                photo: currentPhotoData,
                 date: new Date().toLocaleDateString('hi-IN')
             };
 
@@ -696,26 +687,35 @@
             resetFormOnly();
 
             switchTab({ currentTarget: document.querySelectorAll('.tab-btn')[2] }, 'reports');
-            alert("बिल सुरक्षित (Save) हो गया है!");
+            alert("चालान सुरक्षित (Save) हो गया है!");
         }
 
         function displayInvoice(bill) {
             document.getElementById('pClient').innerText = bill.clientName;
             document.getElementById('pPhone').innerText = bill.clientPhone || '--';
             document.getElementById('pGivenDate').innerText = bill.givenDate || '--';
-            document.getElementById('pRecDate').innerText = bill.receivedDate || '--';
             document.getElementById('pInvNo').innerText = bill.invNo;
             document.getElementById('pDate').innerText = bill.date;
-            document.getElementById('pPayMode').innerText = bill.payMode || 'UPI';
+
+            const imgEl = document.getElementById('pPhotoImg');
+            if (bill.photo) {
+                imgEl.src = bill.photo;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
+            }
 
             let tbodyHtml = '';
             bill.items.forEach((item, index) => {
                 tbodyHtml += `
                     <tr>
                         <td>${index + 1}</td>
-                        <td>${bill.prodName} [Color: ${bill.prodColor}] - Size: <strong>${item.size}</strong></td>
-                        <td>₹${item.rate.toFixed(2)}</td>
+                        <td>${bill.prodName}</td>
+                        <td>${bill.styleNo || '--'}</td>
+                        <td>${bill.prodColor || '--'}</td>
+                        <td><strong>${item.size}</strong></td>
                         <td>${item.qty}</td>
+                        <td>₹${item.rate.toFixed(2)}</td>
                         <td>₹${item.amt.toFixed(2)}</td>
                     </tr>
                 `;
@@ -728,7 +728,7 @@
 
         function downloadPDF() {
             const element = document.getElementById('invoicePrintArea');
-            const invNo = document.getElementById('pInvNo').innerText || 'Invoice';
+            const invNo = document.getElementById('pInvNo').innerText || 'Challan';
             const opt = {
                 margin:       10,
                 filename:     `Shree_Shyam_Fashion_${invNo}.pdf`,
@@ -748,6 +748,7 @@
                         <td><strong>${bill.invNo}</strong></td>
                         <td>${bill.clientName}</td>
                         <td>${bill.prodName}</td>
+                        <td>${bill.styleNo || '--'}</td>
                         <td>${bill.totalQty} Pcs</td>
                         <td>₹${bill.subTotal.toFixed(2)}</td>
                         <td>
@@ -765,7 +766,7 @@
         }
 
         function deleteBill(index) {
-            if (confirm("क्या आप इस सेव किए बिल को डिलीट करना चाहते हैं?")) {
+            if (confirm("क्या आप इस सेव किए चालान को डिलीट करना चाहते हैं?")) {
                 savedInvoices.splice(index, 1);
                 localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
                 syncToCloud();
