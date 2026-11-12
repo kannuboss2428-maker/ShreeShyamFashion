@@ -79,6 +79,10 @@
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .tab-btn.active, .tab-btn:hover {
@@ -429,6 +433,7 @@
 
         <div class="nav-tabs">
             <button class="tab-btn active" onclick="switchTab(event, 'billTab')">📝 Fabricator Bill</button>
+            <a href="cutting.html" class="tab-btn">📊 Cutting Data</a>
             <button class="tab-btn" onclick="switchTab(event, 'cutTab')">✂️ Cutting Calculator</button>
             <button class="tab-btn" onclick="switchTab(event, 'reports')">🖨️ Final Invoice & Saved Bills</button>
         </div>
@@ -801,7 +806,7 @@
             resetFormOnly();
 
             switchTab(null, 'reports');
-            document.querySelectorAll('.tab-btn')[2].classList.add('active');
+            document.querySelectorAll('.tab-btn')[3].classList.add('active');
         }
 
         function editBill(index) {
@@ -948,7 +953,6 @@
             .then(res => res.json())
             .then(data => {
                 if(data && data.record && Array.isArray(data.record) && data.record.length > 0) {
-                    // Only overwrite local if cloud has data and it's newer/valid
                     if(data.record.length >= savedInvoices.length) {
                         savedInvoices = data.record;
                         localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
