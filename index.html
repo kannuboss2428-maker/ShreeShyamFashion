@@ -268,7 +268,7 @@
             print-color-adjust: exact;
         }
 
-        /* Receive Tracker Table styling (S to 5XL + custom width adjustment) */
+        /* Receive Tracker Table styling */
         .receive-tracker-box {
             margin-top: 8px;
         }
@@ -308,11 +308,10 @@
             print-color-adjust: exact;
         }
 
-        /* Specific Column Widths for Receive Table */
         .col-sno { width: 5%; }
         .col-challan { width: 9%; font-size: 0.65rem; }
         .col-date { width: 9%; font-size: 0.65rem; }
-        .col-size { width: 6.5%; } /* Expanded space for size columns */
+        .col-size { width: 6.5%; }
         .col-tot { width: 9%; }
         .col-sig { width: 14%; }
 
@@ -597,7 +596,6 @@
                     </tbody>
                 </table>
 
-                <!-- DATE OF RECEIVE TRACKER TABLE (S to 5XL + Large Total Pcs) -->
                 <div class="receive-tracker-box">
                     <div class="receive-header-title">Date Of Receive</div>
                     <table class="receive-table">
@@ -667,19 +665,25 @@
 
     <script>
         const BIN_ID = "67c5195fe41b4d34e4995f3a"; 
+        
+        // LocalStorage-first approach to guarantee data never gets lost overnight
         let savedInvoices = JSON.parse(localStorage.getItem('ssf_bills')) || [];
         let currentPhotoData = "";
 
         window.onload = function() {
-            fetchCloudData();
+            renderHistory();
             if(savedInvoices.length > 0) {
-                // Generate next NH sequence
                 let nextNum = savedInvoices.length + 1;
                 document.getElementById('invNo').value = "NH-" + String(nextNum).padStart(3, '0');
+                // Automatically display the latest bill on load
+                displayInvoice(savedInvoices[0]);
             } else {
                 document.getElementById('invNo').value = "NH-001";
             }
             document.getElementById('givenDate').valueAsDate = new Date();
+            
+            // Background sync with cloud
+            fetchCloudData();
         };
 
         function switchTab(evt, tabId) {
@@ -788,12 +792,12 @@
                 alert("चालान सुरक्षित (Save) हो गया है!");
             }
 
+            // Save immediately to localStorage
             localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
             syncToCloud();
 
             renderHistory();
             displayInvoice(billData);
-
             resetFormOnly();
 
             switchTab(null, 'reports');
@@ -887,6 +891,10 @@
         function renderHistory() {
             const tbody = document.getElementById('historyTbody');
             tbody.innerHTML = '';
+            if(savedInvoices.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#fff;">कोई पुराना चालान सेव नहीं है।</td></tr>`;
+                return;
+            }
             savedInvoices.forEach((bill, idx) => {
                 tbody.innerHTML += `
                     <tr>
@@ -928,7 +936,7 @@
                     'X-Master-Key': '$2a$10$7v5QyNqJ8E7L1x9x5x5xOuK9qZ3Y8v5K9qZ3Y8v5K9qZ3Y8v5K9qZ'
                 },
                 body: JSON.stringify(savedInvoices)
-            }).catch(err => console.log("Sync background error"));
+            }).catch(err => console.log("Cloud sync error"));
         }
 
         function fetchCloudData() {
@@ -939,16 +947,18 @@
             })
             .then(res => res.json())
             .then(data => {
-                if(data && data.record && Array.isArray(data.record)) {
-                    savedInvoices = data.record;
-                    localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
-                    renderHistory();
-                    if(savedInvoices.length > 0) {
-                        let nextNum = savedInvoices.length + 1;
-                        document.getElementById('invNo').value = "NH-" + String(nextNum).padStart(3, '0');
+                if(data && data.record && Array.isArray(data.record) && data.record.length > 0) {
+                    // Only overwrite local if cloud has data and it's newer/valid
+                    if(data.record.length >= savedInvoices.length) {
+                        savedInvoices = data.record;
+                        localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
+                        renderHistory();
+                        if(savedInvoices.length > 0 && document.getElementById('pInvNo').innerText === '--') {
+                            displayInvoice(savedInvoices[0]);
+                        }
                     }
                 }
-            }).catch(err => console.log("Offline mode"));
+            }).catch(err => console.log("Offline mode - using local storage data"));
         }
 
         function calculateCutting(e) {
