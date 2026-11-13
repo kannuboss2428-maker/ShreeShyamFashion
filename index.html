@@ -277,11 +277,6 @@
             print-color-adjust: exact;
         }
 
-        /* Classes to hide rate and amount on print/pdf */
-        .rate-col, .amt-col {
-            display: table-cell;
-        }
-
         .receive-tracker-box {
             margin-top: 8px;
         }
@@ -330,7 +325,7 @@
 
         .inv-totals {
             float: right;
-            width: 300px;
+            width: 320px;
             font-size: 0.88rem;
             font-weight: 800;
             color: #000000 !important;
@@ -386,7 +381,7 @@
         .btn-edit { background: #d97706; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-right: 4px; }
         .btn-delete { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
 
-        /* Modal for Fabricator Ledger */
+        /* Modal for Ledger & Statement */
         .modal {
             display: none;
             position: fixed;
@@ -401,13 +396,13 @@
             overflow-y: auto;
         }
         .modal-content {
-            background: #0f172a;
-            border: 1px solid #f59e0b;
+            background: #ffffff;
+            border: 2px solid #000;
             border-radius: 12px;
-            max-width: 900px;
-            margin: 40px auto;
+            max-width: 950px;
+            margin: 30px auto;
             padding: 25px;
-            color: #fff;
+            color: #000;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
         .close-modal {
@@ -430,14 +425,22 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-            header, .nav-tabs, .btn-action, .btn-reset, .tab-content:not(#reports), h2, #historySection, script {
+            header, .nav-tabs, .btn-action, .btn-reset, .tab-content:not(#reports), h2, #historySection, script, .close-modal {
                 display: none !important;
             }
-            #reports { 
+            #reports, #ledgerModal { 
                 display: block !important; 
-                padding: 0 !important; 
-                box-shadow: none !important; 
-                background: #ffffff !important; 
+                position: static !important;
+                background: #ffffff !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+            }
+            .modal-content {
+                border: none !important;
+                box-shadow: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100% !important;
             }
             .invoice-box { 
                 border: 2px solid #000000 !important; 
@@ -459,10 +462,6 @@
             }
             .receive-table th {
                 background: #e5e7eb !important;
-            }
-            /* Hide Rate and Amount columns during print/pdf */
-            .rate-col, .amt-col, .inv-totals {
-                display: none !important;
             }
         }
     </style>
@@ -563,7 +562,7 @@
 
                 <div class="form-grid" style="margin-top: 10px;">
                     <div class="input-group">
-                        <label>रेट प्रति पीस (₹) [प्रिंट में नहीं दिखेगा]</label>
+                        <label>रेट प्रति पीस (₹) [अमाउंट जोड़ने के लिए]</label>
                         <input type="number" id="uniformRate" step="0.5" value="50" min="0" oninput="calculateTotals()" required>
                     </div>
                     <div class="input-group">
@@ -611,6 +610,7 @@
                         <label>फैब्रिकेटर चुनें</label>
                         <select id="statementFabSelect" required>
                             <option value="">-- फैब्रिकेटर चुनें --</option>
+                            <option value="ALL">🌟 सभी फैब्रिकेटर (All Fabricators Combined)</option>
                         </select>
                     </div>
                     <div class="input-group">
@@ -709,12 +709,11 @@
                             <th>Print No.</th>
                             <th>Size</th>
                             <th>Qty (Pcs)</th>
-                            <th class="rate-col">Rate (₹)</th>
-                            <th class="amt-col">Amount (₹)</th>
+                            <th>Amount (₹)</th>
                         </tr>
                     </thead>
                     <tbody id="invoiceTableBody">
-                        <tr><td colspan="8" style="text-align:center;">कोई चालान सेलेक्ट नहीं है।</td></tr>
+                        <tr><td colspan="7" style="text-align:center;">कोई चालान सेलेक्ट नहीं है।</td></tr>
                     </tbody>
                 </table>
 
@@ -818,10 +817,8 @@
             if(evt && evt.currentTarget) evt.currentTarget.classList.add('active');
         }
 
-        // Date formatter for DD-MM-YYYY
         function formatDateToDDMMYYYY(dateStr) {
             if(!dateStr) return '--';
-            // If already in YYYY-MM-DD
             let parts = dateStr.split('-');
             if(parts.length === 3) {
                 if(parts[0].length === 4) {
@@ -831,7 +828,6 @@
             return dateStr;
         }
 
-        // Fabricator Account Functions
         function saveFabricatorAccount(e) {
             e.preventDefault();
             const name = document.getElementById('fabNameInput').value.trim();
@@ -852,7 +848,7 @@
             const statementSelect = document.getElementById('statementFabSelect');
             
             select.innerHTML = '<option value="">-- फैब्रिकेटर चुनें --</option>';
-            statementSelect.innerHTML = '<option value="">-- फैब्रिकेटर चुनें --</option>';
+            statementSelect.innerHTML = '<option value="">-- फैब्रिकेटर चुनें --</option><option value="ALL">🌟 सभी फैब्रिकेटर (All Fabricators Combined)</option>';
 
             fabricators.forEach(fab => {
                 let opt = `<option value="${fab.name}">${fab.name} (${fab.phone})</option>`;
@@ -902,7 +898,6 @@
             }
         }
 
-        // Ledger popup
         function openFabricatorLedger(fabName) {
             const fab = fabricators.find(f => f.name === fabName);
             const fabBills = savedInvoices.filter(b => b.clientName === fabName);
@@ -916,50 +911,44 @@
                 totalEarn += b.subTotal;
                 rowsHtml += `
                     <tr>
-                        <td>${b.invNo}</td>
-                        <td>${formatDateToDDMMYYYY(b.givenDate)}</td>
-                        <td>${b.prodName} (${b.styleNo || '--'})</td>
-                        <td>${b.totalQty} Pcs</td>
-                        <td>₹${b.subTotal.toFixed(2)}</td>
+                        <td style="border:1px solid #000; padding:6px; text-align:center;">${b.invNo}</td>
+                        <td style="border:1px solid #000; padding:6px; text-align:center;">${formatDateToDDMMYYYY(b.givenDate)}</td>
+                        <td style="border:1px solid #000; padding:6px;">${b.prodName} (${b.styleNo || '--'})</td>
+                        <td style="border:1px solid #000; padding:6px; text-align:center;">${b.totalQty} Pcs</td>
+                        <td style="border:1px solid #000; padding:6px; text-align:right;">₹${b.subTotal.toFixed(2)}</td>
                     </tr>
                 `;
             });
 
             let modalHtml = `
-                <div style="margin-bottom:15px; border-bottom:2px solid #f59e0b; padding-bottom:10px;">
-                    <h2>खाता विवरण: ${fab.name}</h2>
-                    <p style="font-size:0.9rem; color:#cbd5e1;">मोबाइल: ${fab.phone} | पता: ${fab.address}</p>
+                <div style="text-align:center; border-bottom:3px solid #000; padding-bottom:12px; margin-bottom:15px;">
+                    <h2 style="font-size:1.8rem; font-weight:800; text-transform:uppercase; color:#000;">SHREE SHYAM FASHION</h2>
+                    <p style="font-size:0.8rem; font-weight:700; color:#000;">Fabricator Account Ledger Statement</p>
                 </div>
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:15px;">
-                    <div style="background:rgba(15,23,42,0.8); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.2);">
-                        <span style="font-size:0.8rem; color:#94a3b8;">कुल चालान कटे</span>
-                        <h3 style="color:#f59e0b;">${fabBills.length}</h3>
-                    </div>
-                    <div style="background:rgba(15,23,42,0.8); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.2);">
-                        <span style="font-size:0.8rem; color:#94a3b8;">कुल पीस बनाए</span>
-                        <h3 style="color:#38bdf8;">${totalPcs} Pcs</h3>
-                    </div>
-                    <div style="background:rgba(15,23,42,0.8); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.2);">
-                        <span style="font-size:0.8rem; color:#94a3b8;">कुल कमाई (Amount)</span>
-                        <h3 style="color:#4ade80;">₹${totalEarn.toFixed(2)}</h3>
-                    </div>
+                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:0.9rem; margin-bottom:15px; border-bottom:2px solid #000; padding-bottom:8px;">
+                    <div>Fabricator Name: <strong>${fab.name}</strong><br>Mobile No: ${fab.phone}</div>
+                    <div style="text-align:right;">Address: ${fab.address}</div>
                 </div>
-                <h4 style="margin-bottom:8px; color:#f59e0b;">चालान इतिहास (Challan History):</h4>
-                <div style="max-height:250px; overflow-y:auto;">
-                    <table class="history-table" style="margin-top:0;">
-                        <thead>
-                            <tr>
-                                <th>Challan No</th>
-                                <th>Given Date</th>
-                                <th>Item / Style</th>
-                                <th>Total Pcs</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${rowsHtml || '<tr><td colspan="5" style="text-align:center;">कोई चालान नहीं मिला।</td></tr>'}
-                        </tbody>
-                    </table>
+                <table style="width:100%; border-collapse:collapse; margin-bottom:15px; font-size:0.85rem;">
+                    <thead>
+                        <tr style="background:#000; color:#fff;">
+                            <th style="border:1px solid #000; padding:6px;">Challan No</th>
+                            <th style="border:1px solid #000; padding:6px;">Given Date</th>
+                            <th style="border:1px solid #000; padding:6px;">Item / Style</th>
+                            <th style="border:1px solid #000; padding:6px;">Total Pcs</th>
+                            <th style="border:1px solid #000; padding:6px; text-align:right;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml || '<tr><td colspan="5" style="border:1px solid #000; padding:10px; text-align:center;">कोई चालान नहीं मिला।</td></tr>'}
+                    </tbody>
+                </table>
+                <div style="display:flex; justify-content:space-between; font-size:1rem; font-weight:800; border-top:2px solid #000; padding-top:10px; margin-top:10px;">
+                    <span>कुल चालान: ${fabBills.length} | कुल पीस: ${totalPcs} Pcs</span>
+                    <span style="font-size:1.1rem;">कुल देय राशि: ₹${totalEarn.toFixed(2)}</span>
+                </div>
+                <div style="margin-top:30px; text-align:right;">
+                    <button onclick="window.print()" class="btn-action">🖨️ Print Statement</button>
                 </div>
             `;
 
@@ -967,7 +956,6 @@
             document.getElementById('ledgerModal').style.display = 'block';
         }
 
-        // Date-wise Statement Generator
         function generateDateWiseStatement() {
             const fabName = document.getElementById('statementFabSelect').value;
             const startDate = document.getElementById('startDateInput').value;
@@ -978,10 +966,16 @@
                 return;
             }
 
-            const fab = fabricators.find(f => f.name === fabName);
-            const filteredBills = savedInvoices.filter(b => {
-                return b.clientName === fabName && b.givenDate >= startDate && b.givenDate <= endDate;
-            });
+            let filteredBills = [];
+            let titleText = "";
+
+            if(fabName === "ALL") {
+                filteredBills = savedInvoices.filter(b => b.givenDate >= startDate && b.givenDate <= endDate);
+                titleText = "All Fabricators Combined Statement";
+            } else {
+                filteredBills = savedInvoices.filter(b => b.clientName === fabName && b.givenDate >= startDate && b.givenDate <= endDate);
+                titleText = `Fabricator Statement: ${fabName}`;
+            }
 
             let grandTotalPcs = 0;
             let grandTotalAmt = 0;
@@ -991,53 +985,48 @@
                 grandTotalPcs += b.totalQty;
                 grandTotalAmt += b.subTotal;
 
-                // Build size breakdown string e.g. S:4, M:10...
                 let sizeBreakdown = b.items.map(it => `${it.size}: ${it.qty}`).join(', ');
 
                 tableRows += `
                     <tr>
-                        <td>${b.invNo}</td>
-                        <td>${formatDateToDDMMYYYY(b.givenDate)}</td>
-                        <td>${b.prodName}</td>
-                        <td>${b.styleNo}</td>
-                        <td>₹${b.items[0] ? b.items[0].rate.toFixed(2) : '0'}</td>
-                        <td>${sizeBreakdown}</td>
-                        <td><strong>${b.totalQty} Pcs</strong></td>
-                        <td><strong>₹${b.subTotal.toFixed(2)}</strong></td>
+                        <td style="border:1px solid #000; padding:6px; text-align:center;">${b.invNo}</td>
+                        <td style="border:1px solid #000; padding:6px; text-align:center;">${formatDateToDDMMYYYY(b.givenDate)}</td>
+                        <td style="border:1px solid #000; padding:6px;">${fabName === 'ALL' ? '<strong>' + b.clientName + '</strong><br>' : ''}${b.prodName}</td>
+                        <td style="border:1px solid #000; padding:6px; text-align:center;">${b.styleNo}</td>
+                        <td style="border:1px solid #000; padding:6px;">${sizeBreakdown}</td>
+                        <td style="border:1px solid #000; padding:6px; text-align:center; font-weight:bold;">${b.totalQty} Pcs</td>
+                        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold;">₹${b.subTotal.toFixed(2)}</td>
                     </tr>
                 `;
             });
 
             let statementHtml = `
-                <div style="text-align:center; margin-bottom:15px; border-bottom:2px solid #f59e0b; padding-bottom:10px;">
-                    <h2 style="color:#f59e0b;">SHREE SHYAM FASHION - STATEMENT REPORT</h2>
-                    <p style="font-size:0.9rem; color:#cbd5e1;">Fabricator: <strong>${fab.name}</strong> | Mobile: ${fab.phone}</p>
-                    <p style="font-size:0.85rem; color:#94a3b8;">Period: ${formatDateToDDMMYYYY(startDate)} to ${formatDateToDDMMYYYY(endDate)}</p>
+                <div style="text-align:center; border-bottom:3px solid #000; padding-bottom:12px; margin-bottom:15px;">
+                    <h2 style="font-size:1.8rem; font-weight:800; text-transform:uppercase; color:#000;">SHREE SHYAM FASHION</h2>
+                    <p style="font-size:0.85rem; font-weight:700; color:#000;">${titleText}</p>
+                    <p style="font-size:0.75rem; font-weight:700; color:#555;">Period: ${formatDateToDDMMYYYY(startDate)} to ${formatDateToDDMMYYYY(endDate)}</p>
                 </div>
-                <div style="max-height:350px; overflow-y:auto;">
-                    <table class="history-table" style="margin-top:0;">
-                        <thead>
-                            <tr>
-                                <th>Challan</th>
-                                <th>Date</th>
-                                <th>Item Name</th>
-                                <th>Style No</th>
-                                <th>Rate</th>
-                                <th>Size & Qty Breakdown</th>
-                                <th>Total Pcs</th>
-                                <th>Total Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${tableRows || '<tr><td colspan="8" style="text-align:center;">इस तारीख के बीच कोई चालान नहीं मिला।</td></tr>'}
-                        </tbody>
-                    </table>
-                </div>
-                <div style="margin-top:15px; background:rgba(15,23,42,0.9); padding:15px; border-radius:8px; display:flex; justify-content:space-between; font-size:1.1rem; font-weight:bold; color:#4ade80;">
+                <table style="width:100%; border-collapse:collapse; margin-bottom:15px; font-size:0.8rem;">
+                    <thead>
+                        <tr style="background:#000; color:#fff;">
+                            <th style="border:1px solid #000; padding:6px;">Challan</th>
+                            <th style="border:1px solid #000; padding:6px;">Date</th>
+                            <th style="border:1px solid #000; padding:6px;">Item Name</th>
+                            <th style="border:1px solid #000; padding:6px;">Style No</th>
+                            <th style="border:1px solid #000; padding:6px;">Size Breakdown</th>
+                            <th style="border:1px solid #000; padding:6px;">Total Pcs</th>
+                            <th style="border:1px solid #000; padding:6px; text-align:right;">Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows || '<tr><td colspan="7" style="border:1px solid #000; padding:15px; text-align:center;">इस तारीख के बीच कोई रिकॉर्ड नहीं मिला।</td></tr>'}
+                    </tbody>
+                </table>
+                <div style="display:flex; justify-content:space-between; font-size:1rem; font-weight:800; border-top:2px solid #000; padding-top:10px; margin-top:10px;">
                     <span>कुल पीस (Total Qty): ${grandTotalPcs} Pcs</span>
-                    <span>कुल देय राशि (Total Amount): ₹${grandTotalAmt.toFixed(2)}</span>
+                    <span style="font-size:1.1rem;">कुल राशि (Total Amount): ₹${grandTotalAmt.toFixed(2)}</span>
                 </div>
-                <div style="margin-top:15px; text-align:right;">
+                <div style="margin-top:30px; text-align:right;">
                     <button onclick="window.print()" class="btn-action">🖨️ Print Statement</button>
                 </div>
             `;
@@ -1050,7 +1039,6 @@
             document.getElementById('ledgerModal').style.display = 'none';
         }
 
-        // Search by Style No.
         function searchByStyleNo() {
             const query = document.getElementById('searchStyleInput').value.trim().toUpperCase();
             const resDiv = document.getElementById('styleSearchResult');
@@ -1086,7 +1074,6 @@
             resDiv.innerHTML = html;
         }
 
-        // Standard Bill functions
         function calculateTotals() {
             const sizes = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
             let totalQty = 0;
@@ -1273,8 +1260,7 @@
                         <td>${bill.prodColor || '--'}</td>
                         <td><strong>${item.size}</strong></td>
                         <td>${item.qty}</td>
-                        <td class="rate-col">₹${item.rate.toFixed(2)}</td>
-                        <td class="amt-col">₹${item.amt.toFixed(2)}</td>
+                        <td>₹${item.amt.toFixed(2)}</td>
                     </tr>
                 `;
             });
