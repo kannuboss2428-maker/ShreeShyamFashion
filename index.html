@@ -463,6 +463,10 @@
             .receive-table th {
                 background: #e5e7eb !important;
             }
+            /* केवल रेट कॉलम को प्रिंट/पीडीएफ में छिपाया गया है, अमाउंट और टोटल दोनों दिखेंगे */
+            .rate-col {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -709,11 +713,12 @@
                             <th>Print No.</th>
                             <th>Size</th>
                             <th>Qty (Pcs)</th>
+                            <th class="rate-col">Rate (₹)</th>
                             <th>Amount (₹)</th>
                         </tr>
                     </thead>
                     <tbody id="invoiceTableBody">
-                        <tr><td colspan="7" style="text-align:center;">कोई चालान सेलेक्ट नहीं है।</td></tr>
+                        <tr><td colspan="8" style="text-align:center;">कोई चालान सेलेक्ट नहीं है।</td></tr>
                     </tbody>
                 </table>
 
@@ -1260,6 +1265,7 @@
                         <td>${bill.prodColor || '--'}</td>
                         <td><strong>${item.size}</strong></td>
                         <td>${item.qty}</td>
+                        <td class="rate-col">₹${item.rate.toFixed(2)}</td>
                         <td>₹${item.amt.toFixed(2)}</td>
                     </tr>
                 `;
