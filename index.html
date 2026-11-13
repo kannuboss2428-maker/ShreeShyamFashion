@@ -62,7 +62,7 @@
 
         .nav-tabs {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             justify-content: center;
             margin-bottom: 20px;
             flex-wrap: wrap;
@@ -73,8 +73,8 @@
             color: #fff;
             border: 1px solid rgba(255, 255, 255, 0.3);
             backdrop-filter: blur(8px);
-            padding: 10px 20px;
-            font-size: 0.9rem;
+            padding: 10px 16px;
+            font-size: 0.85rem;
             font-weight: 600;
             border-radius: 10px;
             cursor: pointer;
@@ -134,7 +134,7 @@
             text-shadow: 0 1px 3px rgba(0,0,0,0.9);
         }
 
-        .input-group input {
+        .input-group input, .input-group select {
             padding: 10px 12px;
             border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.4);
@@ -142,6 +142,11 @@
             outline: none;
             background: rgba(15, 23, 42, 0.65);
             color: #ffffff;
+        }
+
+        .input-group select option {
+            background: #0f172a;
+            color: #fff;
         }
 
         .size-matrix-table {
@@ -272,7 +277,11 @@
             print-color-adjust: exact;
         }
 
-        /* Receive Tracker Table styling */
+        /* Classes to hide rate and amount on print/pdf */
+        .rate-col, .amt-col {
+            display: table-cell;
+        }
+
         .receive-tracker-box {
             margin-top: 8px;
         }
@@ -353,7 +362,7 @@
             color: #000000 !important;
         }
 
-        .history-table {
+        .history-table, .fabricator-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
@@ -363,7 +372,7 @@
             border: 1px solid rgba(255,255,255,0.2);
         }
 
-        .history-table th, .history-table td {
+        .history-table th, .history-table td, .fabricator-table th, .fabricator-table td {
             border: 1px solid rgba(255,255,255,0.2);
             padding: 10px;
             font-size: 0.85rem;
@@ -371,11 +380,43 @@
             color: #ffffff;
         }
 
-        .history-table th { background: rgba(15, 23, 42, 0.85); color: #f59e0b; }
+        .history-table th, .fabricator-table th { background: rgba(15, 23, 42, 0.85); color: #f59e0b; }
 
         .btn-view { background: #2563eb; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-right: 4px; }
         .btn-edit { background: #d97706; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-right: 4px; }
         .btn-delete { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+
+        /* Modal for Fabricator Ledger */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal-content {
+            background: #0f172a;
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 25px;
+            color: #fff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .close-modal {
+            float: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ef4444;
+            cursor: pointer;
+        }
 
         @media print {
             @page {
@@ -419,6 +460,10 @@
             .receive-table th {
                 background: #e5e7eb !important;
             }
+            /* Hide Rate and Amount columns during print/pdf */
+            .rate-col, .amt-col, .inv-totals {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -433,36 +478,38 @@
 
         <div class="nav-tabs">
             <button class="tab-btn active" onclick="switchTab(event, 'billTab')">📝 Fabricator Bill</button>
-            <a href="cutting.html" class="tab-btn">📊 Cutting Data</a>
+            <button class="tab-btn" onclick="switchTab(event, 'fabAccountTab')">👤 Fabricator Account</button>
             <button class="tab-btn" onclick="switchTab(event, 'cutTab')">✂️ Cutting Calculator</button>
             <button class="tab-btn" onclick="switchTab(event, 'reports')">🖨️ Final Invoice & Saved Bills</button>
         </div>
 
-        <!-- TAB 1: BILL ENTRY -->
+        <!-- TAB 1: FABRICATOR BILL -->
         <div id="billTab" class="tab-content active">
             <h2 id="formTitle">Fabricator Bill & Size Entry</h2>
             <form id="invoiceForm" onsubmit="generateInvoice(event)">
                 <input type="hidden" id="editIndex" value="-1">
                 <div class="form-grid">
                     <div class="input-group">
+                        <label>Fabricator Name (कारीगर चुनें)</label>
+                        <select id="selectFabricator" onchange="autofillFabricator()" required>
+                            <option value="">-- फैब्रिकेटर चुनें --</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Fabricator Mobile No (फ़ोन नंबर)</label>
+                        <input type="text" id="clientPhone" readonly placeholder="मोबाइल नंबर स्वतः आएगा" required>
+                    </div>
+                    <div class="input-group">
                         <label>Item Name (आइटम का नाम)</label>
-                        <input type="text" id="prodName" placeholder="उदा: Kurti / Suit" required>
+                        <input type="text" id="prodName" placeholder="उदा: Kurti / Suit / Pant" required>
                     </div>
                     <div class="input-group">
                         <label>Style No. (स्टाइल नंबर)</label>
-                        <input type="text" id="styleNo" placeholder="उदा: ST-101" required>
+                        <input type="text" id="styleNo" value="SD-" placeholder="SD-101" required>
                     </div>
                     <div class="input-group">
                         <label>Print No. (प्रिंट नंबर)</label>
                         <input type="text" id="prodColor" placeholder="उदा: PR-55 / Red" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Fabricator Name (कारीगर)</label>
-                        <input type="text" id="clientName" placeholder="उदा: रमेश जी" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Fabricator Mobile No (फ़ोन नंबर)</label>
-                        <input type="text" id="clientPhone" placeholder="उदा: 98290XXXXX" required>
                     </div>
                     <div class="input-group">
                         <label>माल जमा करवाने की तारीख (Given Date)</label>
@@ -516,7 +563,7 @@
 
                 <div class="form-grid" style="margin-top: 10px;">
                     <div class="input-group">
-                        <label>रेट प्रति पीस (₹)</label>
+                        <label>रेट प्रति पीस (₹) [प्रिंट में नहीं दिखेगा]</label>
                         <input type="number" id="uniformRate" step="0.5" value="50" min="0" oninput="calculateTotals()" required>
                     </div>
                     <div class="input-group">
@@ -536,7 +583,74 @@
             </form>
         </div>
 
-        <!-- TAB 2: CUTTING CALCULATOR -->
+        <!-- TAB 2: FABRICATOR ACCOUNT & STATEMENT -->
+        <div id="fabAccountTab" class="tab-content">
+            <h2>👤 Fabricator Account & Date-wise Statement</h2>
+            <form id="fabForm" onsubmit="saveFabricatorAccount(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>Fabricator Name (कारीगर का नाम)</label>
+                        <input type="text" id="fabNameInput" placeholder="उदा: रमेश जी" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Mobile No (मोबाइल नंबर)</label>
+                        <input type="text" id="fabPhoneInput" placeholder="उदा: 98290XXXXX" required>
+                    </div>
+                    <div class="input-group" style="grid-column: span 2;">
+                        <label>Address (पता / ठिकाना)</label>
+                        <input type="text" id="fabAddressInput" placeholder="उदा: सांगानेर, जयपुर" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-action">➕ नया खाता बनाएँ (Save Fabricator)</button>
+            </form>
+
+            <div style="margin-top: 30px; background: rgba(15,23,42,0.5); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);">
+                <h3 style="color:#f59e0b; margin-bottom:10px;">📊 Date-wise Statement & Earnings Report (तारीख के अनुसार स्टेटमेंट)</h3>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>फैब्रिकेटर चुनें</label>
+                        <select id="statementFabSelect" required>
+                            <option value="">-- फैब्रिकेटर चुनें --</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>शुरुआती तारीख (Start Date)</label>
+                        <input type="date" id="startDateInput" required>
+                    </div>
+                    <div class="input-group">
+                        <label>अंतिम तारीख (End Date)</label>
+                        <input type="date" id="endDateInput" required>
+                    </div>
+                </div>
+                <button type="button" onclick="generateDateWiseStatement()" class="btn-action" style="margin-top: 10px;">📄 स्टेटमेंट रिपोर्ट देखें (Generate Statement)</button>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h3 style="color:#f59e0b; margin-bottom:10px;">🔍 स्टाइल नंबर द्वारा चालान खोजें (Search by Style No.)</h3>
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <input type="text" id="searchStyleInput" placeholder="Style No. डालें जैसे SD-101" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(15,23,42,0.7); color: #fff; width: 250px;">
+                    <button onclick="searchByStyleNo()" class="btn-action" style="padding: 10px 20px;">🔍 खोजें</button>
+                </div>
+                <div id="styleSearchResult" style="margin-top: 10px;"></div>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h3 style="color:#f59e0b; margin-bottom:10px;">📋 सभी फैब्रिकेटर की लिस्ट एवं खाते</h3>
+                <table class="fabricator-table">
+                    <thead>
+                        <tr>
+                            <th>नाम</th>
+                            <th>मोबाइल</th>
+                            <th>पता</th>
+                            <th>एक्शन / खाता (Ledger)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fabTbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- TAB 3: CUTTING CALCULATOR -->
         <div id="cutTab" class="tab-content">
             <h2>कटिंग एवं कपड़े का हिसाब</h2>
             <form id="cutForm" onsubmit="calculateCutting(event)">
@@ -561,7 +675,7 @@
             </div>
         </div>
 
-        <!-- TAB 3: PRINT & SAVED BILLS -->
+        <!-- TAB 4: PRINT & SAVED BILLS -->
         <div id="reports" class="tab-content">
             <h2>चालान प्रिंट एवं सुरक्षित रिकॉर्ड</h2>
             
@@ -582,8 +696,7 @@
                         <img id="pPhotoImg" class="item-photo-preview" src="" alt="Photo">
                     </div>
                     <div style="text-align: right;">
-                        <strong>Challan No:</strong> <span id="pInvNo">--</span><br>
-                        <strong>Date:</strong> <span id="pDate">--</span>
+                        <strong>Challan No:</strong> <span id="pInvNo">--</span>
                     </div>
                 </div>
 
@@ -596,8 +709,8 @@
                             <th>Print No.</th>
                             <th>Size</th>
                             <th>Qty (Pcs)</th>
-                            <th>Rate (₹)</th>
-                            <th>Amount (₹)</th>
+                            <th class="rate-col">Rate (₹)</th>
+                            <th class="amt-col">Amount (₹)</th>
                         </tr>
                     </thead>
                     <tbody id="invoiceTableBody">
@@ -625,9 +738,7 @@
                                 <th class="col-sig">Receiver Signature</th>
                             </tr>
                         </thead>
-                        <tbody id="receiveTrackerTbody">
-                            <!-- Dynamic rows based on input -->
-                        </tbody>
+                        <tbody id="receiveTrackerTbody"></tbody>
                     </table>
                 </div>
 
@@ -668,21 +779,33 @@
         </div>
     </div>
 
+    <!-- MODAL FOR LEDGER & STATEMENT -->
+    <div id="ledgerModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeLedgerModal()">×</span>
+            <div id="ledgerBody"></div>
+        </div>
+    </div>
+
     <script>
         const BIN_ID = "67c5195fe41b4d34e4995f3a"; 
         
         let savedInvoices = JSON.parse(localStorage.getItem('ssf_bills')) || [];
+        let fabricators = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
         let currentPhotoData = "";
 
         window.onload = function() {
+            renderFabricatorDropdowns();
+            renderFabricatorTable();
             renderHistory();
+            
             if(savedInvoices.length > 0) {
                 let nextNum = savedInvoices.length + 1;
                 document.getElementById('invNo').value = "NH-" + String(nextNum).padStart(3, '0');
                 displayInvoice(savedInvoices[0]);
             } else {
                 document.getElementById('invNo').value = "NH-001";
-                renderReceiveRows(5); // default 5 rows
+                renderReceiveRows(5);
             }
             document.getElementById('givenDate').valueAsDate = new Date();
             fetchCloudData();
@@ -695,6 +818,275 @@
             if(evt && evt.currentTarget) evt.currentTarget.classList.add('active');
         }
 
+        // Date formatter for DD-MM-YYYY
+        function formatDateToDDMMYYYY(dateStr) {
+            if(!dateStr) return '--';
+            // If already in YYYY-MM-DD
+            let parts = dateStr.split('-');
+            if(parts.length === 3) {
+                if(parts[0].length === 4) {
+                    return `${parts[2]}-${parts[1]}-${parts[0]}`;
+                }
+            }
+            return dateStr;
+        }
+
+        // Fabricator Account Functions
+        function saveFabricatorAccount(e) {
+            e.preventDefault();
+            const name = document.getElementById('fabNameInput').value.trim();
+            const phone = document.getElementById('fabPhoneInput').value.trim();
+            const address = document.getElementById('fabAddressInput').value.trim();
+
+            fabricators.push({ name, phone, address });
+            localStorage.setItem('ssf_fabricators', JSON.stringify(fabricators));
+            alert("फैब्रिकेटर खाता सफलतापूर्वक बन गया है!");
+            
+            document.getElementById('fabForm').reset();
+            renderFabricatorDropdowns();
+            renderFabricatorTable();
+        }
+
+        function renderFabricatorDropdowns() {
+            const select = document.getElementById('selectFabricator');
+            const statementSelect = document.getElementById('statementFabSelect');
+            
+            select.innerHTML = '<option value="">-- फैब्रिकेटर चुनें --</option>';
+            statementSelect.innerHTML = '<option value="">-- फैब्रिकेटर चुनें --</option>';
+
+            fabricators.forEach(fab => {
+                let opt = `<option value="${fab.name}">${fab.name} (${fab.phone})</option>`;
+                select.innerHTML += opt;
+                statementSelect.innerHTML += opt;
+            });
+        }
+
+        function autofillFabricator() {
+            const selectedName = document.getElementById('selectFabricator').value;
+            const fab = fabricators.find(f => f.name === selectedName);
+            if(fab) {
+                document.getElementById('clientPhone').value = fab.phone;
+            } else {
+                document.getElementById('clientPhone').value = '';
+            }
+        }
+
+        function renderFabricatorTable() {
+            const tbody = document.getElementById('fabTbody');
+            tbody.innerHTML = '';
+            if(fabricators.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">कोई फैब्रिकेटर रजिस्टर्ड नहीं है।</td></tr>`;
+                return;
+            }
+            fabricators.forEach((fab, idx) => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${fab.name}</strong></td>
+                        <td>${fab.phone}</td>
+                        <td>${fab.address}</td>
+                        <td>
+                            <button class="btn-view" onclick="openFabricatorLedger('${fab.name}')">📊 खाता देखें (Ledger)</button>
+                            <button class="btn-delete" onclick="deleteFabricator(${idx})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteFabricator(index) {
+            if(confirm("क्या आप इस फैब्रिकेटर को हटाना चाहते हैं?")) {
+                fabricators.splice(index, 1);
+                localStorage.setItem('ssf_fabricators', JSON.stringify(fabricators));
+                renderFabricatorDropdowns();
+                renderFabricatorTable();
+            }
+        }
+
+        // Ledger popup
+        function openFabricatorLedger(fabName) {
+            const fab = fabricators.find(f => f.name === fabName);
+            const fabBills = savedInvoices.filter(b => b.clientName === fabName);
+
+            let totalPcs = 0;
+            let totalEarn = 0;
+            let rowsHtml = '';
+
+            fabBills.forEach((b) => {
+                totalPcs += b.totalQty;
+                totalEarn += b.subTotal;
+                rowsHtml += `
+                    <tr>
+                        <td>${b.invNo}</td>
+                        <td>${formatDateToDDMMYYYY(b.givenDate)}</td>
+                        <td>${b.prodName} (${b.styleNo || '--'})</td>
+                        <td>${b.totalQty} Pcs</td>
+                        <td>₹${b.subTotal.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+
+            let modalHtml = `
+                <div style="margin-bottom:15px; border-bottom:2px solid #f59e0b; padding-bottom:10px;">
+                    <h2>खाता विवरण: ${fab.name}</h2>
+                    <p style="font-size:0.9rem; color:#cbd5e1;">मोबाइल: ${fab.phone} | पता: ${fab.address}</p>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-bottom:15px;">
+                    <div style="background:rgba(15,23,42,0.8); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.2);">
+                        <span style="font-size:0.8rem; color:#94a3b8;">कुल चालान कटे</span>
+                        <h3 style="color:#f59e0b;">${fabBills.length}</h3>
+                    </div>
+                    <div style="background:rgba(15,23,42,0.8); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.2);">
+                        <span style="font-size:0.8rem; color:#94a3b8;">कुल पीस बनाए</span>
+                        <h3 style="color:#38bdf8;">${totalPcs} Pcs</h3>
+                    </div>
+                    <div style="background:rgba(15,23,42,0.8); padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.2);">
+                        <span style="font-size:0.8rem; color:#94a3b8;">कुल कमाई (Amount)</span>
+                        <h3 style="color:#4ade80;">₹${totalEarn.toFixed(2)}</h3>
+                    </div>
+                </div>
+                <h4 style="margin-bottom:8px; color:#f59e0b;">चालान इतिहास (Challan History):</h4>
+                <div style="max-height:250px; overflow-y:auto;">
+                    <table class="history-table" style="margin-top:0;">
+                        <thead>
+                            <tr>
+                                <th>Challan No</th>
+                                <th>Given Date</th>
+                                <th>Item / Style</th>
+                                <th>Total Pcs</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml || '<tr><td colspan="5" style="text-align:center;">कोई चालान नहीं मिला।</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+
+            document.getElementById('ledgerBody').innerHTML = modalHtml;
+            document.getElementById('ledgerModal').style.display = 'block';
+        }
+
+        // Date-wise Statement Generator
+        function generateDateWiseStatement() {
+            const fabName = document.getElementById('statementFabSelect').value;
+            const startDate = document.getElementById('startDateInput').value;
+            const endDate = document.getElementById('endDateInput').value;
+
+            if(!fabName || !startDate || !endDate) {
+                alert("कृपया फैब्रिकेटर और दोनों तारीखें (Start & End Date) चुनें!");
+                return;
+            }
+
+            const fab = fabricators.find(f => f.name === fabName);
+            const filteredBills = savedInvoices.filter(b => {
+                return b.clientName === fabName && b.givenDate >= startDate && b.givenDate <= endDate;
+            });
+
+            let grandTotalPcs = 0;
+            let grandTotalAmt = 0;
+            let tableRows = '';
+
+            filteredBills.forEach(b => {
+                grandTotalPcs += b.totalQty;
+                grandTotalAmt += b.subTotal;
+
+                // Build size breakdown string e.g. S:4, M:10...
+                let sizeBreakdown = b.items.map(it => `${it.size}: ${it.qty}`).join(', ');
+
+                tableRows += `
+                    <tr>
+                        <td>${b.invNo}</td>
+                        <td>${formatDateToDDMMYYYY(b.givenDate)}</td>
+                        <td>${b.prodName}</td>
+                        <td>${b.styleNo}</td>
+                        <td>₹${b.items[0] ? b.items[0].rate.toFixed(2) : '0'}</td>
+                        <td>${sizeBreakdown}</td>
+                        <td><strong>${b.totalQty} Pcs</strong></td>
+                        <td><strong>₹${b.subTotal.toFixed(2)}</strong></td>
+                    </tr>
+                `;
+            });
+
+            let statementHtml = `
+                <div style="text-align:center; margin-bottom:15px; border-bottom:2px solid #f59e0b; padding-bottom:10px;">
+                    <h2 style="color:#f59e0b;">SHREE SHYAM FASHION - STATEMENT REPORT</h2>
+                    <p style="font-size:0.9rem; color:#cbd5e1;">Fabricator: <strong>${fab.name}</strong> | Mobile: ${fab.phone}</p>
+                    <p style="font-size:0.85rem; color:#94a3b8;">Period: ${formatDateToDDMMYYYY(startDate)} to ${formatDateToDDMMYYYY(endDate)}</p>
+                </div>
+                <div style="max-height:350px; overflow-y:auto;">
+                    <table class="history-table" style="margin-top:0;">
+                        <thead>
+                            <tr>
+                                <th>Challan</th>
+                                <th>Date</th>
+                                <th>Item Name</th>
+                                <th>Style No</th>
+                                <th>Rate</th>
+                                <th>Size & Qty Breakdown</th>
+                                <th>Total Pcs</th>
+                                <th>Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows || '<tr><td colspan="8" style="text-align:center;">इस तारीख के बीच कोई चालान नहीं मिला।</td></tr>'}
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top:15px; background:rgba(15,23,42,0.9); padding:15px; border-radius:8px; display:flex; justify-content:space-between; font-size:1.1rem; font-weight:bold; color:#4ade80;">
+                    <span>कुल पीस (Total Qty): ${grandTotalPcs} Pcs</span>
+                    <span>कुल देय राशि (Total Amount): ₹${grandTotalAmt.toFixed(2)}</span>
+                </div>
+                <div style="margin-top:15px; text-align:right;">
+                    <button onclick="window.print()" class="btn-action">🖨️ Print Statement</button>
+                </div>
+            `;
+
+            document.getElementById('ledgerBody').innerHTML = statementHtml;
+            document.getElementById('ledgerModal').style.display = 'block';
+        }
+
+        function closeLedgerModal() {
+            document.getElementById('ledgerModal').style.display = 'none';
+        }
+
+        // Search by Style No.
+        function searchByStyleNo() {
+            const query = document.getElementById('searchStyleInput').value.trim().toUpperCase();
+            const resDiv = document.getElementById('styleSearchResult');
+            if(!query) {
+                resDiv.innerHTML = '<p style="color:#ef4444;">कृपया स्टाइल नंबर दर्ज करें।</p>';
+                return;
+            }
+
+            const matchedBills = savedInvoices.filter(b => (b.styleNo || '').toUpperCase().includes(query));
+            if(matchedBills.length === 0) {
+                resDiv.innerHTML = `<p style="color:#ef4444;">स्टाइल नंबर "${query}" का कोई चालान नहीं मिला।</p>`;
+                return;
+            }
+
+            let html = `<p style="color:#4ade80; margin-bottom:8px;">कुल ${matchedBills.length} चालान मिले:</p>`;
+            html += `<table class="history-table"><thead><tr><th>Challan No</th><th>Fabricator</th><th>Item</th><th>Style No</th><th>Total Pcs</th><th>Amount</th><th>Action</th></tr></thead><tbody>`;
+            
+            matchedBills.forEach(b => {
+                let realIdx = savedInvoices.findIndex(inv => inv.invNo === b.invNo);
+                html += `
+                    <tr>
+                        <td><strong>${b.invNo}</strong></td>
+                        <td>${b.clientName}</td>
+                        <td>${b.prodName}</td>
+                        <td>${b.styleNo}</td>
+                        <td>${b.totalQty} Pcs</td>
+                        <td>₹${b.subTotal.toFixed(2)}</td>
+                        <td><button class="btn-view" onclick="viewBill(${realIdx}); switchTab(null, 'reports'); document.querySelectorAll('.tab-btn')[3].classList.add('active');">View</button></td>
+                    </tr>
+                `;
+            });
+            html += `</tbody></table>`;
+            resDiv.innerHTML = html;
+        }
+
+        // Standard Bill functions
         function calculateTotals() {
             const sizes = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
             let totalQty = 0;
@@ -735,10 +1127,10 @@
             document.getElementById('editIndex').value = "-1";
             document.getElementById('formTitle').innerText = "Fabricator Bill & Size Entry";
             document.getElementById('submitBtn').innerText = "💾 चालान सेव करें एवं प्रिंट देखें";
-            document.getElementById('prodName').value = '';
-            document.getElementById('styleNo').value = '';
-            document.getElementById('clientName').value = '';
+            document.getElementById('selectFabricator').value = '';
             document.getElementById('clientPhone').value = '';
+            document.getElementById('prodName').value = '';
+            document.getElementById('styleNo').value = 'SD-';
             document.getElementById('prodColor').value = '';
             document.getElementById('itemPhoto').value = '';
             document.getElementById('receiveRowsCount').value = '5';
@@ -760,10 +1152,10 @@
         function generateInvoice(e) {
             e.preventDefault();
             const editIndex = parseInt(document.getElementById('editIndex').value);
+            const clientName = document.getElementById('selectFabricator').value;
+            const clientPhone = document.getElementById('clientPhone').value;
             const prodName = document.getElementById('prodName').value;
             const styleNo = document.getElementById('styleNo').value;
-            const clientName = document.getElementById('clientName').value;
-            const clientPhone = document.getElementById('clientPhone').value;
             const prodColor = document.getElementById('prodColor').value;
             const givenDate = document.getElementById('givenDate').value;
             const invNo = document.getElementById('invNo').value;
@@ -799,8 +1191,7 @@
 
             const billData = {
                 invNo, clientName, clientPhone, prodName, styleNo, prodColor, givenDate, receiveRows, items, totalQty, subTotal,
-                photo: photoToSave,
-                date: (editIndex !== -1) ? savedInvoices[editIndex].date : new Date().toLocaleDateString('hi-IN')
+                photo: photoToSave
             };
 
             if (editIndex !== -1) {
@@ -828,10 +1219,10 @@
             document.getElementById('formTitle').innerText = `✏️ Edit Challan (${bill.invNo})`;
             document.getElementById('submitBtn').innerText = "💾 चालान अपडेट करें (Update)";
 
-            document.getElementById('prodName').value = bill.prodName;
-            document.getElementById('styleNo').value = bill.styleNo || '';
-            document.getElementById('clientName').value = bill.clientName;
+            document.getElementById('selectFabricator').value = bill.clientName;
             document.getElementById('clientPhone').value = bill.clientPhone || '';
+            document.getElementById('prodName').value = bill.prodName;
+            document.getElementById('styleNo').value = bill.styleNo || 'SD-';
             document.getElementById('prodColor').value = bill.prodColor || '';
             document.getElementById('givenDate').value = bill.givenDate || '';
             document.getElementById('invNo').value = bill.invNo;
@@ -861,9 +1252,8 @@
         function displayInvoice(bill) {
             document.getElementById('pClient').innerText = bill.clientName;
             document.getElementById('pPhone').innerText = bill.clientPhone || '--';
-            document.getElementById('pGivenDate').innerText = bill.givenDate || '--';
+            document.getElementById('pGivenDate').innerText = formatDateToDDMMYYYY(bill.givenDate);
             document.getElementById('pInvNo').innerText = bill.invNo;
-            document.getElementById('pDate').innerText = bill.date;
 
             const imgEl = document.getElementById('pPhotoImg');
             if (bill.photo) {
@@ -883,8 +1273,8 @@
                         <td>${bill.prodColor || '--'}</td>
                         <td><strong>${item.size}</strong></td>
                         <td>${item.qty}</td>
-                        <td>₹${item.rate.toFixed(2)}</td>
-                        <td>₹${item.amt.toFixed(2)}</td>
+                        <td class="rate-col">₹${item.rate.toFixed(2)}</td>
+                        <td class="amt-col">₹${item.amt.toFixed(2)}</td>
                     </tr>
                 `;
             });
