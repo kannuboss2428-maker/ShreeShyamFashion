@@ -207,7 +207,6 @@
             cursor: pointer;
         }
 
-        /* Invoice Screen & High-Contrast Print Layout */
         .invoice-box {
             background: #ffffff !important;
             color: #000000 !important;
@@ -381,7 +380,6 @@
         .btn-edit { background: #d97706; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-right: 4px; }
         .btn-delete { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
 
-        /* Modal for Ledger & Statement */
         .modal {
             display: none;
             position: fixed;
@@ -425,7 +423,6 @@
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-            /* जब प्रिंट हो, तो केवल मॉडल/स्टेटमेंट दिखे, बाकी पूरी वेबसाइट छिप जाए */
             body > .container {
                 display: none !important;
             }
@@ -447,7 +444,7 @@
             .close-modal, .btn-action {
                 display: none !important;
             }
-            .rate-col {
+            .rate-col, .category-print-hide {
                 display: none !important;
             }
         }
@@ -465,7 +462,7 @@
         <div class="nav-tabs">
             <button class="tab-btn active" onclick="switchTab(event, 'billTab')">📝 Fabricator Bill</button>
             <button class="tab-btn" onclick="switchTab(event, 'fabAccountTab')">👤 Fabricator Account</button>
-            <button class="tab-btn" onclick="switchTab(event, 'cutTab')">✂️ Cutting Calculator</button>
+            <a href="cutting.html" class="tab-btn">✂️ Cutting & Production</a>
             <button class="tab-btn" onclick="switchTab(event, 'reports')">🖨️ Final Invoice & Saved Bills</button>
         </div>
 
@@ -486,8 +483,17 @@
                         <input type="text" id="clientPhone" readonly placeholder="मोबाइल नंबर स्वतः आएगा" required>
                     </div>
                     <div class="input-group">
+                        <label>Category (आइटम प्रकार)</label>
+                        <select id="itemCategory" required>
+                            <option value="Kurti">Kurti</option>
+                            <option value="Pant">Pant</option>
+                            <option value="Dupatta">Dupatta</option>
+                            <option value="Sharara">Sharara</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
                         <label>Item Name (आइटम का नाम)</label>
-                        <input type="text" id="prodName" placeholder="उदा: Kurti / Suit / Pant" required>
+                        <input type="text" id="prodName" placeholder="उदा: 3-Pcs Set / Anarkali" required>
                     </div>
                     <div class="input-group">
                         <label>Style No. (स्टाइल नंबर)</label>
@@ -637,31 +643,6 @@
             </div>
         </div>
 
-        <!-- TAB 3: CUTTING CALCULATOR -->
-        <div id="cutTab" class="tab-content">
-            <h2>कटिंग एवं कपड़े का हिसाब</h2>
-            <form id="cutForm" onsubmit="calculateCutting(event)">
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>कपड़े का नाम</label>
-                        <input type="text" id="cutFabric" placeholder="उदा: Rayon 14KG" required>
-                    </div>
-                    <div class="input-group">
-                        <label>कुल कपड़ा (Meter)</label>
-                        <input type="number" id="cutMeters" step="0.01" placeholder="उदा: 500" required>
-                    </div>
-                    <div class="input-group">
-                        <label>1 पीस का Average (Meter)</label>
-                        <input type="number" id="cutAvg" step="0.01" placeholder="उदा: 2.15" required>
-                    </div>
-                </div>
-                <button type="submit" class="btn-action">⚡ हिसाब निकालें</button>
-            </form>
-            <div id="cutResultBox" style="display:none; margin-top:15px; background:rgba(15,23,42,0.7); padding:15px; border-radius:8px; border-left:5px solid #f59e0b; color:#fff;">
-                <p>कुल कपड़ा: <span id="resM"></span> mtr | पीस बनेंगे: <strong id="resPcs" style="color:#f59e0b; font-size:1.2rem;"></strong> | बचा कपड़ा: <span id="resLeft"></span> mtr</p>
-            </div>
-        </div>
-
         <!-- TAB 4: PRINT & SAVED BILLS -->
         <div id="reports" class="tab-content">
             <h2>चालान प्रिंट एवं सुरक्षित रिकॉर्ड</h2>
@@ -691,7 +672,7 @@
                     <thead>
                         <tr>
                             <th>S.No</th>
-                            <th>Item</th>
+                            <th>Item Name</th>
                             <th>Style No.</th>
                             <th>Print No.</th>
                             <th>Size</th>
@@ -902,7 +883,7 @@
                     <tr>
                         <td style="border:1px solid #000; padding:5px; text-align:center;">${b.invNo}</td>
                         <td style="border:1px solid #000; padding:5px; text-align:center;">${formatDateToDDMMYYYY(b.givenDate)}</td>
-                        <td style="border:1px solid #000; padding:5px;">${b.prodName}</td>
+                        <td style="border:1px solid #000; padding:5px;">[${b.category || 'Kurti'}] ${b.prodName}</td>
                         <td style="border:1px solid #000; padding:5px; text-align:center;">${b.styleNo || '--'}</td>
                         <td style="border:1px solid #000; padding:5px;">${sizeBreakdown}</td>
                         <td style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold;">${b.totalQty} Pcs</td>
@@ -985,7 +966,7 @@
                     <tr>
                         <td style="border:1px solid #000; padding:5px; text-align:center;">${b.invNo}</td>
                         <td style="border:1px solid #000; padding:5px; text-align:center;">${formatDateToDDMMYYYY(b.givenDate)}</td>
-                        <td style="border:1px solid #000; padding:5px;">${fabName === 'ALL' ? '<strong>' + b.clientName + '</strong><br>' : ''}${b.prodName}</td>
+                        <td style="border:1px solid #000; padding:5px;">${fabName === 'ALL' ? '<strong>' + b.clientName + '</strong><br>' : ''}[${b.category || 'Kurti'}] ${b.prodName}</td>
                         <td style="border:1px solid #000; padding:5px; text-align:center;">${b.styleNo}</td>
                         <td style="border:1px solid #000; padding:5px;">${sizeBreakdown}</td>
                         <td style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold;">${b.totalQty} Pcs</td>
@@ -1057,7 +1038,7 @@
                     <tr>
                         <td><strong>${b.invNo}</strong></td>
                         <td>${b.clientName}</td>
-                        <td>${b.prodName}</td>
+                        <td>[${b.category || 'Kurti'}] ${b.prodName}</td>
                         <td>${b.styleNo}</td>
                         <td>${b.totalQty} Pcs</td>
                         <td>₹${b.subTotal.toFixed(2)}</td>
@@ -1111,6 +1092,7 @@
             document.getElementById('submitBtn').innerText = "💾 चालान सेव करें एवं प्रिंट देखें";
             document.getElementById('selectFabricator').value = '';
             document.getElementById('clientPhone').value = '';
+            document.getElementById('itemCategory').value = 'Kurti';
             document.getElementById('prodName').value = '';
             document.getElementById('styleNo').value = 'SD-';
             document.getElementById('prodColor').value = '';
@@ -1136,6 +1118,7 @@
             const editIndex = parseInt(document.getElementById('editIndex').value);
             const clientName = document.getElementById('selectFabricator').value;
             const clientPhone = document.getElementById('clientPhone').value;
+            const category = document.getElementById('itemCategory').value;
             const prodName = document.getElementById('prodName').value;
             const styleNo = document.getElementById('styleNo').value;
             const prodColor = document.getElementById('prodColor').value;
@@ -1172,7 +1155,7 @@
             }
 
             const billData = {
-                invNo, clientName, clientPhone, prodName, styleNo, prodColor, givenDate, receiveRows, items, totalQty, subTotal,
+                invNo, clientName, clientPhone, category, prodName, styleNo, prodColor, givenDate, receiveRows, items, totalQty, subTotal,
                 photo: photoToSave
             };
 
@@ -1203,6 +1186,7 @@
 
             document.getElementById('selectFabricator').value = bill.clientName;
             document.getElementById('clientPhone').value = bill.clientPhone || '';
+            document.getElementById('itemCategory').value = bill.category || 'Kurti';
             document.getElementById('prodName').value = bill.prodName;
             document.getElementById('styleNo').value = bill.styleNo || 'SD-';
             document.getElementById('prodColor').value = bill.prodColor || '';
@@ -1246,11 +1230,12 @@
             }
 
             let tbodyHtml = '';
+            let catText = bill.category ? `[${bill.category}] ` : '';
             bill.items.forEach((item, index) => {
                 tbodyHtml += `
                     <tr>
                         <td>${index + 1}</td>
-                        <td>${bill.prodName}</td>
+                        <td>${catText}${bill.prodName} <span class="category-print-hide" style="font-size:0.75rem; color:#046a58; display:none;"></span></td>
                         <td>${bill.styleNo || '--'}</td>
                         <td>${bill.prodColor || '--'}</td>
                         <td><strong>${item.size}</strong></td>
@@ -1293,7 +1278,7 @@
                     <tr>
                         <td><strong>${bill.invNo}</strong></td>
                         <td>${bill.clientName}</td>
-                        <td>${bill.prodName}</td>
+                        <td>[${bill.category || 'Kurti'}] ${bill.prodName}</td>
                         <td>${bill.styleNo || '--'}</td>
                         <td>${bill.totalQty} Pcs</td>
                         <td>₹${bill.subTotal.toFixed(2)}</td>
@@ -1351,20 +1336,6 @@
                     }
                 }
             }).catch(err => console.log("Offline mode - using local storage data"));
-        }
-
-        function calculateCutting(e) {
-            e.preventDefault();
-            const m = parseFloat(document.getElementById('cutMeters').value);
-            const a = parseFloat(document.getElementById('cutAvg').value);
-            if (a <= 0) return;
-            const pcs = Math.floor(m / a);
-            const left = (m - (pcs * a)).toFixed(2);
-
-            document.getElementById('resM').innerText = m;
-            document.getElementById('resPcs').innerText = pcs;
-            document.getElementById('resLeft').innerText = left;
-            document.getElementById('cutResultBox').style.display = 'block';
         }
     </script>
 </body>
