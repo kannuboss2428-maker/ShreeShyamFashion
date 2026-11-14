@@ -57,10 +57,20 @@
 
         <!-- Entry Form Card -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-            <h2 id="formTitleText" class="text-base font-bold text-slate-800 mb-4 border-b pb-2 flex justify-between items-center">
-                <span>➕ Add New Cutting Entry</span>
-                <span class="text-xs font-normal text-slate-500">* Khali chhodne par automatic <b>N/A</b> set ho jayega</span>
-            </h2>
+            <!-- यहाँ आपका नया हेडर बटन के साथ सेट कर दिया गया है -->
+            <div class="mb-4 border-b pb-3 flex flex-wrap justify-between items-center gap-3">
+                <h2 id="formTitleText" class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <span>➕ Add New Cutting Entry</span>
+                </h2>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="openSearchModal('challan')" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow transition flex items-center gap-1">
+                        🔍 Find Cutting By Challan No.
+                    </button>
+                    <button onclick="openSearchModal('style')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow transition flex items-center gap-1">
+                        🔍 Find Cutting By Style No.
+                    </button>
+                </div>
+            </div>
 
             <form id="cuttingForm" class="space-y-4">
                 <input type="hidden" id="editDocId" value="">
@@ -246,6 +256,28 @@
 
     </div>
 
+    <!-- MODAL FOR FIND CUTTING BY CHALLAN / STYLE -->
+    <div id="searchModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 id="modalTitle" class="text-lg font-bold text-slate-800">🔍 Search Cutting</h3>
+                <button onclick="closeSearchModal()" class="text-red-600 hover:text-red-800 font-bold text-xl px-2">×</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="flex gap-2">
+                    <div id="modalPrefix" class="bg-slate-100 text-slate-700 font-bold px-3 py-2 text-sm border border-r-0 border-slate-300 rounded-l-lg flex items-center">NH-</div>
+                    <input type="text" id="modalSearchInput" placeholder="Enter number e.g. 5" class="w-full border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:border-blue-500 font-semibold" oninput="executeSearch()">
+                    <button onclick="executeSearch()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-lg text-sm font-bold shadow">Search</button>
+                </div>
+
+                <div id="modalSearchResult" class="max-h-[350px] overflow-y-auto space-y-3 mt-3">
+                    <p class="text-slate-400 text-center py-4">Number daalein, detail yahan dikhegi...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Firebase SDK & App Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -267,6 +299,7 @@
 
         const sizeKeys = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
         let cuttingList = [];
+        let currentSearchMode = 'challan';
 
         function updateFabSuggestions() {
             const fabs = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
@@ -302,7 +335,7 @@
         window.resetForm = function() {
             document.getElementById('cuttingForm').reset();
             document.getElementById('editDocId').value = '';
-            document.getElementById('formTitleText').innerHTML = '<span>➕ Add New Cutting Entry</span><span class="text-xs font-normal text-slate-500">* Khali chhodne par automatic <b>N/A</b> set ho jayega</span>';
+            document.getElementById('formTitleText').innerHTML = '<span>➕ Add New Cutting Entry</span>';
             document.getElementById('saveBtn').innerText = "✔ Save to Cloud";
             document.getElementById('cancelEditBtn').classList.add('hidden');
             resetDefaults();
@@ -322,6 +355,84 @@
                 if (!isNaN(val) && val > 0) sum += val;
             });
             document.getElementById('liveTotal').innerText = sum;
+        }
+
+        // Modal Search Functions
+        window.openSearchModal = function(mode) {
+            currentSearchMode = mode;
+            const modal = document.getElementById('searchModal');
+            const title = document.getElementById('modalTitle');
+            const prefix = document.getElementById('modalPrefix');
+            const input = document.getElementById('modalSearchInput');
+
+            input.value = '';
+            document.getElementById('modalSearchResult').innerHTML = '<p class="text-slate-400 text-center py-4">Number daalein, detail yahan dikhegi...</p>';
+
+            if (mode === 'challan') {
+                title.innerText = "🔍 Find Cutting By Challan No.";
+                prefix.innerText = "NH-";
+                input.placeholder = "Enter challan no e.g. 5 or 1161";
+            } else {
+                title.innerText = "🔍 Find Cutting By Style No.";
+                prefix.innerText = "SD-";
+                input.placeholder = "Enter style no e.g. 50 or 0050";
+            }
+            modal.classList.remove('hidden');
+            input.focus();
+        }
+
+        window.closeSearchModal = function() {
+            document.getElementById('searchModal').classList.add('hidden');
+        }
+
+        window.executeSearch = function() {
+            const queryVal = document.getElementById('modalSearchInput').value.trim().toLowerCase();
+            const resContainer = document.getElementById('modalSearchResult');
+            if (!queryVal) {
+                resContainer.innerHTML = '<p class="text-slate-400 text-center py-4">Number daalein, detail yahan dikhegi...</p>';
+                return;
+            }
+
+            const matched = cuttingList.filter(item => {
+                if (currentSearchMode === 'challan') {
+                    return item.challanNo.toLowerCase().includes(queryVal);
+                } else {
+                    return item.styleNo.toLowerCase().includes(queryVal);
+                }
+            });
+
+            if (matched.length === 0) {
+                resContainer.innerHTML = `<p class="text-red-500 text-center py-4 font-semibold">Koi entry nahi mili!</p>`;
+                return;
+            }
+
+            let html = '';
+            matched.forEach(item => {
+                let sizeDetails = sizeKeys.map(sz => `<b>${sz}:</b> ${item.sizes[sz]}`).join(' | ');
+                html += `
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="font-bold text-blue-600 text-sm">Challan: ${item.challanNo}</span>
+                            <span class="text-xs font-semibold bg-teal-100 text-teal-800 px-2 py-0.5 rounded">${item.category || 'Kurti'}</span>
+                            <span class="text-xs text-slate-500">${formatDateIN(item.date)}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs text-slate-700">
+                            <div><b>Style No:</b> ${item.styleNo}</div>
+                            <div><b>Print Name:</b> ${item.printName}</div>
+                            <div><b>Item Name:</b> ${item.itemName}</div>
+                            <div><b>Fabricator:</b> ${item.fabricator}</div>
+                        </div>
+                        <div class="bg-white p-2 rounded border text-xs text-slate-800">
+                            <b>Sizes:</b> ${sizeDetails}
+                        </div>
+                        <div class="flex justify-between items-center pt-1">
+                            <span class="font-bold text-amber-700 text-sm">Total Pcs: ${item.total}</span>
+                            <button onclick="closeSearchModal(); editRow('${item.docId}')" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded text-xs font-bold">✏️ Edit This</button>
+                        </div>
+                    </div>
+                `;
+            });
+            resContainer.innerHTML = html;
         }
 
         // Real-time Cloud Listener
@@ -398,12 +509,10 @@
 
             try {
                 if (editDocId) {
-                    // Update existing record
                     await updateDoc(doc(db, "ssf_cutting_records", editDocId), entry);
                     alert("Entry successfully updated!");
                     resetForm();
                 } else {
-                    // Add new record
                     entry.createdAt = Date.now();
                     await addDoc(cuttingCollection, entry);
                     this.reset();
@@ -423,7 +532,6 @@
             if (!item) return;
 
             document.getElementById('editDocId').value = item.docId;
-            document.getElementById('challanInput.value') // safely set
             document.getElementById('challanInput').value = item.challanNo.replace('NH-', '');
             document.getElementById('dateInput').value = item.date || '';
             document.getElementById('categoryInput').value = item.category || 'Kurti';
