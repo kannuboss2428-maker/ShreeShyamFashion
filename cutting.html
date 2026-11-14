@@ -222,4 +222,273 @@
                         </tr>
                     </thead>
                     <tbody id="sheetBody" class="bg-white divide-y divide-slate-200">
-                        <tr><td colspan="20" class="text-
+                        <tr><td colspan="20" class="text-center py-8 text-slate-400">Cloud se data load ho raha hai...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDK & App Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOmvNfkMXcbLATJlN6tiaCCUBN9vfyf-s",
+            authDomain: "shree-shyam-fashion.firebaseapp.com",
+            projectId: "shree-shyam-fashion",
+            storageBucket: "shree-shyam-fashion.firebasestorage.app",
+            messagingSenderId: "270444185899",
+            appId: "1:270444185899:web:c21de116d358c09a859d6e",
+            measurementId: "G-BBE8D4ENTY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const cuttingCollection = collection(db, "ssf_cutting_records");
+
+        const sizeKeys = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
+        let cuttingList = [];
+
+        // Load existing fabricators into datalist & auto-sync helper
+        function updateFabSuggestions() {
+            const fabs = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
+            const dl = document.getElementById('fabSuggestions');
+            dl.innerHTML = '';
+            fabs.forEach(f => {
+                dl.innerHTML += `<option value="${f.name}">`;
+            });
+        }
+        updateFabSuggestions();
+
+        function autoCreateFabricatorAccount(fabName) {
+            if (!fabName || fabName === 'N/A') return;
+            let fabs = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
+            const exists = fabs.some(f => f.name.trim().toLowerCase() === fabName.trim().toLowerCase());
+            if (!exists) {
+                fabs.push({
+                    name: fabName.trim(),
+                    phone: '',
+                    address: ''
+                });
+                localStorage.setItem('ssf_fabricators', JSON.stringify(fabs));
+                updateFabSuggestions();
+            }
+        }
+
+        window.resetDefaults = function() {
+            document.getElementById('dateInput').valueAsDate = new Date();
+            document.getElementById('liveTotal').innerText = '0';
+        }
+        resetDefaults();
+
+        function formatDateIN(dateStr) {
+            if (!dateStr) return 'N/A';
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return dateStr;
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+
+        window.calcTotal = function() {
+            let sum = 0;
+            sizeKeys.forEach(sz => {
+                const val = parseInt(document.getElementById('sz_' + sz).value);
+                if (!isNaN(val) && val > 0) sum += val;
+            });
+            document.getElementById('liveTotal').innerText = sum;
+        }
+
+        // Real-time Cloud Listener
+        const q = query(cuttingCollection, orderBy("createdAt", "asc"));
+        onSnapshot(q, (snapshot) => {
+            cuttingList = [];
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                cuttingList.push({ docId: docSnap.id, ...data });
+                if (data.fabricator && data.fabricator !== 'N/A') {
+                    autoCreateFabricatorAccount(data.fabricator);
+                }
+            });
+
+            const statusBadge = document.getElementById('syncStatus');
+            statusBadge.innerText = "🟢 Cloud Live Synced";
+            statusBadge.className = "text-[11px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-medium";
+
+            renderTable();
+        }, (error) => {
+            console.error("Firebase Error:", error);
+            const statusBadge = document.getElementById('syncStatus');
+            statusBadge.innerText = "🔴 Connection Error";
+            statusBadge.className = "text-[11px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full font-medium";
+        });
+
+        // Save Entry to Firebase Cloud
+        document.getElementById('cuttingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerText = "⏳ Saving...";
+
+            const rawChallan = document.getElementById('challanInput').value.trim();
+            const rawStyle = document.getElementById('styleInput').value.trim();
+            const clothVal = document.getElementById('clothMitre').value.trim();
+            const fabVal = document.getElementById('fabricatorName').value.trim();
+            const addaVal = document.getElementById('addaWork').value.trim();
+            const cutNoVal = document.getElementById('cuttingNo').value.trim();
+
+            if (fabVal !== '') {
+                autoCreateFabricatorAccount(fabVal);
+            }
+
+            let sizesObj = {};
+            let rowTotal = 0;
+
+            sizeKeys.forEach(sz => {
+                const v = document.getElementById('sz_' + sz).value.trim();
+                if (v === '' || parseInt(v) === 0) {
+                    sizesObj[sz] = 'N/A';
+                } else {
+                    const num = parseInt(v);
+                    sizesObj[sz] = num;
+                    rowTotal += num;
+                }
+            });
+
+            const entry = {
+                createdAt: Date.now(),
+                challanNo: 'NH-' + rawChallan,
+                date: document.getElementById('dateInput').value,
+                printName: document.getElementById('printName').value.trim(),
+                styleNo: 'SD-' + rawStyle,
+                itemName: document.getElementById('itemName').value.trim(),
+                clothMitre: clothVal === '' ? 'N/A' : clothVal,
+                fabricator: fabVal === '' ? 'N/A' : fabVal,
+                addaWork: addaVal === '' ? 'N/A' : addaVal,
+                cuttingNo: cutNoVal === '' ? 'N/A' : cutNoVal,
+                sizes: sizesObj,
+                total: rowTotal
+            };
+
+            try {
+                await addDoc(cuttingCollection, entry);
+                this.reset();
+                resetDefaults();
+            } catch (err) {
+                alert("Data save nahi ho paya!");
+                console.error(err);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = "✔ Save to Cloud";
+            }
+        });
+
+        function renderCell(val, extraClass = '') {
+            if (val === 'N/A' || val === '' || val === null || val === undefined) {
+                return `<td class="na-cell">N/A</td>`;
+            }
+            return `<td class="${extraClass}">${val}</td>`;
+        }
+
+        window.renderTable = function() {
+            const tbody = document.getElementById('sheetBody');
+            const queryText = document.getElementById('searchBox').value.toLowerCase();
+            tbody.innerHTML = '';
+
+            const challanCounts = {};
+            cuttingList.forEach(item => {
+                challanCounts[item.challanNo] = (challanCounts[item.challanNo] || 0) + 1;
+            });
+
+            let grandTotal = 0;
+            let visibleCount = 0;
+
+            cuttingList.forEach((item, index) => {
+                const searchStr = `${item.challanNo} ${item.printName} ${item.styleNo} ${item.itemName} ${item.fabricator}`.toLowerCase();
+                if (queryText && !searchStr.includes(queryText)) return;
+
+                visibleCount++;
+                grandTotal += item.total;
+
+                const isDup = challanCounts[item.challanNo] > 1;
+                const challanClass = isDup ? 'dup-challan text-center' : 'font-semibold text-center';
+
+                let sizeCellsHTML = '';
+                sizeKeys.forEach(sz => {
+                    sizeCellsHTML += renderCell(item.sizes[sz], 'text-center font-medium');
+                });
+
+                const tr = `
+                    <tr class="hover:bg-blue-50 transition">
+                        <td class="text-center font-bold bg-slate-50">${index + 1}</td>
+                        <td class="${challanClass}">${item.challanNo}</td>
+                        <td class="text-center">${formatDateIN(item.date)}</td>
+                        <td class="font-medium">${item.printName}</td>
+                        <td class="text-center font-semibold">${item.styleNo}</td>
+                        <td>${item.itemName}</td>
+                        ${renderCell(item.clothMitre, 'text-center font-semibold')}
+                        ${renderCell(item.fabricator, 'font-medium')}
+                        ${renderCell(item.addaWork, 'text-center')}
+                        ${renderCell(item.cuttingNo, 'text-center')}
+                        ${sizeCellsHTML}
+                        <td class="text-center font-bold bg-amber-50 text-slate-900">${item.total}</td>
+                        <td class="text-center">
+                            <button onclick="deleteRow('${item.docId}')" class="text-red-600 hover:text-red-800 font-bold text-xs px-2 py-0.5 rounded hover:bg-red-50">✖</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += tr;
+            });
+
+            if (visibleCount === 0) {
+                tbody.innerHTML = `<tr><td colspan="20" class="text-center py-8 text-slate-400">Koi entry nahi mili. Upar form se nayi cutting entry add karein!</td></tr>`;
+            }
+
+            document.getElementById('entryCount').innerText = visibleCount;
+            document.getElementById('grandTotalPcs').innerText = grandTotal;
+        }
+
+        window.deleteRow = async function(docId) {
+            if (confirm('Kya aap is entry ko cloud se delete karna chahte hain?')) {
+                try {
+                    await deleteDoc(doc(db, "ssf_cutting_records", docId));
+                } catch (err) {
+                    alert("Delete karne mein error aaya!");
+                }
+            }
+        }
+
+        window.exportToCSV = function() {
+            if (cuttingList.length === 0) {
+                alert('Download karne ke liye pehle kuch entries add karein!');
+                return;
+            }
+            const headers = ['S.no', 'Challan No.', 'Date', 'Print Name', 'Style Name', 'ITEM NAME', 'Cloth Mitre', 'Fabricator Name', 'Adda Work / HandWork', 'Cutting No', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', 'Total'];
+            const rows = cuttingList.map((item, idx) => [
+                idx + 1,
+                item.challanNo,
+                formatDateIN(item.date),
+                `"${item.printName}"`,
+                item.styleNo,
+                `"${item.itemName}"`,
+                item.clothMitre,
+                `"${item.fabricator}"`,
+                `"${item.addaWork}"`,
+                item.cuttingNo,
+                item.sizes.S, item.sizes.M, item.sizes.L, item.sizes.XL, item.sizes.XXL, item.sizes['3XL'], item.sizes['4XL'], item.sizes['5XL'],
+                item.total
+            ]);
+
+            let csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Shree_Shyam_Fashion_Cutting_Sheet.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
