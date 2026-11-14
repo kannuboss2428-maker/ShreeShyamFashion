@@ -400,8 +400,8 @@
             border: 2px solid #000;
             border-radius: 12px;
             max-width: 950px;
-            margin: 30px auto;
-            padding: 25px;
+            margin: 20px auto;
+            padding: 20px;
             color: #000;
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
@@ -416,7 +416,7 @@
         @media print {
             @page {
                 size: A4 portrait;
-                margin: 5mm;
+                margin: 8mm;
             }
             body { 
                 background: #ffffff !important; 
@@ -441,6 +441,7 @@
                 margin: 0 !important;
                 padding: 0 !important;
                 width: 100% !important;
+                max-width: 100% !important;
             }
             .invoice-box { 
                 border: 2px solid #000000 !important; 
@@ -463,7 +464,6 @@
             .receive-table th {
                 background: #e5e7eb !important;
             }
-            /* केवल रेट कॉलम को प्रिंट/पीडीएफ में छिपाया गया है, अमाउंट और टोटल दोनों दिखेंगे */
             .rate-col {
                 display: none !important;
             }
@@ -914,45 +914,50 @@
             fabBills.forEach((b) => {
                 totalPcs += b.totalQty;
                 totalEarn += b.subTotal;
+                let sizeBreakdown = b.items.map(it => `${it.size}: ${it.qty}`).join(', ');
                 rowsHtml += `
                     <tr>
-                        <td style="border:1px solid #000; padding:6px; text-align:center;">${b.invNo}</td>
-                        <td style="border:1px solid #000; padding:6px; text-align:center;">${formatDateToDDMMYYYY(b.givenDate)}</td>
-                        <td style="border:1px solid #000; padding:6px;">${b.prodName} (${b.styleNo || '--'})</td>
-                        <td style="border:1px solid #000; padding:6px; text-align:center;">${b.totalQty} Pcs</td>
-                        <td style="border:1px solid #000; padding:6px; text-align:right;">₹${b.subTotal.toFixed(2)}</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:center;">${b.invNo}</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:center;">${formatDateToDDMMYYYY(b.givenDate)}</td>
+                        <td style="border:1px solid #000; padding:5px;">${b.prodName}</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:center;">${b.styleNo || '--'}</td>
+                        <td style="border:1px solid #000; padding:5px;">${sizeBreakdown}</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold;">${b.totalQty} Pcs</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:right; font-weight:bold;">₹${b.subTotal.toFixed(2)}</td>
                     </tr>
                 `;
             });
 
             let modalHtml = `
-                <div style="text-align:center; border-bottom:3px solid #000; padding-bottom:12px; margin-bottom:15px;">
-                    <h2 style="font-size:1.8rem; font-weight:800; text-transform:uppercase; color:#000;">SHREE SHYAM FASHION</h2>
-                    <p style="font-size:0.8rem; font-weight:700; color:#000;">Fabricator Account Ledger Statement</p>
+                <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:10px;">
+                    <h2 style="font-size:1.4rem; font-weight:800; text-transform:uppercase; color:#000;">SHREE SHYAM FASHION</h2>
+                    <p style="font-size:0.75rem; font-weight:700; color:#000;">Fabricator Statement</p>
                 </div>
-                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:0.9rem; margin-bottom:15px; border-bottom:2px solid #000; padding-bottom:8px;">
+                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:0.82rem; margin-bottom:10px; border-bottom:1.5px solid #000; padding-bottom:6px;">
                     <div>Fabricator Name: <strong>${fab.name}</strong><br>Mobile No: ${fab.phone}</div>
                     <div style="text-align:right;">Address: ${fab.address}</div>
                 </div>
-                <table style="width:100%; border-collapse:collapse; margin-bottom:15px; font-size:0.85rem;">
+                <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:0.75rem;">
                     <thead>
                         <tr style="background:#000; color:#fff;">
-                            <th style="border:1px solid #000; padding:6px;">Challan No</th>
-                            <th style="border:1px solid #000; padding:6px;">Given Date</th>
-                            <th style="border:1px solid #000; padding:6px;">Item / Style</th>
-                            <th style="border:1px solid #000; padding:6px;">Total Pcs</th>
-                            <th style="border:1px solid #000; padding:6px; text-align:right;">Amount</th>
+                            <th style="border:1px solid #000; padding:5px;">Challan</th>
+                            <th style="border:1px solid #000; padding:5px;">Date</th>
+                            <th style="border:1px solid #000; padding:5px;">Item Name</th>
+                            <th style="border:1px solid #000; padding:5px;">Style No</th>
+                            <th style="border:1px solid #000; padding:5px;">Size Breakdown</th>
+                            <th style="border:1px solid #000; padding:5px;">Total Pcs</th>
+                            <th style="border:1px solid #000; padding:5px; text-align:right;">Total Amount</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${rowsHtml || '<tr><td colspan="5" style="border:1px solid #000; padding:10px; text-align:center;">कोई चालान नहीं मिला।</td></tr>'}
+                        ${rowsHtml || '<tr><td colspan="7" style="border:1px solid #000; padding:10px; text-align:center;">कोई चालान नहीं मिला।</td></tr>'}
                     </tbody>
                 </table>
-                <div style="display:flex; justify-content:space-between; font-size:1rem; font-weight:800; border-top:2px solid #000; padding-top:10px; margin-top:10px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.88rem; font-weight:800; border-top:2px solid #000; padding-top:8px; margin-top:8px;">
                     <span>कुल चालान: ${fabBills.length} | कुल पीस: ${totalPcs} Pcs</span>
-                    <span style="font-size:1.1rem;">कुल देय राशि: ₹${totalEarn.toFixed(2)}</span>
+                    <span>कुल देय राशि: ₹${totalEarn.toFixed(2)}</span>
                 </div>
-                <div style="margin-top:30px; text-align:right;">
+                <div style="margin-top:20px; text-align:right;">
                     <button onclick="window.print()" class="btn-action">🖨️ Print Statement</button>
                 </div>
             `;
@@ -994,44 +999,44 @@
 
                 tableRows += `
                     <tr>
-                        <td style="border:1px solid #000; padding:6px; text-align:center;">${b.invNo}</td>
-                        <td style="border:1px solid #000; padding:6px; text-align:center;">${formatDateToDDMMYYYY(b.givenDate)}</td>
-                        <td style="border:1px solid #000; padding:6px;">${fabName === 'ALL' ? '<strong>' + b.clientName + '</strong><br>' : ''}${b.prodName}</td>
-                        <td style="border:1px solid #000; padding:6px; text-align:center;">${b.styleNo}</td>
-                        <td style="border:1px solid #000; padding:6px;">${sizeBreakdown}</td>
-                        <td style="border:1px solid #000; padding:6px; text-align:center; font-weight:bold;">${b.totalQty} Pcs</td>
-                        <td style="border:1px solid #000; padding:6px; text-align:right; font-weight:bold;">₹${b.subTotal.toFixed(2)}</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:center;">${b.invNo}</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:center;">${formatDateToDDMMYYYY(b.givenDate)}</td>
+                        <td style="border:1px solid #000; padding:5px;">${fabName === 'ALL' ? '<strong>' + b.clientName + '</strong><br>' : ''}${b.prodName}</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:center;">${b.styleNo}</td>
+                        <td style="border:1px solid #000; padding:5px;">${sizeBreakdown}</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold;">${b.totalQty} Pcs</td>
+                        <td style="border:1px solid #000; padding:5px; text-align:right; font-weight:bold;">₹${b.subTotal.toFixed(2)}</td>
                     </tr>
                 `;
             });
 
             let statementHtml = `
-                <div style="text-align:center; border-bottom:3px solid #000; padding-bottom:12px; margin-bottom:15px;">
-                    <h2 style="font-size:1.8rem; font-weight:800; text-transform:uppercase; color:#000;">SHREE SHYAM FASHION</h2>
-                    <p style="font-size:0.85rem; font-weight:700; color:#000;">${titleText}</p>
-                    <p style="font-size:0.75rem; font-weight:700; color:#555;">Period: ${formatDateToDDMMYYYY(startDate)} to ${formatDateToDDMMYYYY(endDate)}</p>
+                <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:8px; margin-bottom:10px;">
+                    <h2 style="font-size:1.4rem; font-weight:800; text-transform:uppercase; color:#000;">SHREE SHYAM FASHION</h2>
+                    <p style="font-size:0.78rem; font-weight:700; color:#000;">${titleText}</p>
+                    <p style="font-size:0.7rem; font-weight:700; color:#555;">Period: ${formatDateToDDMMYYYY(startDate)} to ${formatDateToDDMMYYYY(endDate)}</p>
                 </div>
-                <table style="width:100%; border-collapse:collapse; margin-bottom:15px; font-size:0.8rem;">
+                <table style="width:100%; border-collapse:collapse; margin-bottom:10px; font-size:0.75rem;">
                     <thead>
                         <tr style="background:#000; color:#fff;">
-                            <th style="border:1px solid #000; padding:6px;">Challan</th>
-                            <th style="border:1px solid #000; padding:6px;">Date</th>
-                            <th style="border:1px solid #000; padding:6px;">Item Name</th>
-                            <th style="border:1px solid #000; padding:6px;">Style No</th>
-                            <th style="border:1px solid #000; padding:6px;">Size Breakdown</th>
-                            <th style="border:1px solid #000; padding:6px;">Total Pcs</th>
-                            <th style="border:1px solid #000; padding:6px; text-align:right;">Total Amount</th>
+                            <th style="border:1px solid #000; padding:5px;">Challan</th>
+                            <th style="border:1px solid #000; padding:5px;">Date</th>
+                            <th style="border:1px solid #000; padding:5px;">Item Name</th>
+                            <th style="border:1px solid #000; padding:5px;">Style No</th>
+                            <th style="border:1px solid #000; padding:5px;">Size Breakdown</th>
+                            <th style="border:1px solid #000; padding:5px;">Total Pcs</th>
+                            <th style="border:1px solid #000; padding:5px; text-align:right;">Total Amount</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${tableRows || '<tr><td colspan="7" style="border:1px solid #000; padding:15px; text-align:center;">इस तारीख के बीच कोई रिकॉर्ड नहीं मिला।</td></tr>'}
+                        ${tableRows || '<tr><td colspan="7" style="border:1px solid #000; padding:10px; text-align:center;">इस तारीख के बीच कोई रिकॉर्ड नहीं मिला।</td></tr>'}
                     </tbody>
                 </table>
-                <div style="display:flex; justify-content:space-between; font-size:1rem; font-weight:800; border-top:2px solid #000; padding-top:10px; margin-top:10px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.88rem; font-weight:800; border-top:2px solid #000; padding-top:8px; margin-top:8px;">
                     <span>कुल पीस (Total Qty): ${grandTotalPcs} Pcs</span>
-                    <span style="font-size:1.1rem;">कुल राशि (Total Amount): ₹${grandTotalAmt.toFixed(2)}</span>
+                    <span>कुल राशि (Total Amount): ₹${grandTotalAmt.toFixed(2)}</span>
                 </div>
-                <div style="margin-top:30px; text-align:right;">
+                <div style="margin-top:20px; text-align:right;">
                     <button onclick="window.print()" class="btn-action">🖨️ Print Statement</button>
                 </div>
             `;
@@ -1265,7 +1270,6 @@
                         <td>${bill.prodColor || '--'}</td>
                         <td><strong>${item.size}</strong></td>
                         <td>${item.qty}</td>
-                        <td class="rate-col">₹${item.rate.toFixed(2)}</td>
                         <td>₹${item.amt.toFixed(2)}</td>
                     </tr>
                 `;
