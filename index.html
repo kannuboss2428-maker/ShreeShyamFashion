@@ -454,6 +454,9 @@
 
     <div class="container">
         <header>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <span id="syncStatus" style="font-size: 11px; background: rgba(245, 158, 11, 0.2); color: #f59e0b; padding: 2px 8px; border-radius: 10px; font-weight: 600;">⏳ Connecting Cloud...</span>
+            </div>
             <h1>SHREE SHYAM FASHION</h1>
             <p>Mal ki Dhani, Malpura Gate, Sanganer, Jaipur (Raj.) - 302029 | GSTIN: 08BYRPL4944B1Z7</p>
             <p>Owner: Vijay Kumawat (9680598849) | Co-Owner: Sanjay Kumawat (8559858776)</p>
@@ -759,15 +762,94 @@
         </div>
     </div>
 
-    <script>
-        const BIN_ID = "67c5195fe41b4d34e4995f3a"; 
+    <!-- Firebase SDK & App Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, getDocs, setDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOmvNfkMXcbLATJlN6tiaCCUBN9vfyf-s",
+            authDomain: "shree-shyam-fashion.firebaseapp.com",
+            projectId: "shree-shyam-fashion",
+            storageBucket: "shree-shyam-fashion.firebasestorage.app",
+            messagingSenderId: "270444185899",
+            appId: "1:270444185899:web:899ef1a3101d5979859d6e",
+            measurementId: "G-JR47FJ2Q1G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
         
+        const billsCollection = collection(db, "ssf_bills_records");
+        const fabCollection = collection(db, "ssf_fabricators_records");
+
         let savedInvoices = JSON.parse(localStorage.getItem('ssf_bills')) || [];
         let fabricators = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
         let currentPhotoData = "";
 
-        window.onload = function() {
-            fabricators = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
+        window.onload = async function() {
+            // First load local data instantly
+            initAppUI();
+
+            // Then fetch from Cloud and merge/sync safely
+            try {
+                const statusEl = document.getElementById('syncStatus');
+                statusEl.innerText = "⏳ Syncing Cloud Data...";
+
+                // Fetch Bills from Firebase
+                const billSnapshot = await getDocs(billsCollection);
+                let cloudBills = [];
+                billSnapshot.forEach(docSnap => {
+                    cloudBills.push(docSnap.data());
+                });
+
+                // Fetch Fabricators from Firebase
+                const fabSnapshot = await getDocs(fabCollection);
+                let cloudFabs = [];
+                fabSnapshot.forEach(docSnap => {
+                    cloudFabs.push(docSnap.data());
+                });
+
+                // Smart Merge: If cloud has data, use cloud + local items combined without losing anything
+                if (cloudBills.length > 0) {
+                    // Combine cloud and local, removing duplicates based on invNo
+                    const billMap = new Map();
+                    [...savedInvoices, ...cloudBills].forEach(b => billMap.set(b.invNo, b));
+                    savedInvoices = Array.from(billMap.values());
+                    localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
+                } else if (savedInvoices.length > 0) {
+                    // If cloud is empty but local has data, upload local data to cloud
+                    for (let b of savedInvoices) {
+                        await setDoc(doc(db, "ssf_bills_records", String(b.invNo)), b);
+                    }
+                }
+
+                if (cloudFabs.length > 0) {
+                    const fabMap = new Map();
+                    [...fabricators, ...cloudFabs].forEach(f => fabMap.set(f.name.toLowerCase(), f));
+                    fabricators = Array.from(fabMap.values());
+                    localStorage.setItem('ssf_fabricators', JSON.stringify(fabricators));
+                } else if (fabricators.length > 0) {
+                    for (let f of fabricators) {
+                        await setDoc(doc(db, "ssf_fabricators_records", f.name.toLowerCase()), f);
+                    }
+                }
+
+                statusEl.innerText = "🟢 Cloud Live Synced";
+                statusEl.style.background = "rgba(16, 185, 129, 0.2)";
+                statusEl.style.color = "#34d399";
+
+                initAppUI();
+            } catch (err) {
+                console.error("Cloud Sync Error:", err);
+                const statusEl = document.getElementById('syncStatus');
+                statusEl.innerText = "🔴 Offline Mode (Local Data Used)";
+                statusEl.style.background = "rgba(239, 68, 68, 0.2)";
+                statusEl.style.color = "#f87171";
+            }
+        };
+
+        function initAppUI() {
             renderFabricatorDropdowns();
             renderFabricatorTable();
             renderHistory();
@@ -781,19 +863,9 @@
                 renderReceiveRows(5);
             }
             document.getElementById('givenDate').valueAsDate = new Date();
-            fetchCloudData();
-        };
+        }
 
-        // Sync automatically if cutting.html updates localStorage in another tab
-        window.addEventListener('storage', function(e) {
-            if (e.key === 'ssf_fabricators') {
-                fabricators = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
-                renderFabricatorDropdowns();
-                renderFabricatorTable();
-            }
-        });
-
-        function switchTab(evt, tabId) {
+        window.switchTab = function(evt, tabId) {
             fabricators = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
             renderFabricatorDropdowns();
             renderFabricatorTable();
@@ -814,7 +886,7 @@
             return dateStr;
         }
 
-        function saveFabricatorAccount(e) {
+        window.saveFabricatorAccount = async function(e) {
             e.preventDefault();
             const editIdx = parseInt(document.getElementById('editFabIndex').value);
             const name = document.getElementById('fabNameInput').value.trim();
@@ -838,7 +910,6 @@
                 const oldName = fabricators[editIdx].name;
                 fabricators[editIdx] = { name, phone, address };
                 
-                // Update existing bills if fabricator name was changed
                 if (oldName !== name) {
                     savedInvoices.forEach(b => {
                         if (b.clientName === oldName) {
@@ -853,12 +924,23 @@
             }
 
             localStorage.setItem('ssf_fabricators', JSON.stringify(fabricators));
+            
+            // Save to Firebase Cloud
+            try {
+                await setDoc(doc(db, "ssf_fabricators_records", name.toLowerCase()), { name, phone, address });
+                if (editIdx !== -1) {
+                    // if name changed, cleanup old key if needed
+                }
+            } catch(err) {
+                console.log("Cloud save error for fab:", err);
+            }
+
             cancelEditFabricator();
             renderFabricatorDropdowns();
             renderFabricatorTable();
         }
 
-        function editFabricator(index) {
+        window.editFabricator = function(index) {
             const fab = fabricators[index];
             document.getElementById('editFabIndex').value = index;
             document.getElementById('fabNameInput').value = fab.name;
@@ -871,7 +953,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function cancelEditFabricator() {
+        window.cancelEditFabricator = function() {
             document.getElementById('editFabIndex').value = "-1";
             document.getElementById('fabForm').reset();
             document.getElementById('fabFormTitle').innerText = "👤 Fabricator Account & Date-wise Statement";
@@ -894,7 +976,7 @@
             });
         }
 
-        function autofillFabricator() {
+        window.autofillFabricator = function() {
             const selectedName = document.getElementById('selectFabricator').value;
             const fab = fabricators.find(f => f.name === selectedName);
             if(fab) {
@@ -920,24 +1002,29 @@
                         <td>
                             <button class="btn-view" onclick="openFabricatorLedger('${fab.name}')">📊 खाता देखें (Ledger)</button>
                             <button class="btn-edit" onclick="editFabricator(${idx})">✏️ Edit</button>
-                            <button class="btn-delete" onclick="deleteFabricator(${idx})">Delete</button>
+                            <button class="btn-delete" onclick="deleteFabricator('${fab.name}', ${idx})">Delete</button>
                         </td>
                     </tr>
                 `;
             });
         }
 
-        function deleteFabricator(index) {
+        window.deleteFabricator = async function(fabName, index) {
             if(confirm("क्या आप इस फैब्रिकेटर को हटाना चाहते हैं?")) {
                 fabricators.splice(index, 1);
                 localStorage.setItem('ssf_fabricators', JSON.stringify(fabricators));
+                try {
+                    await deleteDoc(doc(db, "ssf_fabricators_records", fabName.toLowerCase()));
+                } catch(err) {
+                    console.log("Cloud delete error:", err);
+                }
                 renderFabricatorDropdowns();
                 renderFabricatorTable();
             }
         }
 
-        function openFabricatorLedger(fabName) {
-            const fab = fabricators.find(f => f.name === fabName);
+        window.openFabricatorLedger = function(fabName) {
+            const fab = fabricators.find(f => f.name === fabName) || { name: fabName, phone: '', address: '' };
             const fabBills = savedInvoices.filter(b => b.clientName === fabName);
 
             let totalPcs = 0;
@@ -1000,7 +1087,7 @@
             document.getElementById('ledgerModal').style.display = 'block';
         }
 
-        function generateDateWiseStatement() {
+        window.generateDateWiseStatement = function() {
             const fabName = document.getElementById('statementFabSelect').value;
             const startDate = document.getElementById('startDateInput').value;
             const endDate = document.getElementById('endDateInput').value;
@@ -1080,11 +1167,11 @@
             document.getElementById('ledgerModal').style.display = 'block';
         }
 
-        function closeLedgerModal() {
+        window.closeLedgerModal = function() {
             document.getElementById('ledgerModal').style.display = 'none';
         }
 
-        function searchByStyleNo() {
+        window.searchByStyleNo = function() {
             const query = document.getElementById('searchStyleInput').value.trim().toUpperCase();
             const resDiv = document.getElementById('styleSearchResult');
             if(!query) {
@@ -1119,7 +1206,7 @@
             resDiv.innerHTML = html;
         }
 
-        function calculateTotals() {
+        window.calculateTotals = function() {
             const sizes = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
             let totalQty = 0;
             sizes.forEach(sz => {
@@ -1130,7 +1217,7 @@
             document.getElementById('displayTotalAmt').value = "₹ " + (totalQty * rate).toFixed(2);
         }
 
-        function previewUploadPhoto(e) {
+        window.previewUploadPhoto = function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
@@ -1155,7 +1242,7 @@
             }
         }
 
-        function resetFormOnly() {
+        window.resetFormOnly = function() {
             document.getElementById('editIndex').value = "-1";
             document.getElementById('formTitle').innerText = "Fabricator Bill & Size Entry";
             document.getElementById('submitBtn').innerText = "💾 चालान सेव करें एवं प्रिंट देखें";
@@ -1182,7 +1269,7 @@
             }
         }
 
-        function generateInvoice(e) {
+        window.generateInvoice = async function(e) {
             e.preventDefault();
             const editIndex = parseInt(document.getElementById('editIndex').value);
             const clientName = document.getElementById('selectFabricator').value;
@@ -1237,7 +1324,13 @@
             }
 
             localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
-            syncToCloud();
+
+            // Save to Firebase Cloud
+            try {
+                await setDoc(doc(db, "ssf_bills_records", String(invNo)), billData);
+            } catch(err) {
+                console.log("Cloud save error for bill:", err);
+            }
 
             renderHistory();
             displayInvoice(billData);
@@ -1247,7 +1340,7 @@
             document.querySelectorAll('.tab-btn')[3].classList.add('active');
         }
 
-        function editBill(index) {
+        window.editBill = function(index) {
             const bill = savedInvoices[index];
             document.getElementById('editIndex').value = index;
             document.getElementById('formTitle').innerText = `✏️ Edit Challan (${bill.invNo})`;
@@ -1321,11 +1414,10 @@
             document.getElementById('pGrandTotal').innerText = "₹" + bill.subTotal.toFixed(2);
         }
 
-        function downloadPDF() {
+        window.downloadPDF = function() {
             const element = document.getElementById('invoicePrintArea');
             const invNo = document.getElementById('pInvNo').innerText || 'Challan';
             
-            // Hide print-excluded elements during PDF generation
             const hiddenEls = element.querySelectorAll('.rate-col, .category-print-hide');
             hiddenEls.forEach(el => el.style.display = 'none');
 
@@ -1360,57 +1452,29 @@
                         <td>
                             <button class="btn-view" onclick="viewBill(${idx})">View/Print</button>
                             <button class="btn-edit" onclick="editBill(${idx})">✏️ Edit</button>
-                            <button class="btn-delete" onclick="deleteBill(${idx})">Delete</button>
+                            <button class="btn-delete" onclick="deleteBill('${bill.invNo}', ${idx})">Delete</button>
                         </td>
                     </tr>
                 `;
             });
         }
 
-        function viewBill(index) {
+        window.viewBill = function(index) {
             displayInvoice(savedInvoices[index]);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function deleteBill(index) {
+        window.deleteBill = async function(invNo, index) {
             if (confirm("क्या आप इस सेव किए चालान को डिलीट करना चाहते हैं?")) {
                 savedInvoices.splice(index, 1);
                 localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
-                syncToCloud();
+                try {
+                    await deleteDoc(doc(db, "ssf_bills_records", String(invNo)));
+                } catch(err) {
+                    console.log("Cloud delete error:", err);
+                }
                 renderHistory();
             }
-        }
-
-        function syncToCloud() {
-            fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': '$2a$10$7v5QyNqJ8E7L1x9x5x5xOuK9qZ3Y8v5K9qZ3Y8v5K9qZ3Y8v5K9qZ'
-                },
-                body: JSON.stringify(savedInvoices)
-            }).catch(err => console.log("Cloud sync error"));
-        }
-
-        function fetchCloudData() {
-            fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
-                headers: {
-                    'X-Master-Key': '$2a$10$7v5QyNqJ8E7L1x9x5x5xOuK9qZ3Y8v5K9qZ3Y8v5K9qZ3Y8v5K9qZ'
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data && data.record && Array.isArray(data.record) && data.record.length > 0) {
-                    if(data.record.length >= savedInvoices.length) {
-                        savedInvoices = data.record;
-                        localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
-                        renderHistory();
-                        if(savedInvoices.length > 0 && document.getElementById('pInvNo').innerText === '--') {
-                            displayInvoice(savedInvoices[0]);
-                        }
-                    }
-                }
-            }).catch(err => console.log("Offline mode - using local storage data"));
         }
     </script>
 </body>
