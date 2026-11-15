@@ -1,771 +1,220 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHREE SHYAM FASHION - Management System</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <title>BillBook (Palati / Fabricator) - SHREE SHYAM FASHION</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #046a58;
-            --primary-dark: #02382e;
-            --accent: #d97706;
-            --bg-glass: rgba(15, 23, 42, 0.4);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        body {
-            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
-                        url('shyam.jpg') no-repeat center center fixed;
-            background-size: cover;
-            min-height: 100vh;
-            color: #ffffff;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            padding: 18px;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            margin-bottom: 20px;
-        }
-
-        header h1 {
-            color: #ffffff;
-            font-size: 2.2rem;
-            letter-spacing: 2px;
-            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.9), 0 0 20px rgba(245, 158, 11, 0.6);
-            font-weight: 700;
-        }
-
-        header p {
-            font-size: 0.85rem;
-            color: #e2e8f0;
-            margin-top: 4px;
-        }
-
-        .nav-tabs {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .tab-btn {
-            background: rgba(15, 23, 42, 0.7);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(8px);
-            padding: 10px 16px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .tab-btn.active, .tab-btn:hover {
-            background: linear-gradient(135deg, #046a58 0%, #0d9488 100%);
-            border-color: #f59e0b;
-        }
-
-        .tab-content {
-            display: none;
-            background: var(--bg-glass);
-            backdrop-filter: blur(6px);
-            padding: 25px;
-            border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        h2 {
-            color: #f59e0b;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-            border-bottom: 3px solid #f59e0b;
-            padding-bottom: 5px;
-            display: inline-block;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.9);
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-group label {
-            font-weight: 600;
-            margin-bottom: 5px;
-            font-size: 0.88rem;
-            color: #ffffff;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.9);
-        }
-
-        .input-group input, .input-group select {
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            font-size: 0.9rem;
-            outline: none;
-            background: rgba(15, 23, 42, 0.65);
-            color: #ffffff;
-        }
-
-        .input-group select option {
-            background: #0f172a;
-            color: #fff;
-        }
-
-        .size-matrix-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            background: rgba(15, 23, 42, 0.65);
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .size-matrix-table th, .size-matrix-table td {
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 8px 10px;
-            text-align: center;
-            font-size: 0.88rem;
-            color: #ffffff;
-        }
-
-        .size-matrix-table th { background: rgba(15, 23, 42, 0.9); color: #f59e0b; }
-
-        .size-matrix-table input {
-            width: 65px;
-            padding: 6px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 6px;
-            background: rgba(15, 23, 42, 0.7);
-            color: #ffffff;
-        }
-
-        .btn-group-form {
-            display: flex;
-            gap: 12px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .btn-action {
-            background: linear-gradient(135deg, #046a58 0%, #0d9488 100%);
-            color: white;
-            border: none;
-            padding: 12px 22px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-        }
-
-        .btn-reset {
-            background: linear-gradient(135deg, #475569 0%, #334155 100%);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .invoice-box {
-            background: #ffffff !important;
-            color: #000000 !important;
-            border: 2px solid #000000 !important;
-            border-radius: 6px;
-            padding: 15px;
-            margin-top: 15px;
-        }
-
-        .invoice-header-bg {
-            background: #000000 !important;
-            color: #ffffff !important;
-            padding: 10px 15px;
-            font-size: 1.5rem;
-            font-weight: 800;
-            text-align: center;
-            border-radius: 4px 4px 0 0;
-            margin: -15px -15px 12px -15px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-
-        .inv-grid-2 {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 15px;
-            font-size: 0.85rem;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #000000;
-            padding-bottom: 10px;
-            font-weight: 700;
-            color: #000000 !important;
-        }
-
-        .item-photo-preview {
-            max-width: 80px;
-            max-height: 80px;
-            border: 1px solid #000;
-            border-radius: 4px;
-            object-fit: cover;
-            display: none;
-        }
-
-        .inv-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 8px;
-        }
-
-        .inv-table th, .inv-table td {
-            border: 1.5px solid #000000 !important;
-            padding: 5px 6px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #000000 !important;
-            text-align: center;
-        }
-
-        .inv-table th { 
-            background: #000000 !important; 
-            color: #ffffff !important;
-            font-size: 0.82rem;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-
-        .receive-tracker-box {
-            margin-top: 8px;
-        }
-
-        .receive-header-title {
-            text-align: center;
-            font-weight: 800;
-            font-size: 0.85rem;
-            border: 1.5px solid #000;
-            border-bottom: none;
-            background: #d1d5db;
-            padding: 3px;
-            text-transform: uppercase;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-
-        .receive-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 8px;
-        }
-
-        .receive-table th, .receive-table td {
-            border: 1.5px solid #000000 !important;
-            padding: 4px 2px;
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: #000000 !important;
-            text-align: center;
-            height: 22px;
-        }
-
-        .receive-table th {
-            background: #e5e7eb !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-
-        .col-sno { width: 5%; }
-        .col-challan { width: 9%; font-size: 0.65rem; }
-        .col-date { width: 9%; font-size: 0.65rem; }
-        .col-size { width: 6.5%; }
-        .col-tot { width: 9%; }
-        .col-sig { width: 14%; }
-
-        .inv-totals {
-            float: right;
-            width: 320px;
-            font-size: 0.88rem;
-            font-weight: 800;
-            color: #000000 !important;
-        }
-
-        .inv-totals div {
-            display: flex;
-            justify-content: space-between;
-            padding: 3px 0;
-            border-bottom: 1.5px solid #000;
-        }
-
-        .grand-total {
-            color: #000000 !important;
-            font-size: 1rem;
-            border-bottom: 2px solid #000000 !important;
-        }
-
-        .clear { clear: both; }
-
-        .signatures {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 15px;
-            padding-top: 6px;
-            border-top: 1.5px solid #000000;
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #000000 !important;
-        }
-
-        .history-table, .fabricator-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            background: rgba(15, 23, 42, 0.6);
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .history-table th, .history-table td, .fabricator-table th, .fabricator-table td {
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 10px;
-            font-size: 0.85rem;
-            text-align: left;
-            color: #ffffff;
-        }
-
-        .history-table th, .fabricator-table th { background: rgba(15, 23, 42, 0.85); color: #f59e0b; }
-
-        .btn-view { background: #2563eb; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-right: 4px; }
-        .btn-edit { background: #d97706; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-right: 4px; }
-        .btn-delete { background: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(5px);
-            padding: 15px;
-            overflow-y: auto;
-        }
-        .modal-content {
-            background: #ffffff;
-            border: 2px solid #000;
-            border-radius: 10px;
-            max-width: 900px;
-            margin: 15px auto;
-            padding: 20px;
-            color: #000;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-        }
-        .close-modal {
-            float: right;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #ef4444;
-            cursor: pointer;
-        }
-
-        @media print {
-            @page {
-                size: A4 portrait;
-                margin: 8mm;
-            }
-            body { 
-                background: #ffffff !important; 
-                padding: 0 !important; 
-                color: #000000 !important; 
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            body > .container {
-                display: none !important;
-            }
-            .modal {
-                display: block !important;
-                position: static !important;
-                background: #ffffff !important;
-                padding: 0 !important;
-                backdrop-filter: none !important;
-            }
-            .modal-content {
-                border: none !important;
-                box-shadow: none !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-            .close-modal, .btn-action {
-                display: none !important;
-            }
-            .rate-col, .category-print-hide {
-                display: none !important;
-            }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .excel-table th, .excel-table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 8px;
+            font-size: 13px;
+            white-space: nowrap;
         }
     </style>
 </head>
-<body>
+<body class="text-slate-800">
 
-    <div class="container">
-        <header>
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                <span id="syncStatus" style="font-size: 11px; background: rgba(245, 158, 11, 0.2); color: #f59e0b; padding: 2px 8px; border-radius: 10px; font-weight: 600;">⏳ Connecting Cloud...</span>
+    <!-- Top Header -->
+    <nav class="bg-slate-900 text-white shadow-md sticky top-0 z-20">
+        <div class="max-w-[98%] mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">📖</span>
+                <div>
+                    <h1 class="text-lg font-bold tracking-wide text-amber-400">SHREE SHYAM FASHION</h1>
+                    <div class="flex items-center gap-2">
+                        <p class="text-xs text-slate-400">BillBook & Palati Record</p>
+                        <span id="syncStatus" class="text-[11px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-medium">⏳ Connecting Cloud...</span>
+                    </div>
+                </div>
             </div>
-            <h1>SHREE SHYAM FASHION</h1>
-            <p>Mal ki Dhani, Malpura Gate, Sanganer, Jaipur (Raj.) - 302029 | GSTIN: 08BYRPL4944B1Z7</p>
-            <p>Owner: Vijay Kumawat (9680598849) | Co-Owner: Sanjay Kumawat (8559858776)</p>
-        </header>
-
-        <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab(event, 'billTab')">📝 Fabricator Bill</button>
-            <button class="tab-btn" onclick="switchTab(event, 'fabAccountTab')">👤 Fabricator Account</button>
-            <a href="cutting.html" class="tab-btn">✂️ Cutting & Production</a>
-            <button class="tab-btn" onclick="switchTab(event, 'reports')">🖨️ Final Invoice & Saved Bills</button>
+            <div class="flex items-center gap-3">
+                <a href="cutting.html" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
+                    ✂️ Cutting Register
+                </a>
+                <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
+                    ⬅ Dashboard
+                </a>
+            </div>
         </div>
+    </nav>
 
-        <!-- TAB 1: FABRICATOR BILL -->
-        <div id="billTab" class="tab-content active">
-            <h2 id="formTitle">Fabricator Bill & Size Entry</h2>
-            <form id="invoiceForm" onsubmit="generateInvoice(event)">
-                <input type="hidden" id="editIndex" value="-1">
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>Fabricator Name (कारीगर चुनें)</label>
-                        <select id="selectFabricator" onchange="autofillFabricator()" required>
-                            <option value="">-- फैब्रिकेटर चुनें --</option>
-                        </select>
+    <div class="max-w-[98%] mx-auto py-5 space-y-6">
+
+        <!-- Entry Form Card -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+            <h2 id="formTitleText" class="text-base font-bold text-slate-800 mb-4 border-b pb-2 flex justify-between items-center">
+                <span>➕ Add Palati / BillBook Entry (माल पलटी के पास भेजना)</span>
+            </h2>
+
+            <form id="billbookForm" class="space-y-4">
+                <input type="hidden" id="editDocId" value="">
+
+                <!-- Row 1 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Challan No. *</label>
+                        <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden focus-within:border-blue-500">
+                            <span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-2 text-sm border-r border-slate-300 select-none">NH-</span>
+                            <input type="text" id="challanInput" placeholder="1161" required class="w-full px-2.5 py-2 text-sm focus:outline-none font-semibold">
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <label>Fabricator Mobile No (फ़ोन नंबर - Optional)</label>
-                        <input type="text" id="clientPhone" placeholder="फ़ोन नंबर (वैकल्पिक)">
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Date *</label>
+                        <input type="date" id="dateInput" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
                     </div>
-                    <div class="input-group">
-                        <label>Category (आइटम प्रकार)</label>
-                        <select id="itemCategory" required>
-                            <option value="Kurti">Kurti</option>
-                            <option value="Pant">Pant</option>
-                            <option value="Dupatta">Dupatta</option>
-                            <option value="Sharara">Sharara</option>
-                        </select>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Palati / Worker Name (किसके पास गया) *</label>
+                        <input type="text" id="palatiName" list="fabSuggestions" placeholder="e.g. Palatiwala / Ramesh Ji" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <datalist id="fabSuggestions"></datalist>
                     </div>
-                    <div class="input-group">
-                        <label>Item Name (आइटम का नाम)</label>
-                        <input type="text" id="prodName" placeholder="उदा: 3-Pcs Set / Anarkali" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Style No. (स्टाइल नंबर)</label>
-                        <input type="text" id="styleNo" value="SD-" placeholder="SD-101" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Print No. (प्रिंट नंबर)</label>
-                        <input type="text" id="prodColor" placeholder="उदा: PR-55 / Red" required>
-                    </div>
-                    <div class="input-group">
-                        <label>माल जमा करवाने की तारीख (Given Date)</label>
-                        <input type="date" id="givenDate" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Challan No. (चालान नंबर)</label>
-                        <input type="text" id="invNo" value="NH-001" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Date of Receive Rows (कितनी Row चाहिए?)</label>
-                        <input type="number" id="receiveRowsCount" value="5" min="1" max="15" required>
-                    </div>
-                    <div class="input-group" style="grid-column: span 2;">
-                        <label>Item Photo (Optional / ऐच्छिक फोटो)</label>
-                        <input type="file" id="itemPhoto" accept="image/*" onchange="previewUploadPhoto(event)">
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Style No. *</label>
+                        <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden focus-within:border-blue-500">
+                            <span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-2 text-sm border-r border-slate-300 select-none">SD-</span>
+                            <input type="text" id="styleInput" placeholder="0050" required class="w-full px-2.5 py-2 text-sm focus:outline-none font-semibold">
+                        </div>
                     </div>
                 </div>
 
-                <label style="font-weight: 600; font-size: 0.9rem; color:#f59e0b;">साइज़ वाइज क्वांटिटी दर्ज करें:</label>
-                <div style="overflow-x: auto;">
-                    <table class="size-matrix-table">
-                        <thead>
-                            <tr>
-                                <th>साइज़</th>
-                                <th>S</th>
-                                <th>M</th>
-                                <th>L</th>
-                                <th>XL</th>
-                                <th>XXL</th>
-                                <th>3XL</th>
-                                <th>4XL</th>
-                                <th>5XL</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>Qty (Pcs)</strong></td>
-                                <td><input type="number" id="qty_s" value="0" min="0" oninput="calculateTotals()"></td>
-                                <td><input type="number" id="qty_m" value="0" min="0" oninput="calculateTotals()"></td>
-                                <td><input type="number" id="qty_l" value="0" min="0" oninput="calculateTotals()"></td>
-                                <td><input type="number" id="qty_xl" value="0" min="0" oninput="calculateTotals()"></td>
-                                <td><input type="number" id="qty_xxl" value="0" min="0" oninput="calculateTotals()"></td>
-                                <td><input type="number" id="qty_3xl" value="0" min="0" oninput="calculateTotals()"></td>
-                                <td><input type="number" id="qty_4xl" value="0" min="0" oninput="calculateTotals()"></td>
-                                <td><input type="number" id="qty_5xl" value="0" min="0" oninput="calculateTotals()"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <!-- Row 2 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Item Name *</label>
+                        <input type="text" id="itemName" placeholder="e.g. Midi / Pant / 3-Pcs Set" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
 
-                <div class="form-grid" style="margin-top: 10px;">
-                    <div class="input-group">
-                        <label>रेट प्रति पीस (₹) [अमाउंट जोड़ने के लिए]</label>
-                        <input type="number" id="uniformRate" step="0.5" value="50" min="0" oninput="calculateTotals()" required>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Process / Work Type</label>
+                        <input type="text" id="workType" placeholder="e.g. Palati Silai / Finishing / Press" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
                     </div>
-                    <div class="input-group">
-                        <label>कुल पीस (Total Pcs)</label>
-                        <input type="text" id="displayTotalQty" readonly value="0 Pcs" style="background:rgba(15,23,42,0.8); font-weight:bold; color:#fff;">
-                    </div>
-                    <div class="input-group">
-                        <label>कुल राशि (Total Amount ₹)</label>
-                        <input type="text" id="displayTotalAmt" readonly value="₹ 0.00" style="background:rgba(15,23,42,0.8); font-weight:bold; color:#f59e0b;">
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Rate / Notes</label>
+                        <input type="text" id="remarks" placeholder="Optional notes or rate" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
                     </div>
                 </div>
 
-                <div class="btn-group-form">
-                    <button type="submit" id="submitBtn" class="btn-action">💾 चालान सेव करें एवं प्रिंट देखें</button>
-                    <button type="button" class="btn-reset" onclick="resetFormOnly()">🔄 Clear Form</button>
+                <!-- Row 3: Sizes -->
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Qty (Size-Wise Pieces)</label>
+                    <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 items-center">
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">S</span>
+                            <input type="number" min="0" id="sz_S" placeholder="0" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">M</span>
+                            <input type="number" min="0" id="sz_M" placeholder="0" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">L</span>
+                            <input type="number" min="0" id="sz_L" placeholder="0" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">XL</span>
+                            <input type="number" min="0" id="sz_XL" placeholder="0" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">XXL</span>
+                            <input type="number" min="0" id="sz_XXL" placeholder="0" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">3XL</span>
+                            <input type="number" min="0" id="sz_3XL" placeholder="0" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">4XL</span>
+                            <input type="number" min="0" id="sz_4XL" placeholder="0" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">5XL</span>
+                            <input type="number" min="0" id="sz_5XL" placeholder="0" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div class="bg-blue-600 text-white rounded-lg p-1.5 text-center shadow-sm">
+                            <span class="block text-[10px] uppercase font-semibold opacity-90">Total Pcs</span>
+                            <span id="liveTotal" class="text-lg font-bold">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button type="button" id="cancelEditBtn" onclick="resetForm()" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hidden">
+                        Cancel Edit
+                    </button>
+                    <button type="reset" onclick="setTimeout(resetDefaults, 10)" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50">
+                        Reset
+                    </button>
+                    <button type="submit" id="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-bold shadow transition">
+                        ✔ Save BillBook Entry
+                    </button>
                 </div>
             </form>
         </div>
 
-        <!-- TAB 2: FABRICATOR ACCOUNT & STATEMENT -->
-        <div id="fabAccountTab" class="tab-content">
-            <h2 id="fabFormTitle">👤 Fabricator Account & Date-wise Statement</h2>
-            <form id="fabForm" onsubmit="saveFabricatorAccount(event)">
-                <input type="hidden" id="editFabIndex" value="-1">
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>Fabricator Name (कारीगर का नाम) *</label>
-                        <input type="text" id="fabNameInput" placeholder="उदा: रमेश जी" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Mobile No (मोबाइल नंबर - Optional)</label>
-                        <input type="text" id="fabPhoneInput" placeholder="उदा: 98290XXXXX (वैकल्पिक)">
-                    </div>
-                    <div class="input-group" style="grid-column: span 2;">
-                        <label>Address (पता / ठिकाना - Optional)</label>
-                        <input type="text" id="fabAddressInput" placeholder="उदा: सांगानेर, जयपुर (वैकल्पिक)">
-                    </div>
+        <!-- Data Sheet Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-4 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3 bg-slate-50">
+                <div class="flex items-center gap-4">
+                    <h3 class="font-bold text-slate-800">📊 BillBook Records (Palati Master Sheet)</h3>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                        Total Entries: <span id="entryCount">0</span>
+                    </span>
+                    <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                        Grand Total Pcs: <span id="grandTotalPcs">0</span>
+                    </span>
                 </div>
-                <div style="display:flex; gap:10px;">
-                    <button type="submit" id="fabSubmitBtn" class="btn-action">➕ नया खाता बनाएँ (Save Fabricator)</button>
-                    <button type="button" id="fabCancelEditBtn" onclick="cancelEditFabricator()" class="btn-reset" style="display:none;">❌ Cancel Edit</button>
-                </div>
-            </form>
-
-            <div style="margin-top: 30px; background: rgba(15,23,42,0.5); padding: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);">
-                <h3 style="color:#f59e0b; margin-bottom:10px;">📊 Date-wise Statement & Earnings Report (तारीख के अनुसार स्टेटमेंट)</h3>
-                <div class="form-grid">
-                    <div class="input-group">
-                        <label>फैब्रिकेटर चुनें</label>
-                        <select id="statementFabSelect" required>
-                            <option value="">-- फैब्रिकेटर चुनें --</option>
-                            <option value="ALL">🌟 सभी फैब्रिकेटर (All Fabricators Combined)</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>शुरुआती तारीख (Start Date)</label>
-                        <input type="date" id="startDateInput" required>
-                    </div>
-                    <div class="input-group">
-                        <label>अंतिम तारीख (End Date)</label>
-                        <input type="date" id="endDateInput" required>
-                    </div>
-                </div>
-                <button type="button" onclick="generateDateWiseStatement()" class="btn-action" style="margin-top: 10px;">📄 स्टेटमेंट रिपोर्ट देखें (Generate Statement)</button>
+                <input type="text" id="searchBox" onkeyup="renderTable()" placeholder="🔍 Search Challan, Palati, Style..." class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-64 focus:outline-none focus:border-blue-500">
             </div>
 
-            <div style="margin-top: 30px;">
-                <h3 style="color:#f59e0b; margin-bottom:10px;">🔍 स्टाइल नंबर द्वारा चालान खोजें (Search by Style No.)</h3>
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <input type="text" id="searchStyleInput" placeholder="Style No. डालें जैसे SD-101" style="padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); background: rgba(15,23,42,0.7); color: #fff; width: 250px;">
-                    <button onclick="searchByStyleNo()" class="btn-action" style="padding: 10px 20px;">🔍 खोजें</button>
-                </div>
-                <div id="styleSearchResult" style="margin-top: 10px;"></div>
-            </div>
-
-            <div style="margin-top: 30px;">
-                <h3 style="color:#f59e0b; margin-bottom:10px;">📋 सभी फैब्रिकेटर की लिस्ट एवं खाते</h3>
-                <table class="fabricator-table">
+            <div class="overflow-x-auto">
+                <table class="w-full excel-table border-collapse text-left">
                     <thead>
-                        <tr>
-                            <th>नाम</th>
-                            <th>मोबाइल</th>
-                            <th>पता</th>
-                            <th>एक्शन / खाता (Ledger)</th>
+                        <tr class="bg-slate-800 text-white text-center text-xs">
+                            <th colspan="8" class="bg-indigo-400 text-slate-900 font-bold">PALATI & CHALLAN DETAILS</th>
+                            <th colspan="8" class="bg-orange-600 text-white font-bold">QTY (SIZE-WISE)</th>
+                            <th colspan="2" class="bg-slate-700 text-white font-bold">SUMMARY</th>
                         </tr>
-                    </thead>
-                    <tbody id="fabTbody"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- TAB 4: PRINT & SAVED BILLS -->
-        <div id="reports" class="tab-content">
-            <h2>चालान प्रिंट एवं सुरक्षित रिकॉर्ड</h2>
-            
-            <div id="invoicePrintArea" class="invoice-box">
-                <div class="invoice-header-bg">SHREE SHYAM FASHION</div>
-                <div style="text-align:center; font-size:0.72rem; font-weight:700; margin-bottom:6px; border-bottom:2px solid #000; padding-bottom:4px; color:#000;">
-                    Address: Mal ki Dhani, Malpura Gate, Sanganer, Jaipur (Raj.) - 302029 | GSTIN: 08BYRPL4944B1Z7<br>
-                    Owner: Vijay Kumawat (9680598849) | Co-Owner: Sanjay Kumawat (8559858776)
-                </div>
-
-                <div class="inv-grid-2">
-                    <div>
-                        <strong>Fabricator Name:</strong> <span id="pClient">--</span><br>
-                        <strong>Phone No:</strong> <span id="pPhone">--</span><br>
-                        <strong>Given Date:</strong> <span id="pGivenDate">--</span>
-                    </div>
-                    <div>
-                        <img id="pPhotoImg" class="item-photo-preview" src="" alt="Photo">
-                    </div>
-                    <div style="text-align: right;">
-                        <strong>Challan No:</strong> <span id="pInvNo">--</span>
-                    </div>
-                </div>
-
-                <table class="inv-table">
-                    <thead>
-                        <tr>
-                            <th>S.No</th>
+                        <tr class="bg-indigo-200 text-slate-900 font-bold text-center">
+                            <th>S.no</th>
+                            <th>Challan No.</th>
+                            <th>Date</th>
+                            <th>Palati / Worker Name</th>
+                            <th>Style Name</th>
                             <th>Item Name</th>
-                            <th>Style No.</th>
-                            <th>Print No.</th>
-                            <th>Size</th>
-                            <th>Qty (Pcs)</th>
-                            <th class="rate-col">Rate (₹)</th>
-                            <th>Amount (₹)</th>
+                            <th>Work Type</th>
+                            <th>Remarks</th>
+                            <th class="bg-sky-200">S</th>
+                            <th class="bg-sky-200">M</th>
+                            <th class="bg-sky-200">L</th>
+                            <th class="bg-sky-200">XL</th>
+                            <th class="bg-sky-200">XXL</th>
+                            <th class="bg-sky-200">3XL</th>
+                            <th class="bg-sky-200">4XL</th>
+                            <th class="bg-sky-200">5XL</th>
+                            <th class="bg-amber-200">Total</th>
+                            <th class="bg-slate-200">Action</th>
                         </tr>
                     </thead>
-                    <tbody id="invoiceTableBody">
-                        <tr><td colspan="8" style="text-align:center;">कोई चालान सेलेक्ट नहीं है।</td></tr>
+                    <tbody id="sheetBody" class="bg-white divide-y divide-slate-200">
+                        <tr><td colspan="18" class="text-center py-8 text-slate-400">Cloud se data load ho raha hai...</td></tr>
                     </tbody>
                 </table>
-
-                <div class="receive-tracker-box">
-                    <div class="receive-header-title">Date Of Receive</div>
-                    <table class="receive-table">
-                        <thead>
-                            <tr>
-                                <th class="col-sno">S.No</th>
-                                <th class="col-challan">Challan No.</th>
-                                <th class="col-date">Date</th>
-                                <th class="col-size">S</th>
-                                <th class="col-size">M</th>
-                                <th class="col-size">L</th>
-                                <th class="col-size">XL</th>
-                                <th class="col-size">XXL</th>
-                                <th class="col-size">3XL</th>
-                                <th class="col-size">4XL</th>
-                                <th class="col-size">5XL</th>
-                                <th class="col-tot">Total Pcs</th>
-                                <th class="col-sig">Receiver Signature</th>
-                            </tr>
-                        </thead>
-                        <tbody id="receiveTrackerTbody"></tbody>
-                    </table>
-                </div>
-
-                <div class="inv-totals" style="margin-top: 6px;">
-                    <div><span>Total Qty:</span> <span id="pGrandQty">0 Pcs</span></div>
-                    <div class="grand-total"><span>Total Amount:</span> <span id="pGrandTotal">₹0.00</span></div>
-                </div>
-                <div class="clear"></div>
-
-                <div class="signatures">
-                    <div>Receiver Signature</div>
-                    <div>Authorized Signature</div>
-                </div>
-            </div>
-
-            <div style="display: flex; gap: 12px; margin-top: 15px; flex-wrap: wrap;">
-                <button onclick="downloadPDF()" class="btn-action" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);">📥 Download Challan (PDF)</button>
-                <button onclick="window.print()" class="btn-action" style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%);">🖨️ A4 Paper Print</button>
-            </div>
-
-            <div id="historySection" style="margin-top: 30px;">
-                <h3 style="color:#f59e0b; margin-bottom:10px;">📂 सेव किए हुए पुराने चालान (Saved History)</h3>
-                <table class="history-table">
-                    <thead>
-                        <tr>
-                            <th>Challan No</th>
-                            <th>Fabricator Name</th>
-                            <th>Item</th>
-                            <th>Style No</th>
-                            <th>Total Pcs</th>
-                            <th>Total Amount</th>
-                            <th>एक्शन</th>
-                        </tr>
-                    </thead>
-                    <tbody id="historyTbody"></tbody>
-                </table>
             </div>
         </div>
-    </div>
 
-    <!-- MODAL FOR LEDGER & STATEMENT -->
-    <div id="ledgerModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal" onclick="closeLedgerModal()">×</span>
-            <div id="ledgerBody"></div>
-        </div>
     </div>
 
     <!-- Firebase SDK & App Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, getDocs, setDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, updateDoc, onSnapshot, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCOmvNfkMXcbLATJlN6tiaCCUBN9vfyf-s",
@@ -773,707 +222,216 @@
             projectId: "shree-shyam-fashion",
             storageBucket: "shree-shyam-fashion.firebasestorage.app",
             messagingSenderId: "270444185899",
-            appId: "1:270444185899:web:899ef1a3101d5979859d6e",
-            measurementId: "G-JR47FJ2Q1G"
+            appId: "1:270444185899:web:c21de116d358c09a859d6e",
+            measurementId: "G-BBE8D4ENTY"
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        
-        const billsCollection = collection(db, "ssf_bills_records");
-        const fabCollection = collection(db, "ssf_fabricators_records");
+        const billbookCollection = collection(db, "ssf_billbook_records");
 
-        let savedInvoices = JSON.parse(localStorage.getItem('ssf_bills')) || [];
-        let fabricators = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
-        let currentPhotoData = "";
+        const sizeKeys = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
+        let billbookList = [];
 
-        window.onload = async function() {
-            // First load local data instantly
-            initAppUI();
+        function updateFabSuggestions() {
+            const fabs = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
+            const dl = document.getElementById('fabSuggestions');
+            dl.innerHTML = '';
+            fabs.forEach(f => {
+                dl.innerHTML += `<option value="${f.name}">`;
+            });
+        }
+        updateFabSuggestions();
 
-            // Then fetch from Cloud and merge/sync safely
+        window.resetDefaults = function() {
+            document.getElementById('dateInput').valueAsDate = new Date();
+            document.getElementById('liveTotal').innerText = '0';
+        }
+        resetDefaults();
+
+        window.resetForm = function() {
+            document.getElementById('billbookForm').reset();
+            document.getElementById('editDocId').value = '';
+            document.getElementById('formTitleText').innerHTML = '<span>➕ Add Palati / BillBook Entry (माल पलटी के पास भेजना)</span>';
+            document.getElementById('saveBtn').innerText = "✔ Save BillBook Entry";
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            resetDefaults();
+        }
+
+        function formatDateIN(dateStr) {
+            if (!dateStr) return 'N/A';
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return dateStr;
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+
+        window.calcTotal = function() {
+            let sum = 0;
+            sizeKeys.forEach(sz => {
+                const val = parseInt(document.getElementById('sz_' + sz).value);
+                if (!isNaN(val) && val > 0) sum += val;
+            });
+            document.getElementById('liveTotal').innerText = sum;
+        }
+
+        // Real-time Cloud Listener
+        const q = query(billbookCollection, orderBy("createdAt", "asc"));
+        onSnapshot(q, (snapshot) => {
+            billbookList = [];
+            snapshot.forEach((docSnap) => {
+                billbookList.push({ docId: docSnap.id, ...docSnap.data() });
+            });
+
+            const statusBadge = document.getElementById('syncStatus');
+            statusBadge.innerText = "🟢 Cloud Live Synced";
+            statusBadge.className = "text-[11px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-medium";
+
+            renderTable();
+        }, (error) => {
+            console.error("Firebase Error:", error);
+            const statusBadge = document.getElementById('syncStatus');
+            statusBadge.innerText = "🔴 Connection Error";
+            statusBadge.className = "text-[11px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full font-medium";
+        });
+
+        // Save or Update Entry
+        document.getElementById('billbookForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerText = "⏳ Saving...";
+
+            const editDocId = document.getElementById('editDocId').value;
+            const rawChallan = document.getElementById('challanInput').value.trim();
+            const rawStyle = document.getElementById('styleInput').value.trim();
+
+            let sizesObj = {};
+            let rowTotal = 0;
+
+            sizeKeys.forEach(sz => {
+                const v = document.getElementById('sz_' + sz).value.trim();
+                const num = (v === '' || isNaN(parseInt(v))) ? 0 : parseInt(v);
+                sizesObj[sz] = num;
+                rowTotal += num;
+            });
+
+            const entry = {
+                challanNo: rawChallan.startsWith('NH-') ? rawChallan : 'NH-' + rawChallan,
+                date: document.getElementById('dateInput').value,
+                palatiName: document.getElementById('palatiName').value.trim(),
+                styleNo: rawStyle.startsWith('SD-') ? rawStyle : 'SD-' + rawStyle,
+                itemName: document.getElementById('itemName').value.trim(),
+                workType: document.getElementById('workType').value.trim() || 'N/A',
+                remarks: document.getElementById('remarks').value.trim() || 'N/A',
+                sizes: sizesObj,
+                total: rowTotal
+            };
+
             try {
-                const statusEl = document.getElementById('syncStatus');
-                statusEl.innerText = "⏳ Syncing Cloud Data...";
-
-                // Fetch Bills from Firebase
-                const billSnapshot = await getDocs(billsCollection);
-                let cloudBills = [];
-                billSnapshot.forEach(docSnap => {
-                    cloudBills.push(docSnap.data());
-                });
-
-                // Fetch Fabricators from Firebase
-                const fabSnapshot = await getDocs(fabCollection);
-                let cloudFabs = [];
-                fabSnapshot.forEach(docSnap => {
-                    cloudFabs.push(docSnap.data());
-                });
-
-                // Smart Merge: If cloud has data, use cloud + local items combined without losing anything
-                if (cloudBills.length > 0) {
-                    // Combine cloud and local, removing duplicates based on invNo
-                    const billMap = new Map();
-                    [...savedInvoices, ...cloudBills].forEach(b => billMap.set(b.invNo, b));
-                    savedInvoices = Array.from(billMap.values());
-                    localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
-                } else if (savedInvoices.length > 0) {
-                    // If cloud is empty but local has data, upload local data to cloud
-                    for (let b of savedInvoices) {
-                        await setDoc(doc(db, "ssf_bills_records", String(b.invNo)), b);
-                    }
+                if (editDocId) {
+                    await updateDoc(doc(db, "ssf_billbook_records", editDocId), entry);
+                    alert("BillBook Entry updated successfully!");
+                    resetForm();
+                } else {
+                    entry.createdAt = Date.now();
+                    await addDoc(billbookCollection, entry);
+                    this.reset();
+                    resetDefaults();
                 }
-
-                if (cloudFabs.length > 0) {
-                    const fabMap = new Map();
-                    [...fabricators, ...cloudFabs].forEach(f => fabMap.set(f.name.toLowerCase(), f));
-                    fabricators = Array.from(fabMap.values());
-                    localStorage.setItem('ssf_fabricators', JSON.stringify(fabricators));
-                } else if (fabricators.length > 0) {
-                    for (let f of fabricators) {
-                        await setDoc(doc(db, "ssf_fabricators_records", f.name.toLowerCase()), f);
-                    }
-                }
-
-                statusEl.innerText = "🟢 Cloud Live Synced";
-                statusEl.style.background = "rgba(16, 185, 129, 0.2)";
-                statusEl.style.color = "#34d399";
-
-                initAppUI();
             } catch (err) {
-                console.error("Cloud Sync Error:", err);
-                const statusEl = document.getElementById('syncStatus');
-                statusEl.innerText = "🔴 Offline Mode (Local Data Used)";
-                statusEl.style.background = "rgba(239, 68, 68, 0.2)";
-                statusEl.style.color = "#f87171";
+                alert("Data save nahi ho paya!");
+                console.error(err);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = editDocId ? "✔ Update Entry" : "✔ Save BillBook Entry";
             }
-        };
+        });
 
-        function initAppUI() {
-            renderFabricatorDropdowns();
-            renderFabricatorTable();
-            renderHistory();
-            
-            if(savedInvoices.length > 0) {
-                let nextNum = savedInvoices.length + 1;
-                document.getElementById('invNo').value = "NH-" + String(nextNum).padStart(3, '0');
-                displayInvoice(savedInvoices[0]);
-            } else {
-                document.getElementById('invNo').value = "NH-001";
-                renderReceiveRows(5);
-            }
-            document.getElementById('givenDate').valueAsDate = new Date();
-        }
+        window.editRow = function(docId) {
+            const item = billbookList.find(i => i.docId === docId);
+            if (!item) return;
 
-        window.switchTab = function(evt, tabId) {
-            fabricators = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
-            renderFabricatorDropdowns();
-            renderFabricatorTable();
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if(evt && evt.currentTarget) evt.currentTarget.classList.add('active');
-        }
+            document.getElementById('editDocId').value = item.docId;
+            document.getElementById('challanInput').value = item.challanNo.replace('NH-', '');
+            document.getElementById('dateInput').value = item.date || '';
+            document.getElementById('palatiName').value = item.palatiName || '';
+            document.getElementById('styleInput').value = item.styleNo.replace('SD-', '');
+            document.getElementById('itemName').value = item.itemName || '';
+            document.getElementById('workType').value = item.workType === 'N/A' ? '' : item.workType;
+            document.getElementById('remarks').value = item.remarks === 'N/A' ? '' : item.remarks;
 
-        function formatDateToDDMMYYYY(dateStr) {
-            if(!dateStr) return '--';
-            let parts = dateStr.split('-');
-            if(parts.length === 3) {
-                if(parts[0].length === 4) {
-                    return `${parts[2]}-${parts[1]}-${parts[0]}`;
-                }
-            }
-            return dateStr;
-        }
+            sizeKeys.forEach(sz => {
+                const val = item.sizes[sz];
+                document.getElementById('sz_' + sz).value = (val === 0 || val === undefined) ? '' : val;
+            });
 
-        window.saveFabricatorAccount = async function(e) {
-            e.preventDefault();
-            const editIdx = parseInt(document.getElementById('editFabIndex').value);
-            const name = document.getElementById('fabNameInput').value.trim();
-            const phone = document.getElementById('fabPhoneInput').value.trim();
-            const address = document.getElementById('fabAddressInput').value.trim();
+            calcTotal();
 
-            if (editIdx === -1) {
-                const exists = fabricators.some(f => f.name.trim().toLowerCase() === name.toLowerCase());
-                if (exists) {
-                    alert("इस नाम का फैब्रिकेटर खाता पहले से मौजूद है!");
-                    return;
-                }
-                fabricators.push({ name, phone, address });
-                alert("फैब्रिकेटर खाता सफलतापूर्वक बन गया है!");
-            } else {
-                const duplicate = fabricators.some((f, i) => i !== editIdx && f.name.trim().toLowerCase() === name.toLowerCase());
-                if (duplicate) {
-                    alert("इस नाम का दूसरा खाता पहले से मौजूद है!");
-                    return;
-                }
-                const oldName = fabricators[editIdx].name;
-                fabricators[editIdx] = { name, phone, address };
-                
-                if (oldName !== name) {
-                    savedInvoices.forEach(b => {
-                        if (b.clientName === oldName) {
-                            b.clientName = name;
-                            if (phone) b.clientPhone = phone;
-                        }
-                    });
-                    localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
-                    renderHistory();
-                }
-                alert("फैब्रिकेटर खाता सफलतापूर्वक अपडेट हो गया है!");
-            }
+            document.getElementById('formTitleText').innerHTML = `<span>✏️ Edit BillBook Entry (${item.challanNo})</span>`;
+            document.getElementById('saveBtn').innerText = "✔ Update Entry";
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
 
-            localStorage.setItem('ssf_fabricators', JSON.stringify(fabricators));
-            
-            // Save to Firebase Cloud
-            try {
-                await setDoc(doc(db, "ssf_fabricators_records", name.toLowerCase()), { name, phone, address });
-                if (editIdx !== -1) {
-                    // if name changed, cleanup old key if needed
-                }
-            } catch(err) {
-                console.log("Cloud save error for fab:", err);
-            }
-
-            cancelEditFabricator();
-            renderFabricatorDropdowns();
-            renderFabricatorTable();
-        }
-
-        window.editFabricator = function(index) {
-            const fab = fabricators[index];
-            document.getElementById('editFabIndex').value = index;
-            document.getElementById('fabNameInput').value = fab.name;
-            document.getElementById('fabPhoneInput').value = fab.phone || '';
-            document.getElementById('fabAddressInput').value = fab.address || '';
-            
-            document.getElementById('fabFormTitle').innerText = `✏️ Edit Fabricator Account (${fab.name})`;
-            document.getElementById('fabSubmitBtn').innerText = "💾 खाता अपडेट करें (Update Account)";
-            document.getElementById('fabCancelEditBtn').style.display = "inline-block";
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        window.cancelEditFabricator = function() {
-            document.getElementById('editFabIndex').value = "-1";
-            document.getElementById('fabForm').reset();
-            document.getElementById('fabFormTitle').innerText = "👤 Fabricator Account & Date-wise Statement";
-            document.getElementById('fabSubmitBtn').innerText = "➕ नया खाता बनाएँ (Save Fabricator)";
-            document.getElementById('fabCancelEditBtn').style.display = "none";
-        }
-
-        function renderFabricatorDropdowns() {
-            const select = document.getElementById('selectFabricator');
-            const statementSelect = document.getElementById('statementFabSelect');
-            
-            select.innerHTML = '<option value="">-- फैब्रिकेटर चुनें --</option>';
-            statementSelect.innerHTML = '<option value="">-- फैब्रिकेटर चुनें --</option><option value="ALL">🌟 सभी फैब्रिकेटर (All Fabricators Combined)</option>';
-
-            fabricators.forEach(fab => {
-                let phoneText = fab.phone ? ` (${fab.phone})` : '';
-                let opt = `<option value="${fab.name}">${fab.name}${phoneText}</option>`;
-                select.innerHTML += opt;
-                statementSelect.innerHTML += opt;
-            });
-        }
-
-        window.autofillFabricator = function() {
-            const selectedName = document.getElementById('selectFabricator').value;
-            const fab = fabricators.find(f => f.name === selectedName);
-            if(fab) {
-                document.getElementById('clientPhone').value = fab.phone || '';
-            } else {
-                document.getElementById('clientPhone').value = '';
-            }
-        }
-
-        function renderFabricatorTable() {
-            const tbody = document.getElementById('fabTbody');
+        window.renderTable = function() {
+            const tbody = document.getElementById('sheetBody');
+            const queryText = document.getElementById('searchBox').value.toLowerCase();
             tbody.innerHTML = '';
-            if(fabricators.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">कोई फैब्रिकेटर रजिस्टर्ड नहीं है।</td></tr>`;
-                return;
-            }
-            fabricators.forEach((fab, idx) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>${fab.name}</strong></td>
-                        <td>${fab.phone || 'N/A'}</td>
-                        <td>${fab.address || 'N/A'}</td>
-                        <td>
-                            <button class="btn-view" onclick="openFabricatorLedger('${fab.name}')">📊 खाता देखें (Ledger)</button>
-                            <button class="btn-edit" onclick="editFabricator(${idx})">✏️ Edit</button>
-                            <button class="btn-delete" onclick="deleteFabricator('${fab.name}', ${idx})">Delete</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
 
-        window.deleteFabricator = async function(fabName, index) {
-            if(confirm("क्या आप इस फैब्रिकेटर को हटाना चाहते हैं?")) {
-                fabricators.splice(index, 1);
-                localStorage.setItem('ssf_fabricators', JSON.stringify(fabricators));
-                try {
-                    await deleteDoc(doc(db, "ssf_fabricators_records", fabName.toLowerCase()));
-                } catch(err) {
-                    console.log("Cloud delete error:", err);
-                }
-                renderFabricatorDropdowns();
-                renderFabricatorTable();
-            }
-        }
+            let grandTotal = 0;
+            let visibleCount = 0;
 
-        window.openFabricatorLedger = function(fabName) {
-            const fab = fabricators.find(f => f.name === fabName) || { name: fabName, phone: '', address: '' };
-            const fabBills = savedInvoices.filter(b => b.clientName === fabName);
+            billbookList.forEach((item, index) => {
+                const searchStr = `${item.challanNo} ${item.palatiName} ${item.styleNo} ${item.itemName}`.toLowerCase();
+                if (queryText && !searchStr.includes(queryText)) return;
 
-            let totalPcs = 0;
-            let totalEarn = 0;
-            let rowsHtml = '';
+                visibleCount++;
+                grandTotal += item.total;
 
-            fabBills.forEach((b) => {
-                totalPcs += b.totalQty;
-                totalEarn += b.subTotal;
-                let sizeBreakdown = b.items.map(it => `${it.size}: ${it.qty}`).join(', ');
-                rowsHtml += `
-                    <tr>
-                        <td style="border:1px solid #000; padding:5px; text-align:center;">${b.invNo}</td>
-                        <td style="border:1px solid #000; padding:5px; text-align:center;">${formatDateToDDMMYYYY(b.givenDate)}</td>
-                        <td style="border:1px solid #000; padding:5px;">[${b.category || 'Kurti'}] ${b.prodName}</td>
-                        <td style="border:1px solid #000; padding:5px; text-align:center;">${b.styleNo || '--'}</td>
-                        <td style="border:1px solid #000; padding:5px;">${sizeBreakdown}</td>
-                        <td style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold;">${b.totalQty} Pcs</td>
-                        <td style="border:1px solid #000; padding:5px; text-align:right; font-weight:bold;">₹${b.subTotal.toFixed(2)}</td>
-                    </tr>
-                `;
-            });
-
-            let modalHtml = `
-                <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:6px; margin-bottom:8px;">
-                    <h2 style="font-size:1.3rem; font-weight:800; text-transform:uppercase; color:#000; margin:0;">SHREE SHYAM FASHION</h2>
-                    <p style="font-size:0.75rem; font-weight:700; color:#000; margin-top:2px;">Mal ki Dhani, Malpura Gate, Sanganer, Jaipur | GSTIN: 08BYRPL4944B1Z7</p>
-                    <p style="font-size:0.78rem; font-weight:800; color:#000; margin-top:4px;">Fabricator Statement</p>
-                </div>
-                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:0.8rem; margin-bottom:8px; border-bottom:1.5px solid #000; padding-bottom:5px;">
-                    <div>Fabricator Name: <strong>${fab.name}</strong><br>Mobile No: ${fab.phone || 'N/A'}</div>
-                    <div style="text-align:right;">Address: ${fab.address || 'N/A'}</div>
-                </div>
-                <table style="width:100%; border-collapse:collapse; margin-bottom:8px; font-size:0.75rem;">
-                    <thead>
-                        <tr style="background:#000; color:#fff;">
-                            <th style="border:1px solid #000; padding:5px;">Challan</th>
-                            <th style="border:1px solid #000; padding:5px;">Date</th>
-                            <th style="border:1px solid #000; padding:5px;">Item Name</th>
-                            <th style="border:1px solid #000; padding:5px;">Style No</th>
-                            <th style="border:1px solid #000; padding:5px;">Size Breakdown</th>
-                            <th style="border:1px solid #000; padding:5px;">Total Pcs</th>
-                            <th style="border:1px solid #000; padding:5px; text-align:right;">Total Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${rowsHtml || '<tr><td colspan="7" style="border:1px solid #000; padding:10px; text-align:center;">कोई चालान नहीं मिला।</td></tr>'}
-                    </tbody>
-                </table>
-                <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:800; border-top:2px solid #000; padding-top:6px; margin-top:6px;">
-                    <span>कुल चालान: ${fabBills.length} | कुल पीस: ${totalPcs} Pcs</span>
-                    <span>कुल देय राशि: ₹${totalEarn.toFixed(2)}</span>
-                </div>
-                <div style="margin-top:15px; text-align:right;">
-                    <button onclick="window.print()" class="btn-action">🖨️ Print Statement</button>
-                </div>
-            `;
-
-            document.getElementById('ledgerBody').innerHTML = modalHtml;
-            document.getElementById('ledgerModal').style.display = 'block';
-        }
-
-        window.generateDateWiseStatement = function() {
-            const fabName = document.getElementById('statementFabSelect').value;
-            const startDate = document.getElementById('startDateInput').value;
-            const endDate = document.getElementById('endDateInput').value;
-
-            if(!fabName || !startDate || !endDate) {
-                alert("कृपया फैब्रिकेटर और दोनों तारीखें (Start & End Date) चुनें!");
-                return;
-            }
-
-            let filteredBills = [];
-            let titleText = "";
-
-            if(fabName === "ALL") {
-                filteredBills = savedInvoices.filter(b => b.givenDate >= startDate && b.givenDate <= endDate);
-                titleText = "All Fabricators Combined Statement";
-            } else {
-                filteredBills = savedInvoices.filter(b => b.clientName === fabName && b.givenDate >= startDate && b.givenDate <= endDate);
-                titleText = `Fabricator Statement: ${fabName}`;
-            }
-
-            let grandTotalPcs = 0;
-            let grandTotalAmt = 0;
-            let tableRows = '';
-
-            filteredBills.forEach(b => {
-                grandTotalPcs += b.totalQty;
-                grandTotalAmt += b.subTotal;
-
-                let sizeBreakdown = b.items.map(it => `${it.size}: ${it.qty}`).join(', ');
-
-                tableRows += `
-                    <tr>
-                        <td style="border:1px solid #000; padding:5px; text-align:center;">${b.invNo}</td>
-                        <td style="border:1px solid #000; padding:5px; text-align:center;">${formatDateToDDMMYYYY(b.givenDate)}</td>
-                        <td style="border:1px solid #000; padding:5px;">${fabName === 'ALL' ? '<strong>' + b.clientName + '</strong><br>' : ''}[${b.category || 'Kurti'}] ${b.prodName}</td>
-                        <td style="border:1px solid #000; padding:5px; text-align:center;">${b.styleNo}</td>
-                        <td style="border:1px solid #000; padding:5px;">${sizeBreakdown}</td>
-                        <td style="border:1px solid #000; padding:5px; text-align:center; font-weight:bold;">${b.totalQty} Pcs</td>
-                        <td style="border:1px solid #000; padding:5px; text-align:right; font-weight:bold;">₹${b.subTotal.toFixed(2)}</td>
-                    </tr>
-                `;
-            });
-
-            let statementHtml = `
-                <div style="text-align:center; border-bottom:2px solid #000; padding-bottom:6px; margin-bottom:8px;">
-                    <h2 style="font-size:1.3rem; font-weight:800; text-transform:uppercase; color:#000; margin:0;">SHREE SHYAM FASHION</h2>
-                    <p style="font-size:0.75rem; font-weight:700; color:#000; margin-top:2px;">Mal ki Dhani, Malpura Gate, Sanganer, Jaipur | GSTIN: 08BYRPL4944B1Z7</p>
-                    <p style="font-size:0.78rem; font-weight:800; color:#000; margin-top:4px;">${titleText}</p>
-                    <p style="font-size:0.7rem; font-weight:700; color:#555;">Period: ${formatDateToDDMMYYYY(startDate)} to ${formatDateToDDMMYYYY(endDate)}</p>
-                </div>
-                <table style="width:100%; border-collapse:collapse; margin-bottom:8px; font-size:0.75rem;">
-                    <thead>
-                        <tr style="background:#000; color:#fff;">
-                            <th style="border:1px solid #000; padding:5px;">Challan</th>
-                            <th style="border:1px solid #000; padding:5px;">Date</th>
-                            <th style="border:1px solid #000; padding:5px;">Item Name</th>
-                            <th style="border:1px solid #000; padding:5px;">Style No</th>
-                            <th style="border:1px solid #000; padding:5px;">Size Breakdown</th>
-                            <th style="border:1px solid #000; padding:5px;">Total Pcs</th>
-                            <th style="border:1px solid #000; padding:5px; text-align:right;">Total Amount</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${tableRows || '<tr><td colspan="7" style="border:1px solid #000; padding:10px; text-align:center;">इस तारीख के बीच कोई रिकॉर्ड नहीं मिला।</td></tr>'}
-                    </tbody>
-                </table>
-                <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:800; border-top:2px solid #000; padding-top:6px; margin-top:6px;">
-                    <span>कुल चालान: ${filteredBills.length} | कुल पीस (Total Qty): ${grandTotalPcs} Pcs</span>
-                    <span>कुल राशि (Total Amount): ₹${grandTotalAmt.toFixed(2)}</span>
-                </div>
-                <div style="margin-top:15px; text-align:right;">
-                    <button onclick="window.print()" class="btn-action">🖨️ Print Statement</button>
-                </div>
-            `;
-
-            document.getElementById('ledgerBody').innerHTML = statementHtml;
-            document.getElementById('ledgerModal').style.display = 'block';
-        }
-
-        window.closeLedgerModal = function() {
-            document.getElementById('ledgerModal').style.display = 'none';
-        }
-
-        window.searchByStyleNo = function() {
-            const query = document.getElementById('searchStyleInput').value.trim().toUpperCase();
-            const resDiv = document.getElementById('styleSearchResult');
-            if(!query) {
-                resDiv.innerHTML = '<p style="color:#ef4444;">कृपया स्टाइल नंबर दर्ज करें।</p>';
-                return;
-            }
-
-            const matchedBills = savedInvoices.filter(b => (b.styleNo || '').toUpperCase().includes(query));
-            if(matchedBills.length === 0) {
-                resDiv.innerHTML = `<p style="color:#ef4444;">स्टाइल नंबर "${query}" का कोई चालान नहीं मिला।</p>`;
-                return;
-            }
-
-            let html = `<p style="color:#4ade80; margin-bottom:8px;">कुल ${matchedBills.length} चालान मिले:</p>`;
-            html += `<table class="history-table"><thead><tr><th>Challan No</th><th>Fabricator</th><th>Item</th><th>Style No</th><th>Total Pcs</th><th>Amount</th><th>Action</th></tr></thead><tbody>`;
-            
-            matchedBills.forEach(b => {
-                let realIdx = savedInvoices.findIndex(inv => inv.invNo === b.invNo);
-                html += `
-                    <tr>
-                        <td><strong>${b.invNo}</strong></td>
-                        <td>${b.clientName}</td>
-                        <td>[${b.category || 'Kurti'}] ${b.prodName}</td>
-                        <td>${b.styleNo}</td>
-                        <td>${b.totalQty} Pcs</td>
-                        <td>₹${b.subTotal.toFixed(2)}</td>
-                        <td><button class="btn-view" onclick="viewBill(${realIdx}); switchTab(null, 'reports'); document.querySelectorAll('.tab-btn')[3].classList.add('active');">View</button></td>
-                    </tr>
-                `;
-            });
-            html += `</tbody></table>`;
-            resDiv.innerHTML = html;
-        }
-
-        window.calculateTotals = function() {
-            const sizes = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
-            let totalQty = 0;
-            sizes.forEach(sz => {
-                totalQty += parseInt(document.getElementById('qty_' + sz).value) || 0;
-            });
-            let rate = parseFloat(document.getElementById('uniformRate').value) || 0;
-            document.getElementById('displayTotalQty').value = totalQty + " Pcs";
-            document.getElementById('displayTotalAmt').value = "₹ " + (totalQty * rate).toFixed(2);
-        }
-
-        window.previewUploadPhoto = function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    currentPhotoData = evt.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function renderReceiveRows(count) {
-            const tbody = document.getElementById('receiveTrackerTbody');
-            tbody.innerHTML = '';
-            let rowCount = parseInt(count) || 5;
-            for(let i = 1; i <= rowCount; i++) {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${i}</td>
-                        <td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                    </tr>
-                `;
-            }
-        }
-
-        window.resetFormOnly = function() {
-            document.getElementById('editIndex').value = "-1";
-            document.getElementById('formTitle').innerText = "Fabricator Bill & Size Entry";
-            document.getElementById('submitBtn').innerText = "💾 चालान सेव करें एवं प्रिंट देखें";
-            document.getElementById('selectFabricator').value = '';
-            document.getElementById('clientPhone').value = '';
-            document.getElementById('itemCategory').value = 'Kurti';
-            document.getElementById('prodName').value = '';
-            document.getElementById('styleNo').value = 'SD-';
-            document.getElementById('prodColor').value = '';
-            document.getElementById('itemPhoto').value = '';
-            document.getElementById('receiveRowsCount').value = '5';
-            currentPhotoData = "";
-            const sizes = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
-            sizes.forEach(sz => {
-                document.getElementById('qty_' + sz).value = 0;
-            });
-            calculateTotals();
-            renderReceiveRows(5);
-            if(savedInvoices.length > 0) {
-                let nextNum = savedInvoices.length + 1;
-                document.getElementById('invNo').value = "NH-" + String(nextNum).padStart(3, '0');
-            } else {
-                document.getElementById('invNo').value = "NH-001";
-            }
-        }
-
-        window.generateInvoice = async function(e) {
-            e.preventDefault();
-            const editIndex = parseInt(document.getElementById('editIndex').value);
-            const clientName = document.getElementById('selectFabricator').value;
-            const clientPhone = document.getElementById('clientPhone').value.trim();
-            const category = document.getElementById('itemCategory').value;
-            const prodName = document.getElementById('prodName').value;
-            const styleNo = document.getElementById('styleNo').value;
-            const prodColor = document.getElementById('prodColor').value;
-            const givenDate = document.getElementById('givenDate').value;
-            const invNo = document.getElementById('invNo').value;
-            const receiveRows = parseInt(document.getElementById('receiveRowsCount').value) || 5;
-            const rate = parseFloat(document.getElementById('uniformRate').value) || 0;
-
-            const sizes = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
-            const sizeIds = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
-
-            let items = [];
-            let totalQty = 0;
-            let subTotal = 0;
-
-            for (let i = 0; i < sizes.length; i++) {
-                let qty = parseInt(document.getElementById('qty_' + sizeIds[i]).value) || 0;
-                if (qty > 0) {
-                    let amt = qty * rate;
-                    totalQty += qty;
-                    subTotal += amt;
-                    items.push({ size: sizes[i], qty: qty, rate: rate, amt: amt });
-                }
-            }
-
-            if (items.length === 0) {
-                alert("कृपया कम से कम किसी एक साइज़ की क्वांटिटी भरें!");
-                return;
-            }
-
-            let photoToSave = currentPhotoData;
-            if (editIndex !== -1 && !photoToSave) {
-                photoToSave = savedInvoices[editIndex].photo || "";
-            }
-
-            const billData = {
-                invNo, clientName, clientPhone, category, prodName, styleNo, prodColor, givenDate, receiveRows, items, totalQty, subTotal,
-                photo: photoToSave
-            };
-
-            if (editIndex !== -1) {
-                savedInvoices[editIndex] = billData;
-                alert("चालान सफलतापूर्वक अपडेट (Edit) हो गया है!");
-            } else {
-                savedInvoices.unshift(billData);
-                alert("चालान सुरक्षित (Save) हो गया है!");
-            }
-
-            localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
-
-            // Save to Firebase Cloud
-            try {
-                await setDoc(doc(db, "ssf_bills_records", String(invNo)), billData);
-            } catch(err) {
-                console.log("Cloud save error for bill:", err);
-            }
-
-            renderHistory();
-            displayInvoice(billData);
-            resetFormOnly();
-
-            switchTab(null, 'reports');
-            document.querySelectorAll('.tab-btn')[3].classList.add('active');
-        }
-
-        window.editBill = function(index) {
-            const bill = savedInvoices[index];
-            document.getElementById('editIndex').value = index;
-            document.getElementById('formTitle').innerText = `✏️ Edit Challan (${bill.invNo})`;
-            document.getElementById('submitBtn').innerText = "💾 चालान अपडेट करें (Update)";
-
-            document.getElementById('selectFabricator').value = bill.clientName;
-            document.getElementById('clientPhone').value = bill.clientPhone || '';
-            document.getElementById('itemCategory').value = bill.category || 'Kurti';
-            document.getElementById('prodName').value = bill.prodName;
-            document.getElementById('styleNo').value = bill.styleNo || 'SD-';
-            document.getElementById('prodColor').value = bill.prodColor || '';
-            document.getElementById('givenDate').value = bill.givenDate || '';
-            document.getElementById('invNo').value = bill.invNo;
-            document.getElementById('receiveRowsCount').value = bill.receiveRows || 5;
-            
-            currentPhotoData = bill.photo || "";
-
-            const sizeIds = ['s', 'm', 'l', 'xl', 'xxl', '3xl', '4xl', '5xl'];
-            sizeIds.forEach(sz => document.getElementById('qty_' + sz).value = 0);
-
-            if (bill.items && bill.items.length > 0) {
-                document.getElementById('uniformRate').value = bill.items[0].rate;
-                bill.items.forEach(item => {
-                    let szLower = item.size.toLowerCase();
-                    if(document.getElementById('qty_' + szLower)) {
-                        document.getElementById('qty_' + szLower).value = item.qty;
-                    }
+                let sizeCellsHTML = '';
+                sizeKeys.forEach(sz => {
+                    let val = item.sizes[sz] || 0;
+                    let displayVal = val === 0 ? '<span class="text-slate-300">0</span>' : val;
+                    sizeCellsHTML += `<td class="text-center font-medium">${displayVal}</td>`;
                 });
-            }
 
-            calculateTotals();
-            switchTab(null, 'billTab');
-            document.querySelectorAll('.tab-btn')[0].classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function displayInvoice(bill) {
-            document.getElementById('pClient').innerText = bill.clientName;
-            document.getElementById('pPhone').innerText = bill.clientPhone || 'N/A';
-            document.getElementById('pGivenDate').innerText = formatDateToDDMMYYYY(bill.givenDate);
-            document.getElementById('pInvNo').innerText = bill.invNo;
-
-            const imgEl = document.getElementById('pPhotoImg');
-            if (bill.photo) {
-                imgEl.src = bill.photo;
-                imgEl.style.display = 'block';
-            } else {
-                imgEl.style.display = 'none';
-            }
-
-            let tbodyHtml = '';
-            bill.items.forEach((item, index) => {
-                tbodyHtml += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${bill.prodName} <span class="category-print-hide" style="font-size:0.75rem; color:#046a58;">[${bill.category || 'Kurti'}]</span></td>
-                        <td>${bill.styleNo || '--'}</td>
-                        <td>${bill.prodColor || '--'}</td>
-                        <td><strong>${item.size}</strong></td>
-                        <td>${item.qty}</td>
-                        <td class="rate-col">₹${item.rate.toFixed(2)}</td>
-                        <td>₹${item.amt.toFixed(2)}</td>
-                    </tr>
-                `;
-            });
-
-            document.getElementById('invoiceTableBody').innerHTML = tbodyHtml;
-            renderReceiveRows(bill.receiveRows || 5);
-
-            document.getElementById('pGrandQty').innerText = bill.totalQty + " Pcs";
-            document.getElementById('pGrandTotal').innerText = "₹" + bill.subTotal.toFixed(2);
-        }
-
-        window.downloadPDF = function() {
-            const element = document.getElementById('invoicePrintArea');
-            const invNo = document.getElementById('pInvNo').innerText || 'Challan';
-            
-            const hiddenEls = element.querySelectorAll('.rate-col, .category-print-hide');
-            hiddenEls.forEach(el => el.style.display = 'none');
-
-            const opt = {
-                margin:       5,
-                filename:     `Shree_Shyam_Fashion_${invNo}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().from(element).set(opt).save().then(() => {
-                hiddenEls.forEach(el => el.style.display = '');
-            });
-        }
-
-        function renderHistory() {
-            const tbody = document.getElementById('historyTbody');
-            tbody.innerHTML = '';
-            if(savedInvoices.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#fff;">कोई पुराना चालान सेव नहीं है।</td></tr>`;
-                return;
-            }
-            savedInvoices.forEach((bill, idx) => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td><strong>${bill.invNo}</strong></td>
-                        <td>${bill.clientName}</td>
-                        <td>[${bill.category || 'Kurti'}] ${bill.prodName}</td>
-                        <td>${bill.styleNo || '--'}</td>
-                        <td>${bill.totalQty} Pcs</td>
-                        <td>₹${bill.subTotal.toFixed(2)}</td>
-                        <td>
-                            <button class="btn-view" onclick="viewBill(${idx})">View/Print</button>
-                            <button class="btn-edit" onclick="editBill(${idx})">✏️ Edit</button>
-                            <button class="btn-delete" onclick="deleteBill('${bill.invNo}', ${idx})">Delete</button>
+                const tr = `
+                    <tr class="hover:bg-blue-50 transition">
+                        <td class="text-center font-bold bg-slate-50">${index + 1}</td>
+                        <td class="font-semibold text-center">${item.challanNo}</td>
+                        <td class="text-center">${formatDateIN(item.date)}</td>
+                        <td class="font-medium text-indigo-700 bg-indigo-50">${item.palatiName}</td>
+                        <td class="text-center font-semibold">${item.styleNo}</td>
+                        <td>${item.itemName}</td>
+                        <td>${item.workType}</td>
+                        <td>${item.remarks}</td>
+                        ${sizeCellsHTML}
+                        <td class="text-center font-bold bg-amber-50 text-slate-900">${item.total}</td>
+                        <td class="text-center space-x-1">
+                            <button onclick="editRow('${item.docId}')" class="text-amber-600 hover:text-amber-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-amber-50" title="Edit">✏️</button>
+                            <button onclick="deleteRow('${item.docId}')" class="text-red-600 hover:text-red-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50" title="Delete">✖</button>
                         </td>
                     </tr>
                 `;
+                tbody.innerHTML += tr;
             });
+
+            if (visibleCount === 0) {
+                tbody.innerHTML = `<tr><td colspan="18" class="text-center py-8 text-slate-400">Koi entry nahi mili. Upar form se nayi BillBook entry add karein!</td></tr>`;
+            }
+
+            document.getElementById('entryCount').innerText = visibleCount;
+            document.getElementById('grandTotalPcs').innerText = grandTotal;
         }
 
-        window.viewBill = function(index) {
-            displayInvoice(savedInvoices[index]);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        window.deleteBill = async function(invNo, index) {
-            if (confirm("क्या आप इस सेव किए चालान को डिलीट करना चाहते हैं?")) {
-                savedInvoices.splice(index, 1);
-                localStorage.setItem('ssf_bills', JSON.stringify(savedInvoices));
+        window.deleteRow = async function(docId) {
+            if (confirm('Kya aap is BillBook entry ko delete karna chahte hain?')) {
                 try {
-                    await deleteDoc(doc(db, "ssf_bills_records", String(invNo)));
-                } catch(err) {
-                    console.log("Cloud delete error:", err);
+                    await deleteDoc(doc(db, "ssf_billbook_records", docId));
+                } catch (err) {
+                    alert("Delete karne mein error aaya!");
                 }
-                renderHistory();
             }
         }
     </script>
