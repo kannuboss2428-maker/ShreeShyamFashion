@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cutting Register (Cloud Sync) - SHREE SHYAM FASHION</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
+        .excel-table th, .excel-table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 8px;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+        .na-cell {
+            background-color: #fef08a !important;
+            color: #854d0e;
+            font-weight: 600;
+            text-align: center;
+        }
+        .dup-challan {
+            background-color: #fecaca !important;
+            color: #991b1b;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- Top Header -->
+    <nav class="bg-slate-900 text-white shadow-md sticky top-0 z-20">
+        <div class="max-w-[98%] mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">✂️</span>
+                <div>
+                    <h1 class="text-lg font-bold tracking-wide text-amber-400">SHREE SHYAM FASHION</h1>
+                    <div class="flex items-center gap-2">
+                        <p class="text-xs text-slate-400">Cutting & Production Sheet</p>
+                        <span id="syncStatus" class="text-[11px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-medium">⏳ Connecting Cloud...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
+                    📥 Download Excel (CSV)
+                </button>
+                <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
+                    ⬅ Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-[98%] mx-auto py-5 space-y-6">
+
+        <!-- Entry Form Card -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+            <!-- यहाँ आपका नया हेडर बटन के साथ सेट कर दिया गया है -->
+            <div class="mb-4 border-b pb-3 flex flex-wrap justify-between items-center gap-3">
+                <h2 id="formTitleText" class="text-base font-bold text-slate-800 flex items-center gap-2">
+                    <span>➕ Add New Cutting Entry</span>
+                </h2>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="openSearchModal('challan')" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow transition flex items-center gap-1">
+                        🔍 Find Cutting By Challan No.
+                    </button>
+                    <button onclick="openSearchModal('style')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow transition flex items-center gap-1">
+                        🔍 Find Cutting By Style No.
+                    </button>
+                </div>
+            </div>
+
+            <form id="cuttingForm" class="space-y-4">
+                <input type="hidden" id="editDocId" value="">
+
+                <!-- Row 1 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Challan No. *</label>
+                        <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden focus-within:border-blue-500">
+                            <span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-2 text-sm border-r border-slate-300 select-none">NH-</span>
+                            <input type="text" id="challanInput" placeholder="1161" required class="w-full px-2.5 py-2 text-sm focus:outline-none font-semibold">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Date *</label>
+                        <input type="date" id="dateInput" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Category *</label>
+                        <select id="categoryInput" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 bg-white">
+                            <option value="Kurti">Kurti</option>
+                            <option value="Pant">Pant</option>
+                            <option value="Dupatta">Dupatta</option>
+                            <option value="Sharara">Sharara</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Print Name *</label>
+                        <input type="text" id="printName" placeholder="e.g. Blue / Black Buta" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Style No. *</label>
+                        <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden focus-within:border-blue-500">
+                            <span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-2 text-sm border-r border-slate-300 select-none">SD-</span>
+                            <input type="text" id="styleInput" placeholder="0050" required class="w-full px-2.5 py-2 text-sm focus:outline-none font-semibold">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Item Name *</label>
+                        <input type="text" id="itemName" placeholder="e.g. Midi / Pant / Kote Set" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Cloth Mitre (Optional)</label>
+                        <input type="number" step="0.01" id="clothMitre" placeholder="Khali chhodein = N/A" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Fabricator Name</label>
+                        <input type="text" id="fabricatorName" list="fabSuggestions" placeholder="e.g. Arun Ji / Jain Sahab" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <datalist id="fabSuggestions"></datalist>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Adda Work / HandWork</label>
+                        <input type="text" id="addaWork" placeholder="Khali chhodein = N/A" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Cutting No.</label>
+                        <input type="text" id="cuttingNo" placeholder="Khali chhodein = N/A" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <!-- Row 3: Sizes -->
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Qty (Size-Wise Pieces — Khali size automatic N/A banega)</label>
+                    <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 items-center">
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">S</span>
+                            <input type="number" min="0" id="sz_S" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">M</span>
+                            <input type="number" min="0" id="sz_M" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">L</span>
+                            <input type="number" min="0" id="sz_L" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">XL</span>
+                            <input type="number" min="0" id="sz_XL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">XXL</span>
+                            <input type="number" min="0" id="sz_XXL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">3XL</span>
+                            <input type="number" min="0" id="sz_3XL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">4XL</span>
+                            <input type="number" min="0" id="sz_4XL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">5XL</span>
+                            <input type="number" min="0" id="sz_5XL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div class="bg-blue-600 text-white rounded-lg p-1.5 text-center shadow-sm">
+                            <span class="block text-[10px] uppercase font-semibold opacity-90">Total Pcs</span>
+                            <span id="liveTotal" class="text-lg font-bold">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button type="button" id="cancelEditBtn" onclick="resetForm()" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hidden">
+                        Cancel Edit
+                    </button>
+                    <button type="reset" onclick="setTimeout(resetDefaults, 10)" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50">
+                        Reset
+                    </button>
+                    <button type="submit" id="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-bold shadow transition">
+                        ✔ Save to Cloud
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Excel-Like Data Sheet Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-4 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3 bg-slate-50">
+                <div class="flex items-center gap-4">
+                    <h3 class="font-bold text-slate-800">📊 Cutting Master Sheet (Live Sync)</h3>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                        Total Entries: <span id="entryCount">0</span>
+                    </span>
+                    <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                        Grand Total Pcs: <span id="grandTotalPcs">0</span>
+                    </span>
+                </div>
+                <input type="text" id="searchBox" onkeyup="renderTable()" placeholder="🔍 Search Challan, Style, Print, Fabricator..." class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-64 focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full excel-table border-collapse text-left">
+                    <thead>
+                        <tr class="bg-slate-800 text-white text-center text-xs">
+                            <th colspan="11" class="bg-lime-400 text-slate-900 font-bold">CUTTING & FABRICATOR DETAILS</th>
+                            <th colspan="8" class="bg-orange-600 text-white font-bold">QTY (SIZE-WISE)</th>
+                            <th colspan="2" class="bg-slate-700 text-white font-bold">SUMMARY</th>
+                        </tr>
+                        <tr class="bg-lime-200 text-slate-900 font-bold text-center">
+                            <th>S.no</th>
+                            <th>Challan No.</th>
+                            <th>Date</th>
+                            <th>Category</th>
+                            <th>Print Name</th>
+                            <th>Style Name</th>
+                            <th>ITEM NAME</th>
+                            <th>Cloth Mitre</th>
+                            <th>Fabricator Name</th>
+                            <th>Adda Work / HandWork</th>
+                            <th>Cutting No</th>
+                            <th class="bg-sky-200">S</th>
+                            <th class="bg-sky-200">M</th>
+                            <th class="bg-sky-200">L</th>
+                            <th class="bg-sky-200">XL</th>
+                            <th class="bg-sky-200">XXL</th>
+                            <th class="bg-sky-200">3XL</th>
+                            <th class="bg-sky-200">4XL</th>
+                            <th class="bg-sky-200">5XL</th>
+                            <th class="bg-amber-200">Total</th>
+                            <th class="bg-slate-200">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sheetBody" class="bg-white divide-y divide-slate-200">
+                        <tr><td colspan="21" class="text-center py-8 text-slate-400">Cloud se data load ho raha hai...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL FOR FIND CUTTING BY CHALLAN / STYLE -->
+    <div id="searchModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 id="modalTitle" class="text-lg font-bold text-slate-800">🔍 Search Cutting</h3>
+                <button onclick="closeSearchModal()" class="text-red-600 hover:text-red-800 font-bold text-xl px-2">×</button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="flex gap-2">
+                    <div id="modalPrefix" class="bg-slate-100 text-slate-700 font-bold px-3 py-2 text-sm border border-r-0 border-slate-300 rounded-l-lg flex items-center">NH-</div>
+                    <input type="text" id="modalSearchInput" placeholder="Enter number e.g. 5" class="w-full border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:border-blue-500 font-semibold" oninput="executeSearch()">
+                    <button onclick="executeSearch()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-lg text-sm font-bold shadow">Search</button>
+                </div>
+
+                <div id="modalSearchResult" class="max-h-[350px] overflow-y-auto space-y-3 mt-3">
+                    <p class="text-slate-400 text-center py-4">Number daalein, detail yahan dikhegi...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK & App Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, addDoc, updateDoc, onSnapshot, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOmvNfkMXcbLATJlN6tiaCCUBN9vfyf-s",
+            authDomain: "shree-shyam-fashion.firebaseapp.com",
+            projectId: "shree-shyam-fashion",
+            storageBucket: "shree-shyam-fashion.firebasestorage.app",
+            messagingSenderId: "270444185899",
+            appId: "1:270444185899:web:c21de116d358c09a859d6e",
+            measurementId: "G-BBE8D4ENTY"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const cuttingCollection = collection(db, "ssf_cutting_records");
+
+        const sizeKeys = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
+        let cuttingList = [];
+        let currentSearchMode = 'challan';
+
+        function updateFabSuggestions() {
+            const fabs = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
+            const dl = document.getElementById('fabSuggestions');
+            dl.innerHTML = '';
+            fabs.forEach(f => {
+                dl.innerHTML += `<option value="${f.name}">`;
+            });
+        }
+        updateFabSuggestions();
+
+        function autoCreateFabricatorAccount(fabName) {
+            if (!fabName || fabName === 'N/A') return;
+            let fabs = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
+            const exists = fabs.some(f => f.name.trim().toLowerCase() === fabName.trim().toLowerCase());
+            if (!exists) {
+                fabs.push({
+                    name: fabName.trim(),
+                    phone: '',
+                    address: ''
+                });
+                localStorage.setItem('ssf_fabricators', JSON.stringify(fabs));
+                updateFabSuggestions();
+            }
+        }
+
+        window.resetDefaults = function() {
+            document.getElementById('dateInput').valueAsDate = new Date();
+            document.getElementById('liveTotal').innerText = '0';
+        }
+        resetDefaults();
+
+        window.resetForm = function() {
+            document.getElementById('cuttingForm').reset();
+            document.getElementById('editDocId').value = '';
+            document.getElementById('formTitleText').innerHTML = '<span>➕ Add New Cutting Entry</span>';
+            document.getElementById('saveBtn').innerText = "✔ Save to Cloud";
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            resetDefaults();
+        }
+
+        function formatDateIN(dateStr) {
+            if (!dateStr) return 'N/A';
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return dateStr;
+            return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        }
+
+        window.calcTotal = function() {
+            let sum = 0;
+            sizeKeys.forEach(sz => {
+                const val = parseInt(document.getElementById('sz_' + sz).value);
+                if (!isNaN(val) && val > 0) sum += val;
+            });
+            document.getElementById('liveTotal').innerText = sum;
+        }
+
+        // Modal Search Functions
+        window.openSearchModal = function(mode) {
+            currentSearchMode = mode;
+            const modal = document.getElementById('searchModal');
+            const title = document.getElementById('modalTitle');
+            const prefix = document.getElementById('modalPrefix');
+            const input = document.getElementById('modalSearchInput');
+
+            input.value = '';
+            document.getElementById('modalSearchResult').innerHTML = '<p class="text-slate-400 text-center py-4">Number daalein, detail yahan dikhegi...</p>';
+
+            if (mode === 'challan') {
+                title.innerText = "🔍 Find Cutting By Challan No.";
+                prefix.innerText = "NH-";
+                input.placeholder = "Enter challan no e.g. 5 or 1161";
+            } else {
+                title.innerText = "🔍 Find Cutting By Style No.";
+                prefix.innerText = "SD-";
+                input.placeholder = "Enter style no e.g. 50 or 0050";
+            }
+            modal.classList.remove('hidden');
+            input.focus();
+        }
+
+        window.closeSearchModal = function() {
+            document.getElementById('searchModal').classList.add('hidden');
+        }
+
+        window.executeSearch = function() {
+            const queryVal = document.getElementById('modalSearchInput').value.trim().toLowerCase();
+            const resContainer = document.getElementById('modalSearchResult');
+            if (!queryVal) {
+                resContainer.innerHTML = '<p class="text-slate-400 text-center py-4">Number daalein, detail yahan dikhegi...</p>';
+                return;
+            }
+
+            const matched = cuttingList.filter(item => {
+                if (currentSearchMode === 'challan') {
+                    return item.challanNo.toLowerCase().includes(queryVal);
+                } else {
+                    return item.styleNo.toLowerCase().includes(queryVal);
+                }
+            });
+
+            if (matched.length === 0) {
+                resContainer.innerHTML = `<p class="text-red-500 text-center py-4 font-semibold">Koi entry nahi mili!</p>`;
+                return;
+            }
+
+            let html = '';
+            matched.forEach(item => {
+                let sizeDetails = sizeKeys.map(sz => `<b>${sz}:</b> ${item.sizes[sz]}`).join(' | ');
+                html += `
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-2">
+                        <div class="flex justify-between items-center border-b pb-2">
+                            <span class="font-bold text-blue-600 text-sm">Challan: ${item.challanNo}</span>
+                            <span class="text-xs font-semibold bg-teal-100 text-teal-800 px-2 py-0.5 rounded">${item.category || 'Kurti'}</span>
+                            <span class="text-xs text-slate-500">${formatDateIN(item.date)}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs text-slate-700">
+                            <div><b>Style No:</b> ${item.styleNo}</div>
+                            <div><b>Print Name:</b> ${item.printName}</div>
+                            <div><b>Item Name:</b> ${item.itemName}</div>
+                            <div><b>Fabricator:</b> ${item.fabricator}</div>
+                        </div>
+                        <div class="bg-white p-2 rounded border text-xs text-slate-800">
+                            <b>Sizes:</b> ${sizeDetails}
+                        </div>
+                        <div class="flex justify-between items-center pt-1">
+                            <span class="font-bold text-amber-700 text-sm">Total Pcs: ${item.total}</span>
+                            <button onclick="closeSearchModal(); editRow('${item.docId}')" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded text-xs font-bold">✏️ Edit This</button>
+                        </div>
+                    </div>
+                `;
+            });
+            resContainer.innerHTML = html;
+        }
+
+        // Real-time Cloud Listener
+        const q = query(cuttingCollection, orderBy("createdAt", "asc"));
+        onSnapshot(q, (snapshot) => {
+            cuttingList = [];
+            snapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                cuttingList.push({ docId: docSnap.id, ...data });
+                if (data.fabricator && data.fabricator !== 'N/A') {
+                    autoCreateFabricatorAccount(data.fabricator);
+                }
+            });
+
+            const statusBadge = document.getElementById('syncStatus');
+            statusBadge.innerText = "🟢 Cloud Live Synced";
+            statusBadge.className = "text-[11px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-medium";
+
+            renderTable();
+        }, (error) => {
+            console.error("Firebase Error:", error);
+            const statusBadge = document.getElementById('syncStatus');
+            statusBadge.innerText = "🔴 Connection Error";
+            statusBadge.className = "text-[11px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full font-medium";
+        });
+
+        // Save or Update Entry to Firebase Cloud
+        document.getElementById('cuttingForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerText = "⏳ Saving...";
+
+            const editDocId = document.getElementById('editDocId').value;
+            const rawChallan = document.getElementById('challanInput').value.trim();
+            const rawStyle = document.getElementById('styleInput').value.trim();
+            const clothVal = document.getElementById('clothMitre').value.trim();
+            const fabVal = document.getElementById('fabricatorName').value.trim();
+            const addaVal = document.getElementById('addaWork').value.trim();
+            const cutNoVal = document.getElementById('cuttingNo').value.trim();
+
+            if (fabVal !== '') {
+                autoCreateFabricatorAccount(fabVal);
+            }
+
+            let sizesObj = {};
+            let rowTotal = 0;
+
+            sizeKeys.forEach(sz => {
+                const v = document.getElementById('sz_' + sz).value.trim();
+                if (v === '' || parseInt(v) === 0) {
+                    sizesObj[sz] = 'N/A';
+                } else {
+                    const num = parseInt(v);
+                    sizesObj[sz] = num;
+                    rowTotal += num;
+                }
+            });
+
+            const entry = {
+                challanNo: rawChallan.startsWith('NH-') ? rawChallan : 'NH-' + rawChallan,
+                date: document.getElementById('dateInput').value,
+                category: document.getElementById('categoryInput').value,
+                printName: document.getElementById('printName').value.trim(),
+                styleNo: rawStyle.startsWith('SD-') ? rawStyle : 'SD-' + rawStyle,
+                itemName: document.getElementById('itemName').value.trim(),
+                clothMitre: clothVal === '' ? 'N/A' : clothVal,
+                fabricator: fabVal === '' ? 'N/A' : fabVal,
+                addaWork: addaVal === '' ? 'N/A' : addaVal,
+                cuttingNo: cutNoVal === '' ? 'N/A' : cutNoVal,
+                sizes: sizesObj,
+                total: rowTotal
+            };
+
+            try {
+                if (editDocId) {
+                    await updateDoc(doc(db, "ssf_cutting_records", editDocId), entry);
+                    alert("Entry successfully updated!");
+                    resetForm();
+                } else {
+                    entry.createdAt = Date.now();
+                    await addDoc(cuttingCollection, entry);
+                    this.reset();
+                    resetDefaults();
+                }
+            } catch (err) {
+                alert("Data save nahi ho paya!");
+                console.error(err);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = editDocId ? "✔ Update Entry" : "✔ Save to Cloud";
+            }
+        });
+
+        window.editRow = function(docId) {
+            const item = cuttingList.find(i => i.docId === docId);
+            if (!item) return;
+
+            document.getElementById('editDocId').value = item.docId;
+            document.getElementById('challanInput').value = item.challanNo.replace('NH-', '');
+            document.getElementById('dateInput').value = item.date || '';
+            document.getElementById('categoryInput').value = item.category || 'Kurti';
+            document.getElementById('printName').value = item.printName || '';
+            document.getElementById('styleInput').value = item.styleNo.replace('SD-', '');
+            document.getElementById('itemName').value = item.itemName || '';
+            document.getElementById('clothMitre').value = item.clothMitre === 'N/A' ? '' : item.clothMitre;
+            document.getElementById('fabricatorName').value = item.fabricator === 'N/A' ? '' : item.fabricator;
+            document.getElementById('addaWork').value = item.addaWork === 'N/A' ? '' : item.addaWork;
+            document.getElementById('cuttingNo').value = item.cuttingNo === 'N/A' ? '' : item.cuttingNo;
+
+            sizeKeys.forEach(sz => {
+                const val = item.sizes[sz];
+                document.getElementById('sz_' + sz).value = (val === 'N/A' || val === undefined) ? '' : val;
+            });
+
+            calcTotal();
+
+            document.getElementById('formTitleText').innerHTML = `<span>✏️ Edit Cutting Entry (${item.challanNo})</span>`;
+            document.getElementById('saveBtn').innerText = "✔ Update Entry";
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderCell(val, extraClass = '') {
+            if (val === 'N/A' || val === '' || val === null || val === undefined) {
+                return `<td class="na-cell">N/A</td>`;
+            }
+            return `<td class="${extraClass}">${val}</td>`;
+        }
+
+        window.renderTable = function() {
+            const tbody = document.getElementById('sheetBody');
+            const queryText = document.getElementById('searchBox').value.toLowerCase();
+            tbody.innerHTML = '';
+
+            const challanCounts = {};
+            cuttingList.forEach(item => {
+                challanCounts[item.challanNo] = (challanCounts[item.challanNo] || 0) + 1;
+            });
+
+            let grandTotal = 0;
+            let visibleCount = 0;
+
+            cuttingList.forEach((item, index) => {
+                const searchStr = `${item.challanNo} ${item.category} ${item.printName} ${item.styleNo} ${item.itemName} ${item.fabricator}`.toLowerCase();
+                if (queryText && !searchStr.includes(queryText)) return;
+
+                visibleCount++;
+                grandTotal += item.total;
+
+                const isDup = challanCounts[item.challanNo] > 1;
+                const challanClass = isDup ? 'dup-challan text-center' : 'font-semibold text-center';
+
+                let sizeCellsHTML = '';
+                sizeKeys.forEach(sz => {
+                    sizeCellsHTML += renderCell(item.sizes[sz], 'text-center font-medium');
+                });
+
+                const tr = `
+                    <tr class="hover:bg-blue-50 transition">
+                        <td class="text-center font-bold bg-slate-50">${index + 1}</td>
+                        <td class="${challanClass}">${item.challanNo}</td>
+                        <td class="text-center">${formatDateIN(item.date)}</td>
+                        <td class="text-center font-semibold text-teal-700 bg-teal-50">${item.category || 'Kurti'}</td>
+                        <td class="font-medium">${item.printName}</td>
+                        <td class="text-center font-semibold">${item.styleNo}</td>
+                        <td>${item.itemName}</td>
+                        ${renderCell(item.clothMitre, 'text-center font-semibold')}
+                        ${renderCell(item.fabricator, 'font-medium')}
+                        ${renderCell(item.addaWork, 'text-center')}
+                        ${renderCell(item.cuttingNo, 'text-center')}
+                        ${sizeCellsHTML}
+                        <td class="text-center font-bold bg-amber-50 text-slate-900">${item.total}</td>
+                        <td class="text-center space-x-1">
+                            <button onclick="editRow('${item.docId}')" class="text-amber-600 hover:text-amber-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-amber-50" title="Edit">✏️</button>
+                            <button onclick="deleteRow('${item.docId}')" class="text-red-600 hover:text-red-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50" title="Delete">✖</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += tr;
+            });
+
+            if (visibleCount === 0) {
+                tbody.innerHTML = `<tr><td colspan="21" class="text-center py-8 text-slate-400">Koi entry nahi mili. Upar form se nayi cutting entry add karein!</td></tr>`;
+            }
+
+            document.getElementById('entryCount').innerText = visibleCount;
+            document.getElementById('grandTotalPcs').innerText = grandTotal;
+        }
+
+        window.deleteRow = async function(docId) {
+            if (confirm('Kya aap is entry ko cloud se delete karna chahte hain?')) {
+                try {
+                    await deleteDoc(doc(db, "ssf_cutting_records", docId));
+                } catch (err) {
+                    alert("Delete karne mein error aaya!");
+                }
+            }
+        }
+
+        window.exportToCSV = function() {
+            if (cuttingList.length === 0) {
+                alert('Download karne ke liye pehle kuch entries add karein!');
+                return;
+            }
+            const headers = ['S.no', 'Challan No.', 'Date', 'Category', 'Print Name', 'Style Name', 'ITEM NAME', 'Cloth Mitre', 'Fabricator Name', 'Adda Work / HandWork', 'Cutting No', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', 'Total'];
+            const rows = cuttingList.map((item, idx) => [
+                idx + 1,
+                item.challanNo,
+                formatDateIN(item.date),
+                item.category || 'Kurti',
+                `"${item.printName}"`,
+                item.styleNo,
+                `"${item.itemName}"`,
+                item.clothMitre,
+                `"${item.fabricator}"`,
+                `"${item.addaWork}"`,
+                item.cuttingNo,
+                item.sizes.S, item.sizes.M, item.sizes.L, item.sizes.XL, item.sizes.XXL, item.sizes['3XL'], item.sizes['4XL'], item.sizes['5XL'],
+                item.total
+            ]);
+
+            let csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Shree_Shyam_Fashion_Cutting_Sheet.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
