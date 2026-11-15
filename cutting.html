@@ -49,7 +49,6 @@
 
         <!-- Entry Form Card -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-            <!-- Top Action Buttons replacing "Add New Cutting Entry" -->
             <div class="mb-4 border-b pb-3 flex flex-wrap justify-between items-center gap-3">
                 <h2 class="text-sm font-bold text-slate-700">📝 Cutting Entry & Search Panel</h2>
                 <div class="flex flex-wrap gap-2">
@@ -152,7 +151,7 @@
         <!-- Master Table -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
             <div class="p-4 border-b bg-slate-50 flex justify-between items-center">
-                <h3 class="font-bold text-slate-800">📊 Cutting Master Sheet (With Done & Pending)</h3>
+                <h3 class="font-bold text-slate-800">📊 Cutting Master Sheet (Done, Pending & Lot Clear)</h3>
                 <input type="text" id="searchBox" onkeyup="renderTable()" placeholder="🔍 Search Challan, Style..." class="border rounded-lg px-3 py-1.5 text-xs w-64 focus:outline-none">
             </div>
             <div class="overflow-x-auto">
@@ -243,7 +242,6 @@
             document.getElementById('liveTotal').innerText = sum;
         }
 
-        // Open Popup Modal for Search
         window.openSearchModal = (mode) => {
             currentSearchMode = mode;
             const modal = document.getElementById('searchModal');
@@ -385,6 +383,14 @@
                 });
                 let pendingPcs = Math.max(0, item.total - donePcs);
 
+                // Check for LOT CLEAR status
+                let pendingDisplay = '';
+                if (pendingPcs === 0) {
+                    pendingDisplay = `<span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded font-bold text-xs">🟢 LOT CLEAR</span>`;
+                } else {
+                    pendingDisplay = `<span class="text-rose-700 font-bold">${pendingPcs} Pcs</span>`;
+                }
+
                 let sizeCellsHTML = '';
                 sizeKeys.forEach(sz => {
                     let val = item.sizes[sz];
@@ -407,7 +413,7 @@
                         ${sizeCellsHTML}
                         <td class="text-center font-bold bg-amber-50 text-slate-900">${item.total}</td>
                         <td class="text-center font-bold bg-emerald-50 text-emerald-800">${donePcs}</td>
-                        <td class="text-center font-bold bg-rose-50 text-rose-700">${pendingPcs}</td>
+                        <td class="text-center bg-rose-50">${pendingDisplay}</td>
                         <td class="text-center space-x-1">
                             <button onclick="editRow('${item.docId}')" class="text-amber-600 font-bold text-xs px-1.5 py-0.5">✏️</button>
                             <button onclick="deleteRow('${item.docId}')" class="text-red-600 font-bold text-xs px-1.5 py-0.5">✖</button>
