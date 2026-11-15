@@ -141,7 +141,7 @@
                         <tr class="bg-slate-800 text-white text-center text-xs">
                             <th colspan="8" class="bg-teal-600 text-white font-bold">BILLBOOK & CHALLAN INFO</th>
                             <th colspan="8" class="bg-orange-600 text-white font-bold">QTY (SIZE-WISE)</th>
-                            <th colspan="4" class="bg-slate-700 text-white font-bold">SUMMARY</th>
+                            <th colspan="2" class="bg-slate-700 text-white font-bold">SUMMARY</th>
                         </tr>
                         <tr class="bg-teal-200 text-slate-900 font-bold text-center">
                             <th>S.no</th>
@@ -161,13 +161,11 @@
                             <th class="bg-sky-200">4XL</th>
                             <th class="bg-sky-200">5XL</th>
                             <th class="bg-amber-200">Total</th>
-                            <th class="bg-emerald-200 text-emerald-900">Done</th>
-                            <th class="bg-rose-200 text-rose-900">Pending</th>
                             <th class="bg-slate-200">Action</th>
                         </tr>
                     </thead>
                     <tbody id="sheetBody" class="bg-white divide-y divide-slate-200">
-                        <tr><td colspan="20" class="text-center py-8 text-slate-400">Cloud se data load ho raha hai...</td></tr>
+                        <tr><td colspan="18" class="text-center py-8 text-slate-400">Cloud se data load ho raha hai...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -433,19 +431,6 @@
                 visibleCount++;
                 grandTotal += item.total;
 
-                const cuttingMatch = cuttingList.find(c => c.challanNo.toUpperCase() === item.sourceChallan.toUpperCase());
-                const totalCuttingPcs = cuttingMatch ? cuttingMatch.total : item.total;
-
-                let cumulativeDone = 0;
-                billbookList.forEach((b, idxNum) => {
-                    if (b.sourceChallan.toUpperCase() === item.sourceChallan.toUpperCase() && idxNum <= index) {
-                        cumulativeDone += b.total;
-                    }
-                });
-
-                let pendingPcs = totalCuttingPcs - cumulativeDone;
-                if (pendingPcs < 0) pendingPcs = 0;
-
                 let sizeCellsHTML = '';
                 if (typeof item.sizes.S === 'string' && item.sizes.S === 'ALL') {
                     sizeCellsHTML = `<td colspan="8" class="text-center font-bold bg-amber-50 text-amber-800">ALL SIZES COMBINED</td>`;
@@ -468,15 +453,13 @@
                         <td>${item.itemName}</td>
                         ${sizeCellsHTML}
                         <td class="text-center font-bold bg-amber-50 text-slate-900">${item.total}</td>
-                        <td class="text-center font-bold bg-emerald-50 text-emerald-800">${item.total} <span class="text-[10px] text-slate-400">(Tot: ${cumulativeDone})</span></td>
-                        <td class="text-center font-bold bg-rose-50 text-rose-700">${pendingPcs}</td>
                         <td class="text-center space-x-1">
                             <button onclick="editRow('${item.docId}')" class="text-amber-600 hover:text-amber-800 font-bold text-xs px-1.5 py-0.5 rounded">✏️</button>
                             <button onclick="deleteRow('${item.docId}')" class="text-red-600 hover:text-red-800 font-bold text-xs px-1.5 py-0.5 rounded">✖</button>
                         </td>
                     </tr>`;
             });
-            if (visibleCount === 0) tbody.innerHTML = `<tr><td colspan="20" class="text-center py-8 text-slate-400">Koi billbook entry nahi mili.</td></tr>`;
+            if (visibleCount === 0) tbody.innerHTML = `<tr><td colspan="18" class="text-center py-8 text-slate-400">Koi billbook entry nahi mili.</td></tr>`;
             document.getElementById('entryCount').innerText = visibleCount;
             document.getElementById('grandTotalPcs').innerText = grandTotal;
         }
