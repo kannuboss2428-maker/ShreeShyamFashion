@@ -223,6 +223,9 @@
             billbookList = [];
             snapshot.forEach(docSnap => billbookList.push(docSnap.data()));
             renderTable();
+            if(!document.getElementById('searchModal').classList.contains('hidden')) {
+                executeSearch();
+            }
         });
 
         window.resetDefaults = () => { document.getElementById('dateInput').valueAsDate = new Date(); document.getElementById('liveTotal').innerText = '0'; }
@@ -292,6 +295,19 @@
 
             let html = '';
             matched.forEach(item => {
+                let donePcs = 0;
+                billbookList.forEach(b => {
+                    if (b.sourceChallan && b.sourceChallan.toUpperCase() === item.challanNo.toUpperCase()) donePcs += (parseInt(b.total) || 0);
+                });
+                let pendingPcs = Math.max(0, item.total - donePcs);
+
+                let statusBadge = '';
+                if (pendingPcs === 0) {
+                    statusBadge = `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-bold text-xs">🟢 LOT CLEAR</span>`;
+                } else {
+                    statusBadge = `<span class="bg-rose-100 text-rose-800 px-2 py-0.5 rounded font-bold text-xs">Pending: ${pendingPcs} Pcs</span>`;
+                }
+
                 let sizeDetails = sizeKeys.map(sz => `<b>${sz}:</b> ${item.sizes[sz] || 'N/A'}`).join(' | ');
                 html += `
                     <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2 text-xs">
@@ -302,9 +318,10 @@
                         </div>
                         <div><b>Print:</b> ${item.printName} | <b>Item:</b> ${item.itemName} | <b>Fabricator:</b> ${item.fabricator}</div>
                         <div class="bg-white p-2 rounded border"><b>Sizes:</b> ${sizeDetails}</div>
-                        <div class="flex justify-between items-center pt-1">
-                            <span class="font-bold text-amber-700">Total Pcs: ${item.total}</span>
-                            <button onclick="closeSearchModal(); editRow('${item.docId}')" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded font-bold">✏️ Edit This</button>
+                        <div class="flex justify-between items-center pt-1 bg-slate-100 p-2 rounded">
+                            <div><b>Total:</b> ${item.total} | <span class="text-emerald-700">Done: ${donePcs}</span></div>
+                            <div>${statusBadge}</div>
+                            <button onclick="closeSearchModal(); editRow('${item.docId}')" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 rounded font-bold">✏️ Edit</button>
                         </div>
                     </div>`;
             });
@@ -316,6 +333,9 @@
             snapshot.forEach(docSnap => cuttingList.push({ docId: docSnap.id, ...docSnap.data() }));
             document.getElementById('syncStatus').innerText = "🟢 Cloud Live Synced";
             renderTable();
+            if(!document.getElementById('searchModal').classList.contains('hidden')) {
+                executeSearch();
+            }
         });
 
         document.getElementById('cuttingForm').addEventListener('submit', async (e) => {
@@ -383,7 +403,6 @@
                 });
                 let pendingPcs = Math.max(0, item.total - donePcs);
 
-                // Check for LOT CLEAR status
                 let pendingDisplay = '';
                 if (pendingPcs === 0) {
                     pendingDisplay = `<span class="bg-emerald-100 text-emerald-800 px-2 py-1 rounded font-bold text-xs">🟢 LOT CLEAR</span>`;
