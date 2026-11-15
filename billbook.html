@@ -84,24 +84,24 @@
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Select Cutting Challan No. (Auto-Fill) *</label>
-                        <input type="text" id="sourceChallan" list="cuttingChallans" placeholder="Type NH-5" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none font-semibold bg-white" onchange="autofillFromCutting()">
+                        <input type="text" id="sourceChallan" list="cuttingChallans" placeholder="Type NH-5" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none font-semibold bg-white" onchange="autofillFromCutting()" oninput="autofillFromCutting()">
                         <datalist id="cuttingChallans"></datalist>
                     </div>
                 </div>
 
-                <!-- Item Details -->
+                <!-- Item Details (Auto-Filled & Locked/Editable) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Style No. *</label>
-                        <input type="text" id="styleInput" placeholder="SD-101" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none font-semibold">
+                        <input type="text" id="styleInput" placeholder="SD-101" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none font-semibold bg-slate-100" readonly>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Print No. *</label>
-                        <input type="text" id="printNo" placeholder="Print-55" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                        <input type="text" id="printNo" placeholder="Print-55" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none bg-slate-100" readonly>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Item Name *</label>
-                        <input type="text" id="itemName" placeholder="Midi / Kurti Set" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                        <input type="text" id="itemName" placeholder="Midi / Kurti Set" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none bg-slate-100" readonly>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Size Selection Mode *</label>
@@ -115,7 +115,7 @@
                 <!-- Size Matrix Input -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <div class="flex justify-between items-center mb-2">
-                        <label class="block text-xs font-bold text-slate-700 uppercase">Qty (Size-Wise Pieces)</label>
+                        <label class="block text-xs font-bold text-slate-700 uppercase">Qty (Size-Wise Pieces - Enter Dispatch Qty)</label>
                         <span id="cuttingLimitInfo" class="text-xs text-blue-700 font-bold">Cutting Limit: Select a challan first</span>
                     </div>
                     <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 items-center" id="sizeInputsContainer">
@@ -193,7 +193,7 @@
                         <tr class="bg-slate-800 text-white text-center text-xs">
                             <th colspan="8" class="bg-teal-600 text-white font-bold">BILLBOOK & CHALLAN INFO</th>
                             <th colspan="8" class="bg-orange-600 text-white font-bold">QTY (SIZE-WISE)</th>
-                            <th colspan="2" class="bg-slate-700 text-white font-bold">SUMMARY</th>
+                            <th colspan="4" class="bg-slate-700 text-white font-bold">SUMMARY</th>
                         </tr>
                         <tr class="bg-teal-200 text-slate-900 font-bold text-center">
                             <th>S.no</th>
@@ -213,11 +213,13 @@
                             <th class="bg-sky-200">4XL</th>
                             <th class="bg-sky-200">5XL</th>
                             <th class="bg-amber-200">Total</th>
+                            <th class="bg-emerald-200 text-emerald-900">Done</th>
+                            <th class="bg-rose-200 text-rose-900">Pending</th>
                             <th class="bg-slate-200">Action</th>
                         </tr>
                     </thead>
                     <tbody id="sheetBody" class="bg-white divide-y divide-slate-200">
-                        <tr><td colspan="18" class="text-center py-8 text-slate-400">Cloud se data load ho raha hai...</td></tr>
+                        <tr><td colspan="20" class="text-center py-8 text-slate-400">Cloud se data load ho raha hai...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -313,15 +315,38 @@
 
         window.autofillFromCutting = function() {
             const val = document.getElementById('sourceChallan').value.trim().toUpperCase();
-            const found = cuttingList.find(c => c.challanNo.toUpperCase() === val || c.challanNo.toUpperCase() === 'NH-' + val);
+            if (!val) {
+                selectedCuttingItem = null;
+                document.getElementById('styleInput').value = '';
+                document.getElementById('printNo').value = '';
+                document.getElementById('itemName').value = '';
+                document.getElementById('cuttingLimitInfo').innerText = "Cutting Limit: Select a challan first";
+                return;
+            }
+
+            const found = cuttingList.find(c => c.challanNo.toUpperCase() === val || c.challanNo.toUpperCase() === 'NH-' + val || c.challanNo.toUpperCase().endsWith('-' + val));
             if (found) {
                 selectedCuttingItem = found;
                 document.getElementById('styleInput').value = found.styleNo;
                 document.getElementById('printNo').value = found.printName;
                 document.getElementById('itemName').value = found.itemName;
-                document.getElementById('cuttingLimitInfo').innerText = `Cutting Total: ${found.total} Pcs available.`;
+                
+                // Calculate already sent pcs for this cutting challan
+                let sentSoFar = 0;
+                const editId = document.getElementById('editDocId').value;
+                billbookList.forEach(b => {
+                    if (b.sourceChallan.toUpperCase() === found.challanNo.toUpperCase() && b.docId !== editId) {
+                        sentSoFar += b.total;
+                    }
+                });
+                let remaining = found.total - sentSoFar;
+
+                document.getElementById('cuttingLimitInfo').innerHTML = `Cutting Total: <b class="text-slate-900">${found.total} Pcs</b> | Already Sent: <b class="text-emerald-700">${sentSoFar} Pcs</b> | Remaining: <b class="text-rose-700">${remaining} Pcs</b>`;
             } else {
                 selectedCuttingItem = null;
+                document.getElementById('styleInput').value = '';
+                document.getElementById('printNo').value = '';
+                document.getElementById('itemName').value = '';
                 document.getElementById('cuttingLimitInfo').innerText = "Cutting Challan not found!";
             }
         }
@@ -350,6 +375,9 @@
             document.getElementById('syncStatus').innerText = "🟢 Cloud Live Synced";
             document.getElementById('syncStatus').className = "text-[11px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-medium";
             renderTable();
+            if (document.getElementById('sourceChallan').value) {
+                autofillFromCutting();
+            }
         }, (error) => {
             console.error("Firebase Error:", error);
             document.getElementById('syncStatus').innerText = "🔴 Connection Error";
@@ -410,6 +438,16 @@
             const srcChallan = document.getElementById('sourceChallan').value.trim();
             const mode = document.getElementById('sizeMode').value;
 
+            // Ensure cutting item is found
+            const cuttingMatch = cuttingList.find(c => c.challanNo.toUpperCase() === srcChallan.toUpperCase() || c.challanNo.toUpperCase() === 'NH-' + srcChallan.toUpperCase() || c.challanNo.toUpperCase().endsWith('-' + srcChallan.toUpperCase()));
+            
+            if (!cuttingMatch) {
+                alert("⚠️ Invalid Cutting Challan No! Pehle Cutting Register mein ye challan hona zaroori hai.");
+                saveBtn.disabled = false;
+                saveBtn.innerText = "✔ Save BillBook Entry";
+                return;
+            }
+
             let sizesObj = {};
             let rowTotal = 0;
 
@@ -425,30 +463,36 @@
                 sizeKeys.forEach(sz => sizesObj[sz] = 'ALL');
             }
 
-            if (selectedCuttingItem) {
-                let existingSent = 0;
-                billbookList.forEach(b => {
-                    if (b.sourceChallan.toUpperCase() === selectedCuttingItem.challanNo.toUpperCase() && b.docId !== editDocId) {
-                        existingSent += b.total;
-                    }
-                });
+            if (rowTotal <= 0) {
+                alert("⚠️ Please enter valid quantity pieces!");
+                saveBtn.disabled = false;
+                saveBtn.innerText = "✔ Save BillBook Entry";
+                return;
+            }
 
-                if ((existingSent + rowTotal) > selectedCuttingItem.total) {
-                    alert(`⚠️ OVER-QUANTITY ALERT!\nCutting mein is challan ke sirf ${selectedCuttingItem.total} pcs hain.\n(Pehle ja chuka hai: ${existingSent} pcs, Aap bhej rahe hain: ${rowTotal} pcs).\nTotal limit cross ho rahi hai!`);
-                    saveBtn.disabled = false;
-                    saveBtn.innerText = "✔ Save BillBook Entry";
-                    return;
+            let existingSent = 0;
+            billbookList.forEach(b => {
+                if (b.sourceChallan.toUpperCase() === cuttingMatch.challanNo.toUpperCase() && b.docId !== editDocId) {
+                    existingSent += b.total;
                 }
+            });
+
+            if ((existingSent + rowTotal) > cuttingMatch.total) {
+                let remainingAllowed = cuttingMatch.total - existingSent;
+                alert(`⚠️ OVER-QUANTITY ALERT!\nCutting mein is challan (${cuttingMatch.challanNo}) ke total ${cuttingMatch.total} pcs hain.\n(Pehle ja chuka hai: ${existingSent} pcs, Bacha hai: ${remainingAllowed} pcs).\nAap abhi ${rowTotal} pcs bhej rahe hain jo limit se zyada hai!`);
+                saveBtn.disabled = false;
+                saveBtn.innerText = "✔ Save BillBook Entry";
+                return;
             }
 
             const entry = {
                 billChallanNo: document.getElementById('billChallanNo').value.trim(),
                 date: document.getElementById('billDate').value,
                 partyName: "NIHAR",
-                sourceChallan: srcChallan,
-                styleNo: document.getElementById('styleInput').value.trim(),
-                printNo: document.getElementById('printNo').value.trim(),
-                itemName: document.getElementById('itemName').value.trim(),
+                sourceChallan: cuttingMatch.challanNo,
+                styleNo: cuttingMatch.styleNo,
+                printNo: cuttingMatch.printName,
+                itemName: cuttingMatch.itemName,
                 sizes: sizesObj,
                 total: rowTotal
             };
@@ -481,9 +525,7 @@
             document.getElementById('billChallanNo').value = item.billChallanNo;
             document.getElementById('billDate').value = item.date || '';
             document.getElementById('sourceChallan').value = item.sourceChallan || '';
-            document.getElementById('styleInput').value = item.styleNo || '';
-            document.getElementById('printNo').value = item.printNo || '';
-            document.getElementById('itemName').value = item.itemName || '';
+            autofillFromCutting();
 
             if (typeof item.sizes.S === 'string' && item.sizes.S === 'ALL') {
                 document.getElementById('sizeMode').value = 'all';
@@ -521,6 +563,21 @@
                 visibleCount++;
                 grandTotal += item.total;
 
+                // Calculate cumulative done and pending for this source cutting challan up to this entry
+                const cuttingMatch = cuttingList.find(c => c.challanNo.toUpperCase() === item.sourceChallan.toUpperCase());
+                const totalCuttingPcs = cuttingMatch ? cuttingMatch.total : item.total;
+
+                // Calculate total sent for this source challan across all entries up to current
+                let cumulativeDone = 0;
+                billbookList.forEach((b, idxNum) => {
+                    if (b.sourceChallan.toUpperCase() === item.sourceChallan.toUpperCase() && idxNum <= index) {
+                        cumulativeDone += b.total;
+                    }
+                });
+
+                let pendingPcs = totalCuttingPcs - cumulativeDone;
+                if (pendingPcs < 0) pendingPcs = 0;
+
                 let sizeCellsHTML = '';
                 if (typeof item.sizes.S === 'string' && item.sizes.S === 'ALL') {
                     sizeCellsHTML = `<td colspan="8" class="text-center font-bold bg-amber-50 text-amber-800">ALL SIZES COMBINED</td>`;
@@ -544,6 +601,8 @@
                         <td>${item.itemName}</td>
                         ${sizeCellsHTML}
                         <td class="text-center font-bold bg-amber-50 text-slate-900">${item.total}</td>
+                        <td class="text-center font-bold bg-emerald-50 text-emerald-800">${item.total} <span class="text-[10px] text-slate-400 font-normal">(Tot: ${cumulativeDone})</span></td>
+                        <td class="text-center font-bold bg-rose-50 text-rose-700">${pendingPcs}</td>
                         <td class="text-center space-x-1">
                             <button onclick="editRow('${item.docId}')" class="text-amber-600 hover:text-amber-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-amber-50" title="Edit">✏️</button>
                             <button onclick="deleteRow('${item.docId}')" class="text-red-600 hover:text-red-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50" title="Delete">✖</button>
@@ -554,7 +613,7 @@
             });
 
             if (visibleCount === 0) {
-                tbody.innerHTML = `<tr><td colspan="18" class="text-center py-8 text-slate-400">Koi billbook entry nahi mili.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="20" class="text-center py-8 text-slate-400">Koi billbook entry nahi mili.</td></tr>`;
             }
 
             document.getElementById('entryCount').innerText = visibleCount;
@@ -565,7 +624,7 @@
             if (confirm('Kya aap is BillBook entry ko delete karna chahte hain?')) {
                 try {
                     await deleteDoc(doc(db, "ssf_billbook_nihar_records", docId));
-                } catch (err) {
+                }gha catch (err) {
                     alert("Delete karne mein error aaya!");
                 }
             }
