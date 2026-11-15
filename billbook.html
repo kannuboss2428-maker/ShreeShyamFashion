@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shree Shyam Fashion - Cloud Challan Book</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f0f2f5;
+            padding: 20px;
+            color: #111;
+        }
+
+        /* Top Control Bar (Print mein nahi dikhega) */
+        .controls {
+            max-width: 800px;
+            margin: 0 auto 15px auto;
+            background: #ffffff;
+            padding: 12px 18px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .status-badge {
+            font-size: 12px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #e8f5e9;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .controls button {
+            padding: 8px 13px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .btn-save { background: #ff9800; color: #fff; }
+        .btn-save:hover { background: #e68900; }
+        .btn-history { background: #673ab7; color: #fff; }
+        .btn-history:hover { background: #512da8; }
+        .btn-print { background: #1a73e8; color: #fff; }
+        .btn-print:hover { background: #1557b0; }
+        .btn-add { background: #2e7d32; color: #fff; }
+        .btn-add:hover { background: #1b5e20; }
+        .btn-clear { background: #d32f2f; color: #fff; }
+        .btn-clear:hover { background: #9a0007; }
+
+        /* Main Challan Sheet */
+        .challan-page {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #f6eed5;
+            border: 2px solid #222;
+            padding: 14px 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+
+        /* Header Section */
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1.5px solid #222;
+            padding-bottom: 8px;
+        }
+
+        .company-block {
+            width: 65%;
+            text-align: center;
+        }
+
+        .challan-badge {
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .company-name {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 32px;
+            font-weight: bold;
+            font-style: italic;
+            letter-spacing: 0.5px;
+            line-height: 1.1;
+        }
+
+        .company-address {
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 3px;
+        }
+
+        .gstin-box {
+            display: inline-block;
+            border: 1px solid #222;
+            padding: 2px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 5px;
+            background: rgba(255,255,255,0.3);
+        }
+
+        .meta-block {
+            width: 34%;
+            font-size: 11.5px;
+        }
+
+        .contacts {
+            text-align: right;
+            font-weight: bold;
+            line-height: 1.35;
+            margin-bottom: 8px;
+        }
+
+        .contacts input {
+            width: 95px;
+            border: none;
+            background: transparent;
+            font-weight: bold;
+            font-size: 11.5px;
+            text-align: right;
+            color: #111;
+        }
+
+        .challan-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 6px;
+            font-weight: bold;
+        }
+
+        .challan-no-input {
+            width: 110px;
+            border: none;
+            border-bottom: 1px dashed #222;
+            background: transparent;
+            font-size: 18px;
+            font-weight: bold;
+            color: #c62828;
+            text-align: center;
+            font-family: "Courier New", monospace;
+        }
+
+        .date-input {
+            width: 120px;
+            border: none;
+            border-bottom: 1px solid #222;
+            background: transparent;
+            font-size: 13px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* M/s Party Name Section */
+        .ms-section {
+            padding: 8px 0;
+            border-bottom: 1.5px solid #222;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .ms-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+
+        .ms-line input {
+            flex: 1;
+            border: none;
+            border-bottom: 1px solid #222;
+            background: transparent;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 2px 5px;
+        }
+
+        .ms-second-line {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #222;
+            background: transparent;
+            font-size: 13px;
+            padding: 2px 5px;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        th, td {
+            border: 1px solid #222;
+            text-align: center;
+            height: 26px;
+            font-size: 12.5px;
+        }
+
+        th {
+            background-color: rgba(0, 0, 0, 0.04);
+            font-weight: bold;
+            padding: 4px 2px;
+        }
+
+        td input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 2px 4px;
+            color: #111;
+        }
+
+        td input.item-input {
+            text-align: left;
+            padding-left: 6px;
+        }
+
+        td input:focus, .ms-line input:focus, .ms-second-line:focus, .challan-no-input:focus, .date-input:focus {
+            outline: none;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Total Row */
+        .total-row td {
+            font-weight: bold;
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        /* Footer Section */
+        .footer-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 12px;
+            padding-top: 25px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .eoe {
+            font-size: 11px;
+        }
+
+        .receiver-sign {
+            border-top: 1px solid #222;
+            padding-top: 3px;
+            width: 140px;
+            text-align: center;
+        }
+
+        .for-company {
+            font-family: "Times New Roman", Times, serif;
+            font-size: 15px;
+            font-style: italic;
+        }
+
+        /* Saved Challans Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 650px;
+            width: 92%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .close-btn {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            background: #fafafa;
+        }
+
+        .history-item button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .btn-load { background: #1a73e8; color: #fff; }
+        .btn-del { background: #d32f2f; color: #fff; }
+
+        /* Print Media Query */
+        @media print {
+            body {
+                background: #fff;
+                padding: 0;
+            }
+            .controls, .modal {
+                display: none !important;
+            }
+            .challan-page {
+                box-shadow: none;
+                border: 2px solid #000;
+                max-width: 100%;
+                width: 100%;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Action Buttons -->
+    <div class="controls">
+        <div>
+            <strong>Shree Shyam Fashion</strong>
+            <span id="cloudStatus" class="status-badge">☁️ Cloud Ready</span>
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            <button class="btn-save" id="saveBtn">☁️ Save Cloud</button>
+            <button class="btn-history" id="historyBtn">📂 Saved Bills</button>
+            <button class="btn-add" id="addRowBtn">+ Row</button>
+            <button class="btn-clear" id="clearBtn">New / Clear</button>
+            <button class="btn-print" onclick="window.print()">🖨️ Print</button>
+        </div>
+    </div>
+
+    <!-- Challan Paper Layout -->
+    <div class="challan-page">
+        <div class="top-row">
+            <div class="company-block">
+                <div class="challan-badge">✈ CHALLAN ✈</div>
+                <div class="company-name">Shree Shyam Fashion</div>
+                <div class="company-address">Mal Ki Dhani, Malpura Gate, Sanganer, Jaipur (Raj.)-302029</div>
+                <div class="gstin-box">GSTIN: 08BYRPK4944B1Z7</div>
+            </div>
+
+            <div class="meta-block">
+                <div class="contacts">
+                    <div>Vijay Kumawat : <input type="text" id="contact1" value="9588238040"></div>
+                    <div>Sanjay Kumawat : <input type="text" id="contact2" value="9588238776"></div>
+                </div>
+                <div class="challan-info-row">
+                    <span>Challan No.</span>
+                    <input type="text" id="challanNo" class="challan-no-input" value="701">
+                </div>
+                <div class="challan-info-row">
+                    <span>Date</span>
+                    <input type="text" id="challanDate" class="date-input">
+                </div>
+            </div>
+        </div>
+
+        <!-- Party / Fabricator Name -->
+        <div class="ms-section">
+            <div class="ms-line">
+                <span>M/s.</span>
+                <input type="text" id="partyName" placeholder="Party / Fabricator Name likhein...">
+            </div>
+            <input type="text" id="partyAddress" class="ms-second-line" placeholder="Address / Remarks (optional)...">
+        </div>
+
+        <!-- Items Table -->
+        <table id="challanTable">
+            <thead>
+                <tr>
+                    <th style="width: 6%;">Sr.No</th>
+                    <th style="width: 15%;">Challan No.</th>
+                    <th style="width: 15%;">Style No.</th>
+                    <th style="width: 12%;">Print No</th>
+                    <th style="width: 32%;">Item</th>
+                    <th style="width: 10%;">Size</th>
+                    <th style="width: 10%;">Qty</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+            <tfoot>
+                <tr class="total-row">
+                    <td colspan="6" style="text-align: right; padding-right: 10px;">TOTAL QTY</td>
+                    <td id="totalQty">0</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <!-- Footer -->
+        <div class="footer-section">
+            <div class="eoe">E. & O.E.</div>
+            <div class="receiver-sign">Receiver's Signature</div>
+            <div class="for-company">For- Shree Shyam Fashion</div>
+        </div>
+    </div>
+
+    <!-- Saved Bills Modal -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>☁️ Saved Cloud Challans</h3>
+                <span class="close-btn" id="closeModal">×</span>
+            </div>
+            <input type="text" id="searchInput" placeholder="Search by Challan No. or Party Name..." style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid #ccc; border-radius: 4px;">
+            <div id="historyList">Loading...</div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK (Modular v10+) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+        // Aapki Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCOmvNfkMXcbLATJlN6tiaCCUBN9vfyf-s",
+            authDomain: "shree-shyam-fashion.firebaseapp.com",
+            projectId: "shree-shyam-fashion",
+            storageBucket: "shree-shyam-fashion.firebasestorage.app",
+            messagingSenderId: "270444185899",
+            appId: "1:270444185899:web:b38aeda188b538ef859d6e",
+            measurementId: "G-RMH0SZ09E0"
+        };
+
+        // Initialize Firebase & Firestore
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const challansCol = collection(db, "challans");
+
+        const DEFAULT_ROWS = 18;
+        const tableBody = document.getElementById('tableBody');
+        const statusBadge = document.getElementById('cloudStatus');
+        let allSavedChallans = [];
+
+        function setStatus(text, isError = false) {
+            statusBadge.textContent = text;
+            statusBadge.style.background = isError ? "#ffebee" : "#e8f5e9";
+            statusBadge.style.color = isError ? "#c62828" : "#2e7d32";
+        }
+
+        function setTodayDate() {
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const yy = String(today.getFullYear()).slice(-2);
+            document.getElementById('challanDate').value = `${dd}-${mm}-${yy}`;
+        }
+
+        function createRow(index, rowData = {}) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${index}</td>
+                <td><input type="text" class="col-challan" value="${rowData.subChallan || ''}"></td>
+                <td><input type="text" class="col-style" value="${rowData.style || ''}"></td>
+                <td><input type="text" class="col-print" value="${rowData.print || ''}"></td>
+                <td><input type="text" class="item-input col-item" value="${rowData.item || ''}"></td>
+                <td><input type="text" class="col-size" value="${rowData.size || ''}"></td>
+                <td><input type="number" class="qty-input col-qty" value="${rowData.qty || ''}"></td>
+            `;
+            tr.querySelector('.qty-input').addEventListener('input', calculateTotal);
+            return tr;
+        }
+
+        function initTable(rowsData = []) {
+            tableBody.innerHTML = '';
+            const totalRows = Math.max(DEFAULT_ROWS, rowsData.length);
+            for (let i = 0; i < totalRows; i++) {
+                tableBody.appendChild(createRow(i + 1, rowsData[i] || {}));
+            }
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            const qtyInputs = document.querySelectorAll('.qty-input');
+            let sum = 0;
+            qtyInputs.forEach(input => {
+                const val = parseFloat(input.value);
+                if (!isNaN(val)) sum += val;
+            });
+            document.getElementById('totalQty').textContent = sum;
+            return sum;
+        }
+
+        // Cloud par Challan Save karna
+        async function saveToCloud() {
+            const challanNo = document.getElementById('challanNo').value.trim();
+            if (!challanNo) {
+                alert("Please Challan No. enter karein!");
+                return;
+            }
+
+            setStatus("⏳ Saving...");
+            const rows = [];
+            document.querySelectorAll('#tableBody tr').forEach(tr => {
+                const subChallan = tr.querySelector('.col-challan').value.trim();
+                const style = tr.querySelector('.col-style').value.trim();
+                const print = tr.querySelector('.col-print').value.trim();
+                const item = tr.querySelector('.col-item').value.trim();
+                const size = tr.querySelector('.col-size').value.trim();
+                const qty = tr.querySelector('.col-qty').value.trim();
+
+                if (subChallan || style || print || item || size || qty) {
+                    rows.push({ subChallan, style, print, item, size, qty });
+                }
+            });
+
+            const payload = {
+                challanNo: challanNo,
+                date: document.getElementById('challanDate').value.trim(),
+                partyName: document.getElementById('partyName').value.trim(),
+                partyAddress: document.getElementById('partyAddress').value.trim(),
+                contact1: document.getElementById('contact1').value.trim(),
+                contact2: document.getElementById('contact2').value.trim(),
+                totalQty: calculateTotal(),
+                rows: rows,
+                updatedAt: new Date().toISOString()
+            };
+
+            try {
+                // Document ID ko Challan No. ke naam se save kar rahe hain taaki duplicate na bane
+                await setDoc(doc(challansCol, `challan_${challanNo}`), payload);
+                setStatus(`✅ Saved (#${challanNo})`);
+            } catch (error) {
+                console.error("Firebase Save Error:", error);
+                setStatus("❌ Save Failed", true);
+                alert("Save failed! Check karein ki Firebase Console mein Firestore Database 'Test Mode' mein enabled hai ya nahi.\n\nError: " + error.message);
+            }
+        }
+
+        // Cloud se saare Saved Challans fetch karna
+        async function loadHistory() {
+            const modal = document.getElementById('historyModal');
+            const listDiv = document.getElementById('historyList');
+            modal.style.display = "block";
+            listDiv.innerHTML = "Loading from Firebase Cloud...";
+
+            try {
+                const q = query(challansCol, orderBy("updatedAt", "desc"));
+                const snapshot = await getDocs(q);
+                allSavedChallans = [];
+                snapshot.forEach(docSnap => {
+                    allSavedChallans.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderHistoryList(allSavedChallans);
+            } catch (error) {
+                console.error("Load Error:", error);
+                listDiv.innerHTML = `<p style="color:red;">Error loading bills: ${error.message}</p>`;
+            }
+        }
+
+        function renderHistoryList(items) {
+            const listDiv = document.getElementById('historyList');
+            if (items.length === 0) {
+                listDiv.innerHTML = "<p>Abhi koi challan cloud par save nahi hai.</p>";
+                return;
+            }
+
+            listDiv.innerHTML = "";
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <div>
+                        <strong>Challan #${item.challanNo}</strong> — ${item.partyName || 'No Party Name'}<br>
+                        <small style="color:#555;">Date: ${item.date || '-'} | Total Qty: <b>${item.totalQty || 0}</b></small>
+                    </div>
+                    <div>
+                        <button class="btn-load">Open</button>
+                        <button class="btn-del">Delete</button>
+                    </div>
+                `;
+
+                div.querySelector('.btn-load').onclick = () => {
+                    document.getElementById('challanNo').value = item.challanNo || '';
+                    document.getElementById('challanDate').value = item.date || '';
+                    document.getElementById('partyName').value = item.partyName || '';
+                    document.getElementById('partyAddress').value = item.partyAddress || '';
+                    if (item.contact1) document.getElementById('contact1').value = item.contact1;
+                    if (item.contact2) document.getElementById('contact2').value = item.contact2;
+                    initTable(item.rows || []);
+                    document.getElementById('historyModal').style.display = "none";
+                    setStatus(`📂 Loaded #${item.challanNo}`);
+                };
+
+                div.querySelector('.btn-del').onclick = async () => {
+                    if (confirm(`Kya aap Challan #${item.challanNo} ko cloud se delete karna chahte hain?`)) {
+                        await deleteDoc(doc(challansCol, item.id));
+                        loadHistory();
+                    }
+                };
+
+                listDiv.appendChild(div);
+            });
+        }
+
+        // Event Listeners
+        document.getElementById('saveBtn').addEventListener('click', saveToCloud);
+        document.getElementById('historyBtn').addEventListener('click', loadHistory);
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('historyModal').style.display = "none";
+        });
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allSavedChallans.filter(c =>
+                (c.challanNo && c.challanNo.toLowerCase().includes(term)) ||
+                (c.partyName && c.partyName.toLowerCase().includes(term))
+            );
+            renderHistoryList(filtered);
+        });
+
+        document.getElementById('addRowBtn').addEventListener('click', () => {
+            const nextIndex = tableBody.rows.length + 1;
+            tableBody.appendChild(createRow(nextIndex));
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            if (confirm('Naya challan shuru karne ke liye form clear karein?')) {
+                document.getElementById('partyName').value = '';
+                document.getElementById('partyAddress').value = '';
+                const currentNo = parseInt(document.getElementById('challanNo').value);
+                if (!isNaN(currentNo)) {
+                    document.getElementById('challanNo').value = currentNo + 1;
+                }
+                setTodayDate();
+                initTable();
+                setStatus("☁️ New Challan Ready");
+            }
+        });
+
+        // Initial Load
+        setTodayDate();
+        initTable();
+    </script>
+</body>
+</html>
