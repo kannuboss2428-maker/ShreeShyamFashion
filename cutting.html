@@ -220,7 +220,7 @@
                         <tr class="bg-slate-800 text-white text-center text-xs">
                             <th colspan="11" class="bg-lime-400 text-slate-900 font-bold">CUTTING & FABRICATOR DETAILS</th>
                             <th colspan="8" class="bg-orange-600 text-white font-bold">QTY (SIZE-WISE)</th>
-                            <th colspan="2" class="bg-slate-700 text-white font-bold">SUMMARY</th>
+                            <th colspan="4" class="bg-slate-700 text-white font-bold">SUMMARY</th>
                         </tr>
                         <tr class="bg-lime-200 text-slate-900 font-bold text-center">
                             <th>S.no</th>
@@ -243,13 +243,35 @@
                             <th class="bg-sky-200">4XL</th>
                             <th class="bg-sky-200">5XL</th>
                             <th class="bg-amber-200">Total</th>
+                            <th class="bg-emerald-200 text-emerald-900">Done</th>
+                            <th class="bg-rose-200 text-rose-900">Pending</th>
                             <th class="bg-slate-200">Action</th>
                         </tr>
                     </thead>
                     <tbody id="sheetBody" class="bg-white divide-y divide-slate-200">
-                        <tr><td colspan="21" class="text-center py-8 text-slate-400">Cloud se data load ho raha hai...</td></tr>
+                        <tr><td colspan="23" class="text-center py-8 text-slate-400">Cloud se data load ho raha hai...</td></tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL FOR SEARCH -->
+    <div id="searchModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 id="modalTitle" class="text-lg font-bold text-slate-800">🔍 Search Cutting</h3>
+                <button onclick="closeSearchModal()" class="text-red-600 hover:text-red-800 font-bold text-xl px-2">×</button>
+            </div>
+            <div class="space-y-4">
+                <div class="flex gap-2">
+                    <div id="modalPrefix" class="bg-slate-100 text-slate-700 font-bold px-3 py-2 text-sm border border-r-0 border-slate-300 rounded-l-lg flex items-center">NH-</div>
+                    <input type="text" id="modalSearchInput" placeholder="Enter number..." class="w-full border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:border-blue-500 font-semibold" oninput="executeSearch()">
+                    <button onclick="executeSearch()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-lg text-sm font-bold shadow">Search</button>
+                </div>
+                <div id="modalSearchResult" class="max-h-[350px] overflow-y-auto space-y-3 mt-3">
+                    <p class="text-slate-400 text-center py-4">Number daalein, detail yahan dikhegi...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -272,9 +294,19 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const cuttingCollection = collection(db, "ssf_cutting_records");
+        const billbookCollection = collection(db, "ssf_billbook_nihar_records");
 
         const sizeKeys = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
         let cuttingList = [];
+        let billbookList = [];
+
+        onSnapshot(query(billbookCollection, orderBy("createdAt", "asc")), (snapshot) => {
+            billbookList = [];
+            snapshot.forEach((docSnap) => {
+                billbookList.push(docSnap.data());
+            });
+            renderTable();
+        });
 
         window.resetDefaults = function() {
             document.getElementById('dateInput').valueAsDate = new Date();
@@ -298,6 +330,36 @@
                 if (!isNaN(val) && val > 0) sum += val;
             });
             document.getElementById('liveTotal').innerText = sum;
+        }
+
+        window.openSearchModal = function(mode) {
+            const modal = document.getElementById('searchModal');
+            document.getElementById('modalSearchInput').value = '';
+            document.getElementById('modalSearchResult').innerHTML = '<p class="text-slate-400 text-center py-4">Number daalein...</p>';
+            modal.classList.remove('hidden');
+        }
+
+        window.closeSearchModal = function() {
+            document.getElementById('searchModal').classList.add('hidden');
+        }
+
+        window.executeSearch = function() {
+            const queryVal = document.getElementById('modalSearchInput').value.trim().toLowerCase();
+            const resContainer = document.getElementById('modalSearchResult');
+            if (!queryVal) {
+                resContainer.innerHTML = '<p class="text-slate-400 text-center py-4">Number daalein...</p>';
+                return;
+            }
+            const matched = cuttingList.filter(item => item.challanNo.toLowerCase().includes(queryVal) || item.styleNo.toLowerCase().includes(queryVal));
+            if (matched.length === 0) {
+                resContainer.innerHTML = `<p class="text-red-500 text-center py-4 font-semibold">Koi entry nahi mili!</p>`;
+                return;
+            }
+            let html = '';
+            matched.forEach(item => {
+                html += `<div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs"><b>Challan:</b> ${item.challanNo} | <b>Style:</b> ${item.styleNo} | <b>Total:</b> ${item.total} Pcs</div>`;
+            });
+            resContainer.innerHTML = html;
         }
 
         onSnapshot(query(cuttingCollection, orderBy("createdAt", "asc")), (snapshot) => {
@@ -405,6 +467,16 @@
                 visibleCount++;
                 grandTotal += item.total;
 
+                // Calculate Done and Pending for this cutting challan
+                let donePcs = 0;
+                billbookList.forEach(b => {
+                    if (b.sourceChallan && b.sourceChallan.toUpperCase() === item.challanNo.toUpperCase()) {
+                        donePcs += (parseInt(b.total) || 0);
+                    }
+                });
+                let pendingPcs = item.total - donePcs;
+                if (pendingPcs < 0) pendingPcs = 0;
+
                 let sizeCellsHTML = '';
                 sizeKeys.forEach(sz => {
                     let val = item.sizes[sz];
@@ -426,13 +498,15 @@
                         <td class="text-center">${item.cuttingNo}</td>
                         ${sizeCellsHTML}
                         <td class="text-center font-bold bg-amber-50 text-slate-900">${item.total}</td>
+                        <td class="text-center font-bold bg-emerald-50 text-emerald-800">${donePcs}</td>
+                        <td class="text-center font-bold bg-rose-50 text-rose-700">${pendingPcs}</td>
                         <td class="text-center space-x-1">
                             <button onclick="editRow('${item.docId}')" class="text-amber-600 hover:text-amber-800 font-bold text-xs px-1.5 py-0.5 rounded">✏️</button>
                             <button onclick="deleteRow('${item.docId}')" class="text-red-600 hover:text-red-800 font-bold text-xs px-1.5 py-0.5 rounded">✖</button>
                         </td>
                     </tr>`;
             });
-            if (visibleCount === 0) tbody.innerHTML = `<tr><td colspan="21" class="text-center py-8 text-slate-400">Koi entry nahi mili.</td></tr>`;
+            if (visibleCount === 0) tbody.innerHTML = `<tr><td colspan="23" class="text-center py-8 text-slate-400">Koi entry nahi mili.</td></tr>`;
             document.getElementById('entryCount').innerText = visibleCount;
             document.getElementById('grandTotalPcs').innerText = grandTotal;
         }
