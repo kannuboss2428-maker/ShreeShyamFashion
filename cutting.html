@@ -20,11 +20,6 @@
             font-weight: 600;
             text-align: center;
         }
-        .dup-challan {
-            background-color: #fecaca !important;
-            color: #991b1b;
-            font-weight: 700;
-        }
     </style>
 </head>
 <body class="text-slate-800">
@@ -46,9 +41,6 @@
                 <a href="billbook.html" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
                     📖 Open BillBook
                 </a>
-                <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
-                    📥 Download Excel (CSV)
-                </button>
             </div>
         </div>
     </nav>
@@ -57,127 +49,84 @@
 
         <!-- Entry Form Card -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-            <div class="mb-4 border-b pb-3 flex flex-wrap justify-between items-center gap-3">
+            <div class="mb-4 border-b pb-3 flex justify-between items-center">
                 <h2 id="formTitleText" class="text-base font-bold text-slate-800 flex items-center gap-2">
                     <span>➕ Add New Cutting Entry</span>
                 </h2>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="openSearchModal('challan')" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow transition flex items-center gap-1">
-                        🔍 Find Cutting By Challan No.
-                    </button>
-                    <button onclick="openSearchModal('style')" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow transition flex items-center gap-1">
-                        🔍 Find Cutting By Style No.
-                    </button>
-                </div>
             </div>
 
             <form id="cuttingForm" class="space-y-4">
                 <input type="hidden" id="editDocId" value="">
 
-                <!-- Row 1 -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Challan No. *</label>
-                        <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden focus-within:border-blue-500">
-                            <span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-2 text-sm border-r border-slate-300 select-none">NH-</span>
+                        <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden">
+                            <span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-2 text-sm border-r">NH-</span>
                             <input type="text" id="challanInput" placeholder="1161" required class="w-full px-2.5 py-2 text-sm focus:outline-none font-semibold">
                         </div>
                     </div>
-
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Date *</label>
-                        <input type="date" id="dateInput" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <input type="date" id="dateInput" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none bg-white">
                     </div>
-
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Category *</label>
-                        <select id="categoryInput" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 bg-white">
+                        <select id="categoryInput" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white font-semibold">
                             <option value="Kurti">Kurti</option>
                             <option value="Pant">Pant</option>
                             <option value="Dupatta">Dupatta</option>
                             <option value="Sharara">Sharara</option>
                         </select>
                     </div>
-
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Print Name *</label>
-                        <input type="text" id="printName" placeholder="e.g. Blue / Black Buta" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <input type="text" id="printName" placeholder="Blue Buta" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none">
                     </div>
-
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Style No. *</label>
-                        <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden focus-within:border-blue-500">
-                            <span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-2 text-sm border-r border-slate-300 select-none">SD-</span>
+                        <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden">
+                            <span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-2 text-sm border-r">SD-</span>
                             <input type="text" id="styleInput" placeholder="0050" required class="w-full px-2.5 py-2 text-sm focus:outline-none font-semibold">
                         </div>
                     </div>
                 </div>
 
-                <!-- Row 2 -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Item Name *</label>
-                        <input type="text" id="itemName" placeholder="e.g. Midi / Pant / Kote Set" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <input type="text" id="itemName" placeholder="Midi Set" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none">
                     </div>
-
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">Cloth Mitre (Optional)</label>
-                        <input type="number" step="0.01" id="clothMitre" placeholder="Khali chhodein = N/A" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Cloth Mitre</label>
+                        <input type="number" step="0.01" id="clothMitre" placeholder="N/A" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none">
                     </div>
-
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Fabricator Name</label>
-                        <input type="text" id="fabricatorName" list="fabSuggestions" placeholder="e.g. Arun Ji" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
-                        <datalist id="fabSuggestions"></datalist>
+                        <input type="text" id="fabricatorName" placeholder="Arun Ji" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none">
                     </div>
-
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">Adda Work / HandWork</label>
-                        <input type="text" id="addaWork" placeholder="Khali chhodein = N/A" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Adda Work</label>
+                        <input type="text" id="addaWork" placeholder="N/A" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none">
                     </div>
-
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Cutting No.</label>
-                        <input type="text" id="cuttingNo" placeholder="Khali chhodein = N/A" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500">
+                        <input type="text" id="cuttingNo" placeholder="N/A" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none">
                     </div>
                 </div>
 
-                <!-- Row 3: Sizes -->
+                <!-- Size Matrix Input -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Qty (Size-Wise Pieces — Khali size automatic N/A banega)</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Qty (Size-Wise Pieces)</label>
                     <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 items-center">
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">S</span>
-                            <input type="number" min="0" id="sz_S" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">M</span>
-                            <input type="number" min="0" id="sz_M" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">L</span>
-                            <input type="number" min="0" id="sz_L" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">XL</span>
-                            <input type="number" min="0" id="sz_XL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">XXL</span>
-                            <input type="number" min="0" id="sz_XXL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">3XL</span>
-                            <input type="number" min="0" id="sz_3XL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">4XL</span>
-                            <input type="number" min="0" id="sz_4XL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">5XL</span>
-                            <input type="number" min="0" id="sz_5XL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">S</span><input type="number" min="0" id="sz_S" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">M</span><input type="number" min="0" id="sz_M" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">L</span><input type="number" min="0" id="sz_L" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">XL</span><input type="number" min="0" id="sz_XL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">XXL</span><input type="number" min="0" id="sz_XXL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">3XL</span><input type="number" min="0" id="sz_3XL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">4XL</span><input type="number" min="0" id="sz_4XL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">5XL</span><input type="number" min="0" id="sz_5XL" placeholder="N/A" oninput="calcTotal()" class="w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
                         <div class="bg-blue-600 text-white rounded-lg p-1.5 text-center shadow-sm">
                             <span class="block text-[10px] uppercase font-semibold opacity-90">Total Pcs</span>
                             <span id="liveTotal" class="text-lg font-bold">0</span>
@@ -186,102 +135,46 @@
                 </div>
 
                 <div class="flex justify-end gap-3">
-                    <button type="button" id="cancelEditBtn" onclick="resetForm()" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hidden">
-                        Cancel Edit
-                    </button>
-                    <button type="reset" onclick="setTimeout(resetDefaults, 10)" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50">
-                        Reset
-                    </button>
-                    <button type="submit" id="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-bold shadow transition">
-                        ✔ Save to Cloud
-                    </button>
+                    <button type="button" id="cancelEditBtn" onclick="resetForm()" class="px-4 py-2 border rounded-lg text-sm font-medium hidden">Cancel</button>
+                    <button type="reset" onclick="setTimeout(resetDefaults, 10)" class="px-4 py-2 border rounded-lg text-sm font-medium">Reset</button>
+                    <button type="submit" id="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-bold shadow">✔ Save to Cloud</button>
                 </div>
             </form>
         </div>
 
-        <!-- Master Sheet Table -->
+        <!-- Master Table -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="p-4 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3 bg-slate-50">
-                <div class="flex items-center gap-4">
-                    <h3 class="font-bold text-slate-800">📊 Cutting Master Sheet (Live Sync)</h3>
-                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">
-                        Total Entries: <span id="entryCount">0</span>
-                    </span>
-                    <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">
-                        Grand Total Pcs: <span id="grandTotalPcs">0</span>
-                    </span>
-                </div>
-                <input type="text" id="searchBox" onkeyup="renderTable()" placeholder="🔍 Search Challan, Style, Print..." class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-64 focus:outline-none focus:border-blue-500">
+            <div class="p-4 border-b bg-slate-50 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800">📊 Cutting Master Sheet (With Done & Pending)</h3>
+                <input type="text" id="searchBox" onkeyup="renderTable()" placeholder="🔍 Search Challan, Style..." class="border rounded-lg px-3 py-1.5 text-xs w-64 focus:outline-none">
             </div>
-
             <div class="overflow-x-auto">
                 <table class="w-full excel-table border-collapse text-left">
                     <thead>
                         <tr class="bg-slate-800 text-white text-center text-xs">
-                            <th colspan="11" class="bg-lime-400 text-slate-900 font-bold">CUTTING & FABRICATOR DETAILS</th>
+                            <th colspan="11" class="bg-lime-400 text-slate-900 font-bold">CUTTING DETAILS</th>
                             <th colspan="8" class="bg-orange-600 text-white font-bold">QTY (SIZE-WISE)</th>
                             <th colspan="4" class="bg-slate-700 text-white font-bold">SUMMARY</th>
                         </tr>
-                        <tr class="bg-lime-200 text-slate-900 font-bold text-center">
-                            <th>S.no</th>
-                            <th>Challan No.</th>
-                            <th>Date</th>
-                            <th>Category</th>
-                            <th>Print Name</th>
-                            <th>Style Name</th>
-                            <th>ITEM NAME</th>
-                            <th>Cloth Mitre</th>
-                            <th>Fabricator Name</th>
-                            <th>Adda Work</th>
-                            <th>Cutting No</th>
-                            <th class="bg-sky-200">S</th>
-                            <th class="bg-sky-200">M</th>
-                            <th class="bg-sky-200">L</th>
-                            <th class="bg-sky-200">XL</th>
-                            <th class="bg-sky-200">XXL</th>
-                            <th class="bg-sky-200">3XL</th>
-                            <th class="bg-sky-200">4XL</th>
-                            <th class="bg-sky-200">5XL</th>
-                            <th class="bg-amber-200">Total</th>
-                            <th class="bg-emerald-200 text-emerald-900">Done</th>
-                            <th class="bg-rose-200 text-rose-900">Pending</th>
-                            <th class="bg-slate-200">Action</th>
+                        <tr class="bg-lime-200 text-slate-900 font-bold text-center text-xs">
+                            <th>S.no</th><th>Challan No.</th><th>Date</th><th>Category</th><th>Print Name</th><th>Style Name</th><th>ITEM NAME</th><th>Cloth Mitre</th><th>Fabricator</th><th>Adda Work</th><th>Cutting No</th>
+                            <th class="bg-sky-200">S</th><th class="bg-sky-200">M</th><th class="bg-sky-200">L</th><th class="bg-sky-200">XL</th><th class="bg-sky-200">XXL</th><th class="bg-sky-200">3XL</th><th class="bg-sky-200">4XL</th><th class="bg-sky-200">5XL</th>
+                            <th class="bg-amber-200">Total</th><th class="bg-emerald-200 text-emerald-900">Done</th><th class="bg-rose-200 text-rose-900">Pending</th><th>Action</th>
                         </tr>
                     </thead>
-                    <tbody id="sheetBody" class="bg-white divide-y divide-slate-200">
-                        <tr><td colspan="23" class="text-center py-8 text-slate-400">Cloud se data load ho raha hai...</td></tr>
+                    <tbody id="sheetBody" class="bg-white divide-y">
+                        <tr><td colspan="23" class="text-center py-8 text-slate-400">Loading...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- MODAL FOR SEARCH -->
-    <div id="searchModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200">
-            <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 id="modalTitle" class="text-lg font-bold text-slate-800">🔍 Search Cutting</h3>
-                <button onclick="closeSearchModal()" class="text-red-600 hover:text-red-800 font-bold text-xl px-2">×</button>
-            </div>
-            <div class="space-y-4">
-                <div class="flex gap-2">
-                    <div id="modalPrefix" class="bg-slate-100 text-slate-700 font-bold px-3 py-2 text-sm border border-r-0 border-slate-300 rounded-l-lg flex items-center">NH-</div>
-                    <input type="text" id="modalSearchInput" placeholder="Enter number..." class="w-full border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:border-blue-500 font-semibold" oninput="executeSearch()">
-                    <button onclick="executeSearch()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-lg text-sm font-bold shadow">Search</button>
-                </div>
-                <div id="modalSearchResult" class="max-h-[350px] overflow-y-auto space-y-3 mt-3">
-                    <p class="text-slate-400 text-center py-4">Number daalein, detail yahan dikhegi...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Firebase Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, onSnapshot, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        const firebaseConfig = {
+        const app = initializeApp({
             apiKey: "AIzaSyCOmvNfkMXcbLATJlN6tiaCCUBN9vfyf-s",
             authDomain: "shree-shyam-fashion.firebaseapp.com",
             projectId: "shree-shyam-fashion",
@@ -289,147 +182,65 @@
             messagingSenderId: "270444185899",
             appId: "1:270444185899:web:c21de116d358c09a859d6e",
             measurementId: "G-BBE8D4ENTY"
-        };
-
-        const app = initializeApp(firebaseConfig);
+        });
         const db = getFirestore(app);
         const cuttingCollection = collection(db, "ssf_cutting_records");
         const billbookCollection = collection(db, "ssf_billbook_nihar_records");
 
         const sizeKeys = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
-        let cuttingList = [];
-        let billbookList = [];
+        let cuttingList = [], billbookList = [];
 
         onSnapshot(query(billbookCollection, orderBy("createdAt", "asc")), (snapshot) => {
             billbookList = [];
-            snapshot.forEach((docSnap) => {
-                billbookList.push(docSnap.data());
-            });
+            snapshot.forEach(docSnap => billbookList.push(docSnap.data()));
             renderTable();
         });
 
-        window.resetDefaults = function() {
-            document.getElementById('dateInput').valueAsDate = new Date();
-            document.getElementById('liveTotal').innerText = '0';
-        }
+        window.resetDefaults = () => { document.getElementById('dateInput').valueAsDate = new Date(); document.getElementById('liveTotal').innerText = '0'; }
         resetDefaults();
 
-        window.resetForm = function() {
-            document.getElementById('cuttingForm').reset();
-            document.getElementById('editDocId').value = '';
-            document.getElementById('formTitleText').innerHTML = '<span>➕ Add New Cutting Entry</span>';
-            document.getElementById('saveBtn').innerText = "✔ Save to Cloud";
-            document.getElementById('cancelEditBtn').classList.add('hidden');
-            resetDefaults();
-        }
-
-        window.calcTotal = function() {
+        window.calcTotal = () => {
             let sum = 0;
-            sizeKeys.forEach(sz => {
-                const val = parseInt(document.getElementById('sz_' + sz).value);
-                if (!isNaN(val) && val > 0) sum += val;
-            });
+            sizeKeys.forEach(sz => { let v = parseInt(document.getElementById('sz_' + sz).value); if (!isNaN(v) && v > 0) sum += v; });
             document.getElementById('liveTotal').innerText = sum;
-        }
-
-        window.openSearchModal = function(mode) {
-            const modal = document.getElementById('searchModal');
-            document.getElementById('modalSearchInput').value = '';
-            document.getElementById('modalSearchResult').innerHTML = '<p class="text-slate-400 text-center py-4">Number daalein...</p>';
-            modal.classList.remove('hidden');
-        }
-
-        window.closeSearchModal = function() {
-            document.getElementById('searchModal').classList.add('hidden');
-        }
-
-        window.executeSearch = function() {
-            const queryVal = document.getElementById('modalSearchInput').value.trim().toLowerCase();
-            const resContainer = document.getElementById('modalSearchResult');
-            if (!queryVal) {
-                resContainer.innerHTML = '<p class="text-slate-400 text-center py-4">Number daalein...</p>';
-                return;
-            }
-            const matched = cuttingList.filter(item => item.challanNo.toLowerCase().includes(queryVal) || item.styleNo.toLowerCase().includes(queryVal));
-            if (matched.length === 0) {
-                resContainer.innerHTML = `<p class="text-red-500 text-center py-4 font-semibold">Koi entry nahi mili!</p>`;
-                return;
-            }
-            let html = '';
-            matched.forEach(item => {
-                html += `<div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs"><b>Challan:</b> ${item.challanNo} | <b>Style:</b> ${item.styleNo} | <b>Total:</b> ${item.total} Pcs</div>`;
-            });
-            resContainer.innerHTML = html;
         }
 
         onSnapshot(query(cuttingCollection, orderBy("createdAt", "asc")), (snapshot) => {
             cuttingList = [];
-            snapshot.forEach((docSnap) => {
-                cuttingList.push({ docId: docSnap.id, ...docSnap.data() });
-            });
+            snapshot.forEach(docSnap => cuttingList.push({ docId: docSnap.id, ...docSnap.data() }));
             document.getElementById('syncStatus').innerText = "🟢 Cloud Live Synced";
             renderTable();
         });
 
-        document.getElementById('cuttingForm').addEventListener('submit', async function(e) {
+        document.getElementById('cuttingForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.disabled = true;
-            saveBtn.innerText = "⏳ Saving...";
-
             const editDocId = document.getElementById('editDocId').value;
-            const rawChallan = document.getElementById('challanInput').value.trim();
-            const rawStyle = document.getElementById('styleInput').value.trim();
-
-            let sizesObj = {};
-            let rowTotal = 0;
-
+            let sizesObj = {}, rowTotal = 0;
             sizeKeys.forEach(sz => {
-                const v = document.getElementById('sz_' + sz).value.trim();
-                if (v === '' || parseInt(v) === 0) {
-                    sizesObj[sz] = 'N/A';
-                } else {
-                    const num = parseInt(v);
-                    sizesObj[sz] = num;
-                    rowTotal += num;
-                }
+                let v = document.getElementById('sz_' + sz).value.trim();
+                if (v === '' || parseInt(v) === 0) sizesObj[sz] = 'N/A';
+                else { let num = parseInt(v); sizesObj[sz] = num; rowTotal += num; }
             });
 
             const entry = {
-                challanNo: rawChallan.startsWith('NH-') ? rawChallan : 'NH-' + rawChallan,
+                challanNo: document.getElementById('challanInput').value.trim().startsWith('NH-') ? document.getElementById('challanInput').value.trim() : 'NH-' + document.getElementById('challanInput').value.trim(),
                 date: document.getElementById('dateInput').value,
                 category: document.getElementById('categoryInput').value,
                 printName: document.getElementById('printName').value.trim(),
-                styleNo: rawStyle.startsWith('SD-') ? rawStyle : 'SD-' + rawStyle,
+                styleNo: document.getElementById('styleInput').value.trim().startsWith('SD-') ? document.getElementById('styleInput').value.trim() : 'SD-' + document.getElementById('styleInput').value.trim(),
                 itemName: document.getElementById('itemName').value.trim(),
                 clothMitre: document.getElementById('clothMitre').value.trim() || 'N/A',
                 fabricator: document.getElementById('fabricatorName').value.trim() || 'N/A',
                 addaWork: document.getElementById('addaWork').value.trim() || 'N/A',
                 cuttingNo: document.getElementById('cuttingNo').value.trim() || 'N/A',
-                sizes: sizesObj,
-                total: rowTotal
+                sizes: sizesObj, total: rowTotal
             };
 
-            try {
-                if (editDocId) {
-                    await updateDoc(doc(db, "ssf_cutting_records", editDocId), entry);
-                    alert("Entry updated successfully!");
-                    resetForm();
-                } else {
-                    entry.createdAt = Date.now();
-                    await addDoc(cuttingCollection, entry);
-                    this.reset();
-                    resetDefaults();
-                }
-            } catch (err) {
-                alert("Error saving data!");
-            } finally {
-                saveBtn.disabled = false;
-                saveBtn.innerText = editDocId ? "✔ Update Entry" : "✔ Save to Cloud";
-            }
+            if (editDocId) { await updateDoc(doc(db, "ssf_cutting_records", editDocId), entry); alert("Updated!"); location.reload(); }
+            else { entry.createdAt = Date.now(); await addDoc(cuttingCollection, entry); e.target.reset(); resetDefaults(); }
         });
 
-        window.editRow = function(docId) {
+        window.editRow = (docId) => {
             const item = cuttingList.find(i => i.docId === docId);
             if (!item) return;
             document.getElementById('editDocId').value = item.docId;
@@ -443,39 +254,28 @@
             document.getElementById('fabricatorName').value = item.fabricator === 'N/A' ? '' : item.fabricator;
             document.getElementById('addaWork').value = item.addaWork === 'N/A' ? '' : item.addaWork;
             document.getElementById('cuttingNo').value = item.cuttingNo === 'N/A' ? '' : item.cuttingNo;
-
-            sizeKeys.forEach(sz => {
-                const val = item.sizes[sz];
-                document.getElementById('sz_' + sz).value = (val === 'N/A' || val === undefined) ? '' : val;
-            });
+            sizeKeys.forEach(sz => document.getElementById('sz_' + sz).value = (item.sizes[sz] === 'N/A' || !item.sizes[sz]) ? '' : item.sizes[sz]);
             calcTotal();
-            document.getElementById('formTitleText').innerHTML = `<span>✏️ Edit Cutting Entry (${item.challanNo})</span>`;
-            document.getElementById('saveBtn').innerText = "✔ Update Entry";
             document.getElementById('cancelEditBtn').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        window.renderTable = function() {
+        window.renderTable = () => {
             const tbody = document.getElementById('sheetBody');
             const queryText = document.getElementById('searchBox').value.toLowerCase();
             tbody.innerHTML = '';
             let grandTotal = 0, visibleCount = 0;
 
             cuttingList.forEach((item, index) => {
-                const searchStr = `${item.challanNo} ${item.printName} ${item.styleNo} ${item.itemName}`.toLowerCase();
-                if (queryText && !searchStr.includes(queryText)) return;
+                if (queryText && !`${item.challanNo} ${item.styleNo}`.toLowerCase().includes(queryText)) return;
                 visibleCount++;
                 grandTotal += item.total;
 
-                // Calculate Done and Pending for this cutting challan
                 let donePcs = 0;
                 billbookList.forEach(b => {
-                    if (b.sourceChallan && b.sourceChallan.toUpperCase() === item.challanNo.toUpperCase()) {
-                        donePcs += (parseInt(b.total) || 0);
-                    }
+                    if (b.sourceChallan && b.sourceChallan.toUpperCase() === item.challanNo.toUpperCase()) donePcs += (parseInt(b.total) || 0);
                 });
-                let pendingPcs = item.total - donePcs;
-                if (pendingPcs < 0) pendingPcs = 0;
+                let pendingPcs = Math.max(0, item.total - donePcs);
 
                 let sizeCellsHTML = '';
                 sizeKeys.forEach(sz => {
@@ -501,21 +301,17 @@
                         <td class="text-center font-bold bg-emerald-50 text-emerald-800">${donePcs}</td>
                         <td class="text-center font-bold bg-rose-50 text-rose-700">${pendingPcs}</td>
                         <td class="text-center space-x-1">
-                            <button onclick="editRow('${item.docId}')" class="text-amber-600 hover:text-amber-800 font-bold text-xs px-1.5 py-0.5 rounded">✏️</button>
-                            <button onclick="deleteRow('${item.docId}')" class="text-red-600 hover:text-red-800 font-bold text-xs px-1.5 py-0.5 rounded">✖</button>
+                            <button onclick="editRow('${item.docId}')" class="text-amber-600 font-bold text-xs px-1.5 py-0.5">✏️</button>
+                            <button onclick="deleteRow('${item.docId}')" class="text-red-600 font-bold text-xs px-1.5 py-0.5">✖</button>
                         </td>
                     </tr>`;
             });
-            if (visibleCount === 0) tbody.innerHTML = `<tr><td colspan="23" class="text-center py-8 text-slate-400">Koi entry nahi mili.</td></tr>`;
+            if (visibleCount === 0) tbody.innerHTML = `<tr><td colspan="23" class="text-center py-8 text-slate-400">No entries found.</td></tr>`;
             document.getElementById('entryCount').innerText = visibleCount;
             document.getElementById('grandTotalPcs').innerText = grandTotal;
         }
 
-        window.deleteRow = async function(docId) {
-            if (confirm('Kya aap delete karna chahte hain?')) {
-                await deleteDoc(doc(db, "ssf_cutting_records", docId));
-            }
-        }
+        window.deleteRow = async (docId) => { if (confirm('Delete?')) await deleteDoc(doc(db, "ssf_cutting_records", docId)); }
     </script>
 </body>
 </html>
