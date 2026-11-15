@@ -83,7 +83,7 @@
                         <label class="block text-xs font-bold text-slate-600 mb-1">Challan No. *</label>
                         <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden focus-within:border-blue-500">
                             <span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-2 text-sm border-r border-slate-300 select-none">NH-</span>
-                            <input type="text" id="challanInput" placeholder="2" oninput="autoFillByChallan()" required class="w-full px-2.5 py-2 text-sm focus:outline-none font-semibold">
+                            <input type="text" id="challanInput" placeholder="1161" required class="w-full px-2.5 py-2 text-sm focus:outline-none font-semibold">
                         </div>
                     </div>
 
@@ -147,7 +147,7 @@
 
                 <!-- Row 3: Sizes -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Qty (Size-Wise Pieces)</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Qty (Size-Wise Pieces — Khali size automatic N/A banega)</label>
                     <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 items-center">
                         <div>
                             <span class="block text-center text-xs font-bold text-slate-600">S</span>
@@ -258,19 +258,21 @@
 
     </div>
 
-    <!-- MODAL FOR FIND CUTTING -->
+    <!-- MODAL FOR FIND CUTTING BY CHALLAN / STYLE -->
     <div id="searchModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200">
             <div class="flex justify-between items-center mb-4 border-b pb-3">
                 <h3 id="modalTitle" class="text-lg font-bold text-slate-800">🔍 Search Cutting</h3>
                 <button onclick="closeSearchModal()" class="text-red-600 hover:text-red-800 font-bold text-xl px-2">×</button>
             </div>
+            
             <div class="space-y-4">
                 <div class="flex gap-2">
                     <div id="modalPrefix" class="bg-slate-100 text-slate-700 font-bold px-3 py-2 text-sm border border-r-0 border-slate-300 rounded-l-lg flex items-center">NH-</div>
                     <input type="text" id="modalSearchInput" placeholder="Enter number e.g. 5" class="w-full border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:border-blue-500 font-semibold" oninput="executeSearch()">
                     <button onclick="executeSearch()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-r-lg text-sm font-bold shadow">Search</button>
                 </div>
+
                 <div id="modalSearchResult" class="max-h-[350px] overflow-y-auto space-y-3 mt-3">
                     <p class="text-slate-400 text-center py-4">Number daalein, detail yahan dikhegi...</p>
                 </div>
@@ -300,6 +302,31 @@
         const sizeKeys = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
         let cuttingList = [];
         let currentSearchMode = 'challan';
+
+        function updateFabSuggestions() {
+            const fabs = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
+            const dl = document.getElementById('fabSuggestions');
+            dl.innerHTML = '';
+            fabs.forEach(f => {
+                dl.innerHTML += `<option value="${f.name}">`;
+            });
+        }
+        updateFabSuggestions();
+
+        function autoCreateFabricatorAccount(fabName) {
+            if (!fabName || fabName === 'N/A') return;
+            let fabs = JSON.parse(localStorage.getItem('ssf_fabricators')) || [];
+            const exists = fabs.some(f => f.name.trim().toLowerCase() === fabName.trim().toLowerCase());
+            if (!exists) {
+                fabs.push({
+                    name: fabName.trim(),
+                    phone: '',
+                    address: ''
+                });
+                localStorage.setItem('ssf_fabricators', JSON.stringify(fabs));
+                updateFabSuggestions();
+            }
+        }
 
         window.resetDefaults = function() {
             document.getElementById('dateInput').valueAsDate = new Date();
@@ -332,23 +359,6 @@
             document.getElementById('liveTotal').innerText = sum;
         }
 
-        window.autoFillByChallan = function() {
-            const val = document.getElementById('challanInput').value.trim();
-            if (!val) return;
-            const fullChallan = val.toUpperCase().startsWith('NH-') ? val.toUpperCase() : 'NH-' + val;
-            const found = cuttingList.find(item => item.challanNo.toUpperCase() === fullChallan);
-            if (found) {
-                document.getElementById('categoryInput').value = found.category || 'Kurti';
-                document.getElementById('printName').value = found.printName || '';
-                document.getElementById('styleInput').value = found.styleNo ? found.styleNo.replace('SD-', '') : '';
-                document.getElementById('itemName').value = found.itemName || '';
-                document.getElementById('clothMitre').value = found.clothMitre === 'N/A' ? '' : found.clothMitre;
-                document.getElementById('fabricatorName').value = found.fabricator === 'N/A' ? '' : found.fabricator;
-                document.getElementById('addaWork').value = found.addaWork === 'N/A' ? '' : found.addaWork;
-                document.getElementById('cuttingNo').value = found.cuttingNo === 'N/A' ? '' : found.cuttingNo;
-            }
-        }
-
         window.openSearchModal = function(mode) {
             currentSearchMode = mode;
             const modal = document.getElementById('searchModal');
@@ -362,11 +372,11 @@
             if (mode === 'challan') {
                 title.innerText = "🔍 Find Cutting By Challan No.";
                 prefix.innerText = "NH-";
-                input.placeholder = "Enter challan no e.g. 2";
+                input.placeholder = "Enter challan no e.g. 5 or 1161";
             } else {
                 title.innerText = "🔍 Find Cutting By Style No.";
                 prefix.innerText = "SD-";
-                input.placeholder = "Enter style no e.g. 50";
+                input.placeholder = "Enter style no e.g. 50 or 0050";
             }
             modal.classList.remove('hidden');
             input.focus();
@@ -380,7 +390,7 @@
             const queryVal = document.getElementById('modalSearchInput').value.trim().toLowerCase();
             const resContainer = document.getElementById('modalSearchResult');
             if (!queryVal) {
-                resContainer.innerHTML = '<p class="text-slate-400 text-center py-4">Number daalein...</p>';
+                resContainer.innerHTML = '<p class="text-slate-400 text-center py-4">Number daalein, detail yahan dikhegi...</p>';
                 return;
             }
 
@@ -411,6 +421,7 @@
                             <div><b>Style No:</b> ${item.styleNo}</div>
                             <div><b>Print Name:</b> ${item.printName}</div>
                             <div><b>Item Name:</b> ${item.itemName}</div>
+                            <div><b>Fabricator:</b> ${item.fabricator}</div>
                         </div>
                         <div class="bg-white p-2 rounded border text-xs text-slate-800">
                             <b>Sizes:</b> ${sizeDetails}
@@ -429,13 +440,23 @@
         onSnapshot(q, (snapshot) => {
             cuttingList = [];
             snapshot.forEach((docSnap) => {
-                cuttingList.push({ docId: docSnap.id, ...docSnap.data() });
+                const data = docSnap.data();
+                cuttingList.push({ docId: docSnap.id, ...data });
+                if (data.fabricator && data.fabricator !== 'N/A') {
+                    autoCreateFabricatorAccount(data.fabricator);
+                }
             });
-            document.getElementById('syncStatus').innerText = "🟢 Cloud Live Synced";
+
+            const statusBadge = document.getElementById('syncStatus');
+            statusBadge.innerText = "🟢 Cloud Live Synced";
+            statusBadge.className = "text-[11px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-medium";
+
             renderTable();
         }, (error) => {
             console.error("Firebase Error:", error);
-            document.getElementById('syncStatus').innerText = "🔴 Connection Error";
+            const statusBadge = document.getElementById('syncStatus');
+            statusBadge.innerText = "🔴 Connection Error";
+            statusBadge.className = "text-[11px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full font-medium";
         });
 
         document.getElementById('cuttingForm').addEventListener('submit', async function(e) {
@@ -452,6 +473,10 @@
             const addaVal = document.getElementById('addaWork').value.trim();
             const cutNoVal = document.getElementById('cuttingNo').value.trim();
 
+            if (fabVal !== '') {
+                autoCreateFabricatorAccount(fabVal);
+            }
+
             let sizesObj = {};
             let rowTotal = 0;
 
@@ -467,11 +492,11 @@
             });
 
             const entry = {
-                challanNo: rawChallan.toUpperCase().startsWith('NH-') ? rawChallan.toUpperCase() : 'NH-' + rawChallan,
+                challanNo: rawChallan.startsWith('NH-') ? rawChallan : 'NH-' + rawChallan,
                 date: document.getElementById('dateInput').value,
                 category: document.getElementById('categoryInput').value,
                 printName: document.getElementById('printName').value.trim(),
-                styleNo: rawStyle.toUpperCase().startsWith('SD-') ? rawStyle.toUpperCase() : 'SD-' + rawStyle,
+                styleNo: rawStyle.startsWith('SD-') ? rawStyle : 'SD-' + rawStyle,
                 itemName: document.getElementById('itemName').value.trim(),
                 clothMitre: clothVal === '' ? 'N/A' : clothVal,
                 fabricator: fabVal === '' ? 'N/A' : fabVal,
@@ -494,6 +519,7 @@
                 }
             } catch (err) {
                 alert("Data save nahi ho paya!");
+                console.error(err);
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerText = editDocId ? "✔ Update Entry" : "✔ Save to Cloud";
@@ -520,11 +546,13 @@
                 const val = item.sizes[sz];
                 document.getElementById('sz_' + sz).value = (val === 'N/A' || val === undefined) ? '' : val;
             });
+
             calcTotal();
 
             document.getElementById('formTitleText').innerHTML = `<span>✏️ Edit Cutting Entry (${item.challanNo})</span>`;
             document.getElementById('saveBtn').innerText = "✔ Update Entry";
             document.getElementById('cancelEditBtn').classList.remove('hidden');
+
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -540,6 +568,11 @@
             const queryText = document.getElementById('searchBox').value.toLowerCase();
             tbody.innerHTML = '';
 
+            const challanCounts = {};
+            cuttingList.forEach(item => {
+                challanCounts[item.challanNo] = (challanCounts[item.challanNo] || 0) + 1;
+            });
+
             let grandTotal = 0;
             let visibleCount = 0;
 
@@ -550,15 +583,18 @@
                 visibleCount++;
                 grandTotal += item.total;
 
+                const isDup = challanCounts[item.challanNo] > 1;
+                const challanClass = isDup ? 'dup-challan text-center' : 'font-semibold text-center';
+
                 let sizeCellsHTML = '';
                 sizeKeys.forEach(sz => {
                     sizeCellsHTML += renderCell(item.sizes[sz], 'text-center font-medium');
                 });
 
-                tbody.innerHTML += `
+                const tr = `
                     <tr class="hover:bg-blue-50 transition">
                         <td class="text-center font-bold bg-slate-50">${index + 1}</td>
-                        <td class="font-semibold text-center">${item.challanNo}</td>
+                        <td class="${challanClass}">${item.challanNo}</td>
                         <td class="text-center">${formatDateIN(item.date)}</td>
                         <td class="text-center font-semibold text-teal-700 bg-teal-50">${item.category || 'Kurti'}</td>
                         <td class="font-medium">${item.printName}</td>
@@ -571,21 +607,62 @@
                         ${sizeCellsHTML}
                         <td class="text-center font-bold bg-amber-50 text-slate-900">${item.total}</td>
                         <td class="text-center space-x-1">
-                            <button onclick="editRow('${item.docId}')" class="text-amber-600 hover:text-amber-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-amber-50">✏️</button>
-                            <button onclick="deleteRow('${item.docId}')" class="text-red-600 hover:text-red-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50">✖</button>
+                            <button onclick="editRow('${item.docId}')" class="text-amber-600 hover:text-amber-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-amber-50" title="Edit">✏️</button>
+                            <button onclick="deleteRow('${item.docId}')" class="text-red-600 hover:text-red-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50" title="Delete">✖</button>
                         </td>
                     </tr>
                 `;
+                tbody.innerHTML += tr;
             });
+
+            if (visibleCount === 0) {
+                tbody.innerHTML = `<tr><td colspan="21" class="text-center py-8 text-slate-400">Koi entry nahi mili. Upar form se nayi cutting entry add karein!</td></tr>`;
+            }
 
             document.getElementById('entryCount').innerText = visibleCount;
             document.getElementById('grandTotalPcs').innerText = grandTotal;
         }
 
         window.deleteRow = async function(docId) {
-            if (confirm('Kya aap is entry ko delete karna chahte hain?')) {
-                await deleteDoc(doc(db, "ssf_cutting_records", docId));
+            if (confirm('Kya aap is entry ko cloud se delete karna chahte hain?')) {
+                try {
+                    await deleteDoc(doc(db, "ssf_cutting_records", docId));
+                } catch (err) {
+                    alert("Delete karne mein error aaya!");
+                }
             }
+        }
+
+        window.exportToCSV = function() {
+            if (cuttingList.length === 0) {
+                alert('Download karne ke liye pehle kuch entries add karein!');
+                return;
+            }
+            const headers = ['S.no', 'Challan No.', 'Date', 'Category', 'Print Name', 'Style Name', 'ITEM NAME', 'Cloth Mitre', 'Fabricator Name', 'Adda Work / HandWork', 'Cutting No', 'S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL', 'Total'];
+            const rows = cuttingList.map((item, idx) => [
+                idx + 1,
+                item.challanNo,
+                formatDateIN(item.date),
+                item.category || 'Kurti',
+                `"${item.printName}"`,
+                item.styleNo,
+                `"${item.itemName}"`,
+                item.clothMitre,
+                `"${item.fabricator}"`,
+                `"${item.addaWork}"`,
+                item.cuttingNo,
+                item.sizes.S, item.sizes.M, item.sizes.L, item.sizes.XL, item.sizes.XXL, item.sizes['3XL'], item.sizes['4XL'], item.sizes['5XL'],
+                item.total
+            ]);
+
+            let csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Shree_Shyam_Fashion_Cutting_Sheet.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>
