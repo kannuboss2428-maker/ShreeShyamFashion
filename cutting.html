@@ -57,7 +57,6 @@
 
         <!-- Entry Form Card -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-            <!-- यहाँ आपका नया हेडर बटन के साथ सेट कर दिया गया है -->
             <div class="mb-4 border-b pb-3 flex flex-wrap justify-between items-center gap-3">
                 <h2 id="formTitleText" class="text-base font-bold text-slate-800 flex items-center gap-2">
                     <span>➕ Add New Cutting Entry</span>
@@ -78,10 +77,10 @@
                 <!-- Row 1 -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">Challan No. *</label>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Challan No. * (Type no to auto-fill)</label>
                         <div class="flex items-center border border-slate-300 rounded-lg overflow-hidden focus-within:border-blue-500">
                             <span class="bg-slate-100 text-slate-700 font-bold px-2.5 py-2 text-sm border-r border-slate-300 select-none">NH-</span>
-                            <input type="text" id="challanInput" placeholder="1161" required class="w-full px-2.5 py-2 text-sm focus:outline-none font-semibold">
+                            <input type="text" id="challanInput" placeholder="2" oninput="autoFillByChallan()" required class="w-full px-2.5 py-2 text-sm focus:outline-none font-semibold">
                         </div>
                     </div>
 
@@ -143,9 +142,9 @@
                     </div>
                 </div>
 
-                <!-- Row 3: Sizes -->
+                <!-- Row 3: Sizes Matrix S to 5XL -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Qty (Size-Wise Pieces — Khali size automatic N/A banega)</label>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Qty (Size-Wise Pieces — S, M, L, XL, XXL, 3XL, 4XL, 5XL)</label>
                     <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 items-center">
                         <div>
                             <span class="block text-center text-xs font-bold text-slate-600">S</span>
@@ -357,6 +356,26 @@
             document.getElementById('liveTotal').innerText = sum;
         }
 
+        // Auto Fill Details when typing Challan No (e.g. 2 -> NH-2)
+        window.autoFillByChallan = function() {
+            const val = document.getElementById('challanInput').value.trim();
+            if (!val) return;
+            const fullChallan = val.toUpperCase().startsWith('NH-') ? val.toUpperCase() : 'NH-' + val;
+            
+            // Match from existing loaded cuttingList
+            const found = cuttingList.find(item => item.challanNo.toUpperCase() === fullChallan);
+            if (found) {
+                document.getElementById('categoryInput').value = found.category || 'Kurti';
+                document.getElementById('printName').value = found.printName || '';
+                document.getElementById('styleInput').value = found.styleNo ? found.styleNo.replace('SD-', '') : '';
+                document.getElementById('itemName').value = found.itemName || '';
+                document.getElementById('clothMitre').value = found.clothMitre === 'N/A' ? '' : found.clothMitre;
+                document.getElementById('fabricatorName').value = found.fabricator === 'N/A' ? '' : found.fabricator;
+                document.getElementById('addaWork').value = found.addaWork === 'N/A' ? '' : found.addaWork;
+                document.getElementById('cuttingNo').value = found.cuttingNo === 'N/A' ? '' : found.cuttingNo;
+            }
+        }
+
         // Modal Search Functions
         window.openSearchModal = function(mode) {
             currentSearchMode = mode;
@@ -371,7 +390,7 @@
             if (mode === 'challan') {
                 title.innerText = "🔍 Find Cutting By Challan No.";
                 prefix.innerText = "NH-";
-                input.placeholder = "Enter challan no e.g. 5 or 1161";
+                input.placeholder = "Enter challan no e.g. 2 or 1161";
             } else {
                 title.innerText = "🔍 Find Cutting By Style No.";
                 prefix.innerText = "SD-";
@@ -493,11 +512,11 @@
             });
 
             const entry = {
-                challanNo: rawChallan.startsWith('NH-') ? rawChallan : 'NH-' + rawChallan,
+                challanNo: rawChallan.toUpperCase().startsWith('NH-') ? rawChallan.toUpperCase() : 'NH-' + rawChallan,
                 date: document.getElementById('dateInput').value,
                 category: document.getElementById('categoryInput').value,
                 printName: document.getElementById('printName').value.trim(),
-                styleNo: rawStyle.startsWith('SD-') ? rawStyle : 'SD-' + rawStyle,
+                styleNo: rawStyle.toUpperCase().startsWith('SD-') ? rawStyle.toUpperCase() : 'SD-' + rawStyle,
                 itemName: document.getElementById('itemName').value.trim(),
                 clothMitre: clothVal === '' ? 'N/A' : clothVal,
                 fabricator: fabVal === '' ? 'N/A' : fabVal,
