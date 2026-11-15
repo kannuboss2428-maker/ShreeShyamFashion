@@ -3,193 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shree Shyam Fashion - Billbook & Challan (NIHAR)</title>
+    <title>BillBook (NIHAR) - SHREE SHYAM FASHION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
-        .challan-box {
-            background-color: #f6eed5;
-            border: 2px solid #222;
-        }
         .excel-table th, .excel-table td {
-            border: 1px solid #333;
-            padding: 4px 6px;
-            font-size: 12px;
-        }
-        .excel-table input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            text-align: center;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .excel-table input:focus {
-            outline: none;
-            background: rgba(255,255,255,0.7);
-        }
-        @media print {
-            body { background: #fff; padding: 0; }
-            .no-print { display: none !important; }
-            .challan-box { box-shadow: none; border: 2px solid #000; width: 100%; max-width: 100%; }
+            border: 1px solid #cbd5e1;
+            padding: 6px 8px;
+            font-size: 13px;
+            white-space: nowrap;
         }
     </style>
 </head>
-<body class="text-slate-800 pb-12">
+<body class="text-slate-800">
 
-    <!-- Top Navigation / Controls -->
-    <nav class="bg-slate-900 text-white shadow-md sticky top-0 z-20 no-print">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
+    <!-- Top Header -->
+    <nav class="bg-slate-900 text-white shadow-md sticky top-0 z-20">
+        <div class="max-w-[98%] mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-2">
             <div class="flex items-center gap-3">
-                <span class="text-2xl">📜</span>
+                <span class="text-2xl">📖</span>
                 <div>
                     <h1 class="text-lg font-bold tracking-wide text-amber-400">SHREE SHYAM FASHION</h1>
                     <div class="flex items-center gap-2">
-                        <p class="text-xs text-slate-400">Billbook & Challan (Party: NIHAR)</p>
+                        <p class="text-xs text-slate-400">BillBook (Party: NIHAR)</p>
                         <span id="syncStatus" class="text-[11px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-medium">⏳ Connecting Cloud...</span>
                     </div>
                 </div>
             </div>
-            <div class="flex flex-wrap gap-2">
-                <button onclick="saveBillToCloud()" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1.5 rounded text-xs font-bold shadow transition">
-                    ☁️ Save to Cloud
-                </button>
-                <button onclick="openHistoryModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded text-xs font-bold shadow transition">
-                    📂 Saved Bills
-                </button>
-                <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-bold shadow transition">
-                    🖨️ Print / PDF
-                </button>
+            <div class="flex items-center gap-3">
                 <a href="cutting.html" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
-                    ✂️ Cutting Page
+                    ✂️ Cutting Register
+                </a>
+                <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
+                    ⬅ Dashboard
                 </a>
             </div>
         </div>
     </nav>
 
-    <!-- Status Bar for Pending / Done Check -->
-    <div class="max-w-5xl mx-auto mt-4 px-4 no-print">
-        <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-300 flex flex-wrap justify-between items-center gap-3">
+    <div class="max-w-[98%] mx-auto py-5 space-y-6">
+
+        <!-- Search & Status Bar for Pending/Done -->
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-4">
             <div>
-                <h3 class="font-bold text-slate-800 text-xs">🔍 Check Pending / Done Status (Cutting vs Billbook)</h3>
-                <p class="text-[11px] text-slate-500">Challan No (e.g. NH-2) ya Style No daalkar check karein.</p>
+                <h3 class="font-bold text-slate-800 text-sm">🔍 Check Pending / Done Status</h3>
+                <p class="text-xs text-slate-500">Challan No ya Style No daalkar check karein kitna maal gaya aur kitna pending hai.</p>
             </div>
             <div class="flex gap-2">
-                <input type="text" id="checkInput" placeholder="NH-2 or SD-101" class="border border-slate-300 rounded px-2 py-1 text-xs w-36 font-semibold bg-slate-50">
-                <button onclick="checkPendingDone()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded text-xs font-bold shadow">Check</button>
+                <input type="text" id="checkInput" placeholder="e.g. NH-5 or SD-101" class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-48 focus:outline-none focus:border-blue-500 font-semibold">
+                <button onclick="checkPendingDone()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow">Check Status</button>
             </div>
         </div>
-        <div id="statusResultBox" class="hidden bg-slate-900 text-white p-3 rounded-xl shadow-lg border border-slate-700 space-y-1 mt-2 text-xs"></div>
+
+        <!-- Status Result Box -->
+        <div id="statusResultBox" class="hidden bg-slate-900 text-white p-4 rounded-xl shadow-lg border border-slate-700 space-y-2"></div>
+
+        <!-- BillBook Entry Form -->
+        <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+            <h2 id="formTitleText" class="text-base font-bold text-slate-800 mb-4 border-b pb-2 flex justify-between items-center">
+                <span>➕ Create New BillBook Challan (For NIHAR)</span>
+            </h2>
+
+            <form id="billbookForm" class="space-y-4">
+                <input type="hidden" id="editDocId" value="">
+
+                <!-- Top Meta Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">BillBook Challan No. *</label>
+                        <input type="text" id="billChallanNo" placeholder="701" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none font-semibold bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Date *</label>
+                        <input type="date" id="billDate" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Party Name (Fixed)</label>
+                        <input type="text" id="partyName" value="NIHAR" readonly class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-200 font-bold text-slate-700 cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Select Cutting Challan No. (Auto-Fill) *</label>
+                        <input type="text" id="sourceChallan" list="cuttingChallans" placeholder="Type NH-5" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none font-semibold bg-white" onchange="autofillFromCutting()">
+                        <datalist id="cuttingChallans"></datalist>
+                    </div>
+                </div>
+
+                <!-- Item Details -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Style No. *</label>
+                        <input type="text" id="styleInput" placeholder="SD-101" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Print No. *</label>
+                        <input type="text" id="printNo" placeholder="Print-55" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Item Name *</label>
+                        <input type="text" id="itemName" placeholder="Midi / Kurti Set" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">Size Selection Mode *</label>
+                        <select id="sizeMode" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white font-semibold" onchange="toggleSizeMode()">
+                            <option value="individual">Size-Wise (S, M, L...)</option>
+                            <option value="all">ALL Sizes Combined</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Size Matrix Input -->
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="block text-xs font-bold text-slate-700 uppercase">Qty (Size-Wise Pieces)</label>
+                        <span id="cuttingLimitInfo" class="text-xs text-blue-700 font-bold">Cutting Limit: Select a challan first</span>
+                    </div>
+                    <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 items-center" id="sizeInputsContainer">
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">S</span>
+                            <input type="number" min="0" id="sz_S" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">M</span>
+                            <input type="number" min="0" id="sz_M" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">L</span>
+                            <input type="number" min="0" id="sz_L" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">XL</span>
+                            <input type="number" min="0" id="sz_XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">XXL</span>
+                            <input type="number" min="0" id="sz_XXL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">3XL</span>
+                            <input type="number" min="0" id="sz_3XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">4XL</span>
+                            <input type="number" min="0" id="sz_4XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div>
+                            <span class="block text-center text-xs font-bold text-slate-600">5XL</span>
+                            <input type="number" min="0" id="sz_5XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
+                        </div>
+                        <div class="bg-blue-600 text-white rounded-lg p-1.5 text-center shadow-sm">
+                            <span class="block text-[10px] uppercase font-semibold opacity-90">Total Pcs</span>
+                            <span id="liveTotal" class="text-lg font-bold">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3">
+                    <button type="button" id="cancelEditBtn" onclick="resetForm()" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hidden">
+                        Cancel Edit
+                    </button>
+                    <button type="reset" onclick="setTimeout(resetDefaults, 10)" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50">
+                        Reset
+                    </button>
+                    <button type="submit" id="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-bold shadow transition">
+                        ✔ Save BillBook Entry
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- BillBook Data Sheet Table -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="p-4 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3 bg-slate-50">
+                <div class="flex items-center gap-4">
+                    <h3 class="font-bold text-slate-800">📊 BillBook Records (NIHAR Master Sheet)</h3>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                        Total Entries: <span id="entryCount">0</span>
+                    </span>
+                    <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">
+                        Grand Total Pcs: <span id="grandTotalPcs">0</span>
+                    </span>
+                </div>
+                <input type="text" id="searchBox" onkeyup="renderTable()" placeholder="🔍 Search Bill Challan, Source Challan, Style..." class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-64 focus:outline-none focus:border-blue-500">
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full excel-table border-collapse text-left">
+                    <thead>
+                        <tr class="bg-slate-800 text-white text-center text-xs">
+                            <th colspan="8" class="bg-teal-600 text-white font-bold">BILLBOOK & CHALLAN INFO</th>
+                            <th colspan="8" class="bg-orange-600 text-white font-bold">QTY (SIZE-WISE)</th>
+                            <th colspan="2" class="bg-slate-700 text-white font-bold">SUMMARY</th>
+                        </tr>
+                        <tr class="bg-teal-200 text-slate-900 font-bold text-center">
+                            <th>S.no</th>
+                            <th>Bill Challan No</th>
+                            <th>Date</th>
+                            <th>Party</th>
+                            <th>Source Challan</th>
+                            <th>Style No</th>
+                            <th>Print No</th>
+                            <th>Item Name</th>
+                            <th class="bg-sky-200">S</th>
+                            <th class="bg-sky-200">M</th>
+                            <th class="bg-sky-200">L</th>
+                            <th class="bg-sky-200">XL</th>
+                            <th class="bg-sky-200">XXL</th>
+                            <th class="bg-sky-200">3XL</th>
+                            <th class="bg-sky-200">4XL</th>
+                            <th class="bg-sky-200">5XL</th>
+                            <th class="bg-amber-200">Total</th>
+                            <th class="bg-slate-200">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sheetBody" class="bg-white divide-y divide-slate-200">
+                        <tr><td colspan="18" class="text-center py-8 text-slate-400">Cloud se data load ho raha hai...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-    <!-- Main Billbook Sheet -->
-    <div class="max-w-5xl mx-auto mt-4 p-4 md:p-6 challan-box shadow-xl rounded-lg">
-        
-        <!-- Header Section -->
-        <div class="flex flex-wrap justify-between items-start border-b-2 border-slate-900 pb-4 gap-4">
-            <div class="w-full md:w-2/3 text-center md:text-left">
-                <div class="text-xs font-bold tracking-widest text-slate-700 uppercase">✈ CHALLAN ✈</div>
-                <h2 class="font-serif text-3xl md:text-4xl font-bold italic tracking-wide text-slate-900">Shree Shyam Fashion</h2>
-                <p class="text-xs font-semibold text-slate-800 mt-1">Mal Ki Dhani, Malpura Gate, Sanganer, Jaipur (Raj.)-302029</p>
-                <div class="inline-block border border-slate-900 px-3 py-0.5 text-xs font-bold mt-2 bg-white/40">
-                    GSTIN: 08BYRPK4944B1Z7
-                </div>
-            </div>
-
-            <div class="w-full md:w-1/4 text-right text-xs font-bold space-y-1">
-                <div>Vijay Kumawat : <input type="text" id="contact1" value="9588238040" class="w-24 text-right font-bold bg-transparent border-b border-slate-700"></div>
-                <div>Sanjay Kumawat : <input type="text" id="contact2" value="9588238776" class="w-24 text-right font-bold bg-transparent border-b border-slate-700"></div>
-                
-                <div class="flex justify-between items-center pt-2">
-                    <span>Bill Challan No.</span>
-                    <input type="text" id="challanNo" value="701" oninput="autoFillBill()" class="w-24 text-center text-red-600 font-mono text-lg font-bold bg-transparent border-b border-dashed border-slate-900">
-                </div>
-                <div class="flex justify-between items-center">
-                    <span>Date</span>
-                    <input type="date" id="challanDate" class="w-28 text-center font-bold bg-transparent border-b border-slate-900">
-                </div>
-            </div>
-        </div>
-
-        <!-- Party Details Section -->
-        <div class="py-3 border-b-2 border-slate-900 space-y-2 text-sm font-bold">
-            <div class="flex items-center gap-2">
-                <span>M/s.</span>
-                <input type="text" id="partyName" value="NIHAR" class="flex-1 bg-transparent border-b border-slate-900 px-2 py-1 font-bold text-red-700">
-            </div>
-            <div>
-                <input type="text" id="partyAddress" value="Maal Sirf NIHAR ke paas jata hai" class="w-full bg-transparent border-b border-slate-900 px-2 py-1 text-xs font-semibold">
-            </div>
-        </div>
-
-        <!-- Items Matrix Table -->
-        <div class="overflow-x-auto mt-4">
-            <table class="w-full excel-table border-collapse bg-white/60">
-                <thead>
-                    <tr class="bg-slate-200 text-slate-900 font-bold text-center">
-                        <th style="width: 5%;">Sr</th>
-                        <th style="width: 12%;">Cutting Challan (NH-)</th>
-                        <th style="width: 12%;">Style No</th>
-                        <th style="width: 12%;">Print No</th>
-                        <th style="width: 17%;">Item Name</th>
-                        <th style="width: 5%;">S</th>
-                        <th style="width: 5%;">M</th>
-                        <th style="width: 5%;">L</th>
-                        <th style="width: 5%;">XL</th>
-                        <th style="width: 5%;">XXL</th>
-                        <th style="width: 5%;">3XL</th>
-                        <th style="width: 5%;">4XL</th>
-                        <th style="width: 5%;">5XL</th>
-                        <th style="width: 12%;">Total Qty</th>
-                    </tr>
-                </thead>
-                <tbody id="billTableBody">
-                    <!-- Dynamic Rows -->
-                </tbody>
-                <tfoot>
-                    <tr class="bg-slate-200 font-bold">
-                        <td colspan="13" class="text-right pr-3 py-2">TOTAL QTY:</td>
-                        <td id="grandTotalQty" class="text-center text-red-700 font-bold text-sm">0</td>
-                    </tr>
-                </tfoot>
-            </table>
-            <datalist id="cuttingChallansList"></datalist>
-        </div>
-
-        <div class="no-print mt-3 text-right">
-            <button onclick="addRow()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1 rounded text-xs font-bold">
-                + Add Row
-            </button>
-        </div>
-
-        <!-- Footer Signatures -->
-        <div class="flex justify-between items-end mt-12 pt-4 text-xs font-bold">
-            <div>E. & O.E.</div>
-            <div class="border-t border-slate-900 pt-1 text-center w-40">Receiver's Signature</div>
-            <div class="font-serif italic text-sm">For- Shree Shyam Fashion</div>
-        </div>
-
-    </div>
-
-    <!-- SAVED BILLS MODAL -->
-    <div id="historyModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden no-print">
-        <div class="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200">
-            <div class="flex justify-between items-center mb-4 border-b pb-3">
-                <h3 class="text-lg font-bold text-slate-800">📂 Saved Cloud Bills</h3>
-                <button onclick="closeHistoryModal()" class="text-red-600 hover:text-red-800 font-bold text-xl px-2">×</button>
-            </div>
-            <input type="text" id="searchHistory" placeholder="Search by Challan No or Party Name..." oninput="filterHistory()" class="w-full border border-slate-300 px-3 py-2 text-xs rounded mb-3 focus:outline-none focus:border-blue-500">
-            <div id="historyList" class="max-h-[350px] overflow-y-auto space-y-2">
-                <p class="text-slate-400 text-center py-4">Loading cloud bills...</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Firebase SDK & Script -->
+    <!-- Firebase SDK & App Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, updateDoc, onSnapshot, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCOmvNfkMXcbLATJlN6tiaCCUBN9vfyf-s",
@@ -203,312 +242,334 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const billsCol = collection(db, "ssf_billbook_records");
-        const cuttingCol = collection(db, "ssf_cutting_records");
+        const billbookCollection = collection(db, "ssf_billbook_nihar_records");
+        const cuttingCollection = collection(db, "ssf_cutting_records");
 
         const sizeKeys = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
-        const INITIAL_ROWS = 10;
-        let allSavedBills = [];
+        let billbookList = [];
         let cuttingList = [];
+        let selectedCuttingItem = null;
 
-        document.getElementById('challanDate').valueAsDate = new Date();
-
-        // Real-time Cutting Data Sync for Auto-fill & Verification
-        onSnapshot(query(cuttingCol, orderBy("createdAt", "asc")), (snapshot) => {
+        onSnapshot(query(cuttingCollection, orderBy("createdAt", "asc")), (snapshot) => {
             cuttingList = [];
-            const dl = document.getElementById('cuttingChallansList');
+            const dl = document.getElementById('cuttingChallans');
             dl.innerHTML = '';
-            snapshot.forEach(docSnap => {
+            snapshot.forEach((docSnap) => {
                 const data = docSnap.data();
                 cuttingList.push(data);
                 dl.innerHTML += `<option value="${data.challanNo}">`;
             });
         });
 
-        function createRow(index, data = {}) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="text-center font-bold">${index}</td>
-                <td><input type="text" class="row-sub" list="cuttingChallansList" value="${data.subChallan || ''}" oninput="autoFillRowFromCutting(this)" placeholder="NH-2"></td>
-                <td><input type="text" class="row-style" value="${data.style || ''}"></td>
-                <td><input type="text" class="row-print" value="${data.print || ''}"></td>
-                <td><input type="text" class="row-item text-left pl-1" value="${data.item || ''}"></td>
-                ${sizeKeys.map(sz => `<td><input type="number" min="0" class="row-sz row-${sz}" value="${data.sizes && data.sizes[sz] ? data.sizes[sz] : ''}" oninput="calcRowTotal(this)"></td>`).join('')}
-                <td class="text-center font-bold row-tot bg-amber-50">0</td>
-            `;
-            return tr;
+        window.resetDefaults = function() {
+            document.getElementById('billDate').valueAsDate = new Date();
+            document.getElementById('liveTotal').innerText = '0';
+            selectedCuttingItem = null;
+            document.getElementById('cuttingLimitInfo').innerText = "Cutting Limit: Select a challan first";
+        }
+        resetDefaults();
+
+        window.resetForm = function() {
+            document.getElementById('billbookForm').reset();
+            document.getElementById('editDocId').value = '';
+            document.getElementById('formTitleText').innerHTML = '<span>➕ Create New BillBook Challan (For NIHAR)</span>';
+            document.getElementById('saveBtn').innerText = "✔ Save BillBook Entry";
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            document.getElementById('partyName').value = "NIHAR";
+            resetDefaults();
         }
 
-        function initTable(rowsData = []) {
-            const tbody = document.getElementById('billTableBody');
-            tbody.innerHTML = '';
-            const totalRows = Math.max(INITIAL_ROWS, rowsData.length);
-            for (let i = 0; i < totalRows; i++) {
-                tbody.appendChild(createRow(i + 1, rowsData[i] || {}));
+        window.toggleSizeMode = function() {
+            const mode = document.getElementById('sizeMode').value;
+            const container = document.getElementById('sizeInputsContainer');
+            if (mode === 'all') {
+                container.innerHTML = `
+                    <div class="col-span-8 bg-amber-50 p-3 rounded border text-center font-bold text-slate-700 text-sm">
+                        ALL Sizes Selected
+                    </div>
+                    <div class="bg-blue-600 text-white rounded-lg p-1.5 text-center shadow-sm">
+                        <span class="block text-[10px] uppercase font-semibold opacity-90">Total Pcs</span>
+                        <span id="liveTotal" class="text-lg font-bold">0</span>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div><span class="block text-center text-xs font-bold text-slate-600">S</span><input type="number" min="0" id="sz_S" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                    <div><span class="block text-center text-xs font-bold text-slate-600">M</span><input type="number" min="0" id="sz_M" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                    <div><span class="block text-center text-xs font-bold text-slate-600">L</span><input type="number" min="0" id="sz_L" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                    <div><span class="block text-center text-xs font-bold text-slate-600">XL</span><input type="number" min="0" id="sz_XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                    <div><span class="block text-center text-xs font-bold text-slate-600">XXL</span><input type="number" min="0" id="sz_XXL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                    <div><span class="block text-center text-xs font-bold text-slate-600">3XL</span><input type="number" min="0" id="sz_3XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                    <div><span class="block text-center text-xs font-bold text-slate-600">4XL</span><input type="number" min="0" id="sz_4XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                    <div><span class="block text-center text-xs font-bold text-slate-600">5XL</span><input type="number" min="0" id="sz_5XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                    <div class="bg-blue-600 text-white rounded-lg p-1.5 text-center shadow-sm">
+                        <span class="block text-[10px] uppercase font-semibold opacity-90">Total Pcs</span>
+                        <span id="liveTotal" class="text-lg font-bold">0</span>
+                    </div>
+                `;
             }
-            document.querySelectorAll('#billTableBody tr').forEach(tr => calcRowTotal(tr.querySelector('.row-sz')));
+            calcTotal();
         }
 
-        window.addRow = function() {
-            const tbody = document.getElementById('billTableBody');
-            tbody.appendChild(createRow(tbody.rows.length + 1));
-        }
-
-        // Auto-fill row details when typing Cutting Challan No (e.g. NH-2 or 2)
-        window.autoFillRowFromCutting = function(inputEl) {
-            const val = inputEl.value.trim().toUpperCase();
-            if (!val) return;
-            const fullCh = val.startsWith('NH-') ? val : 'NH-' + val;
-
-            const found = cuttingList.find(c => c.challanNo.toUpperCase() === fullChالन || c.challanNo.toUpperCase() === fullCh);
+        window.autofillFromCutting = function() {
+            const val = document.getElementById('sourceChallan').value.trim().toUpperCase();
+            const found = cuttingList.find(c => c.challanNo.toUpperCase() === val || c.challanNo.toUpperCase() === 'NH-' + val);
             if (found) {
-                const tr = inputEl.closest('tr');
-                tr.querySelector('.row-style').value = found.styleNo || '';
-                tr.querySelector('.row-print').value = found.printName || '';
-                tr.querySelector('.row-item').value = found.itemName || '';
-                
-                // Optional: Auto-fill sizes if needed or leave blank for user entry
+                selectedCuttingItem = found;
+                document.getElementById('styleInput').value = found.styleNo;
+                document.getElementById('printNo').value = found.printName;
+                document.getElementById('itemName').value = found.itemName;
+                document.getElementById('cuttingLimitInfo').innerText = `Cutting Total: ${found.total} Pcs available.`;
+            } else {
+                selectedCuttingItem = null;
+                document.getElementById('cuttingLimitInfo').innerText = "Cutting Challan not found!";
+            }
+        }
+
+        window.calcTotal = function() {
+            let sum = 0;
+            const mode = document.getElementById('sizeMode').value;
+            if (mode === 'individual') {
                 sizeKeys.forEach(sz => {
-                    if (found.sizes && found.sizes[sz] && found.sizes[sz] !== 'N/A') {
-                        tr.querySelector(`.row-${sz}`).value = found.sizes[sz];
+                    const el = document.getElementById('sz_' + sz);
+                    if (el) {
+                        const val = parseInt(el.value) || 0;
+                        sum += val;
                     }
                 });
-                calcRowTotal(inputEl);
             }
+            document.getElementById('liveTotal').innerText = sum;
         }
 
-        window.calcRowTotal = function(element) {
-            const tr = element.closest('tr');
-            let rowSum = 0;
-            sizeKeys.forEach(sz => {
-                const val = parseInt(tr.querySelector(`.row-${sz}`).value);
-                if (!isNaN(val) && val > 0) rowSum += val;
+        onSnapshot(query(billbookCollection, orderBy("createdAt", "asc")), (snapshot) => {
+            billbookList = [];
+            snapshot.forEach((docSnap) => {
+                billbookList.push({ docId: docSnap.id, ...docSnap.data() });
             });
-            tr.querySelector('.row-tot').innerText = rowSum;
-            calcGrandTotal();
-        }
 
-        function calcGrandTotal() {
-            let grand = 0;
-            document.querySelectorAll('.row-tot').forEach(el => {
-                const val = parseInt(el.innerText);
-                if (!isNaN(val)) grand += val;
-            });
-            document.getElementById('grandTotalQty').innerText = grand;
-        }
+            document.getElementById('syncStatus').innerText = "🟢 Cloud Live Synced";
+            document.getElementById('syncStatus').className = "text-[11px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-medium";
+            renderTable();
+        }, (error) => {
+            console.error("Firebase Error:", error);
+            document.getElementById('syncStatus').innerText = "🔴 Connection Error";
+        });
 
-        // Check Pending / Done Status
         window.checkPendingDone = function() {
-            const qVal = document.getElementById('checkInput').value.trim().toUpperCase();
+            const queryVal = document.getElementById('checkInput').value.trim().toUpperCase();
             const box = document.getElementById('statusResultBox');
-            if (!qVal) {
+            if (!queryVal) {
                 box.classList.add('hidden');
                 return;
             }
 
-            const cuttingMatch = cuttingList.find(c => c.challanNo.toUpperCase().includes(qVal) || c.styleNo.toUpperCase().includes(qVal));
+            const cuttingMatch = cuttingList.find(c => c.challanNo.toUpperCase().includes(queryVal) || c.styleNo.toUpperCase().includes(queryVal));
             if (!cuttingMatch) {
-                box.innerHTML = `<span class="text-red-400 font-semibold">Cutting mein is Challan ya Style ka record nahi mila!</span>`;
+                box.innerHTML = `<p class="text-red-400 font-semibold">Koi cutting record nahi mila is query ke liye!</p>`;
                 box.classList.remove('hidden');
                 return;
             }
 
+            const sentRecords = billbookList.filter(b => b.sourceChallan.toUpperCase() === cuttingMatch.challanNo.toUpperCase() || b.styleNo.toUpperCase() === cuttingMatch.styleNo.toUpperCase());
             let sentTotal = 0;
-            allSavedBills.forEach(bill => {
-                if (bill.rows) {
-                    bill.rows.forEach(r => {
-                        const subCh = (r.subChallan || '').toUpperCase();
-                        const st = (r.style || '').toUpperCase();
-                        if (subCh.includes(cuttingMatch.challanNo.toUpperCase()) || st.includes(cuttingMatch.styleNo.toUpperCase())) {
-                            sizeKeys.forEach(sz => {
-                                if (r.sizes && r.sizes[sz]) sentTotal += parseInt(r.sizes[sz]) || 0;
-                            });
-                        }
-                    });
-                }
-            });
+            sentRecords.forEach(r => sentTotal += r.total);
 
             let pending = cuttingMatch.total - sentTotal;
             if (pending < 0) pending = 0;
 
             box.innerHTML = `
-                <div class="flex justify-between font-bold text-amber-300 border-b border-slate-700 pb-1">
-                    <span>Challan: ${cuttingMatch.challanNo} (${cuttingMatch.styleNo})</span>
-                    <button onclick="document.getElementById('statusResultBox').classList.add('hidden')" class="text-red-400">✖</button>
+                <div class="flex justify-between items-center border-b border-slate-700 pb-2">
+                    <span class="font-bold text-amber-400">📊 Status Report for Cutting Challan: ${cuttingMatch.challanNo} (${cuttingMatch.styleNo})</span>
+                    <button onclick="document.getElementById('statusResultBox').classList.add('hidden')" class="text-red-400 font-bold text-sm">✖ Close</button>
                 </div>
-                <div class="grid grid-cols-3 gap-2 pt-1 text-center">
-                    <div class="bg-slate-800 p-1 rounded">Total Cut: <strong class="text-white">${cuttingMatch.total}</strong></div>
-                    <div class="bg-emerald-950 p-1 rounded">Done (Gya): <strong class="text-emerald-400">${sentTotal}</strong></div>
-                    <div class="bg-rose-950 p-1 rounded">Pending: <strong class="text-rose-400">${pending}</strong></div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-2">
+                    <div class="bg-slate-800 p-2.5 rounded border border-slate-700">
+                        <span class="block text-slate-400">Total Cut Pcs (Cutting):</span>
+                        <strong class="text-base text-white">${cuttingMatch.total} Pcs</strong>
+                    </div>
+                    <div class="bg-emerald-950/60 p-2.5 rounded border border-emerald-800">
+                        <span class="block text-emerald-300">Done (NIHAR ko Gaya):</span>
+                        <strong class="text-base text-emerald-400">${sentTotal} Pcs</strong>
+                    </div>
+                    <div class="bg-rose-950/60 p-2.5 rounded border border-rose-800">
+                        <span class="block text-rose-300">Pending (Abhi Bacha hai):</span>
+                        <strong class="text-base text-rose-400">${pending} Pcs</strong>
+                    </div>
                 </div>
             `;
             box.classList.remove('hidden');
         }
 
-        async function fetchBills() {
-            try {
-                const q = query(billsCol, orderBy("challanNo", "desc"));
-                const snapshot = await getDocs(q);
-                allSavedBills = [];
-                snapshot.forEach(docSnap => {
-                    allSavedBills.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                document.getElementById('syncStatus').innerText = "🟢 Cloud Live Synced";
-            } catch (err) {
-                console.error(err);
-                document.getElementById('syncStatus').innerText = "🔴 Sync Error";
-            }
-        }
-        fetchBills();
+        document.getElementById('billbookForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerText = "⏳ Saving...";
 
-        window.autoFillBill = function() {
-            const no = document.getElementById('challanNo').value.trim();
-            if (!no) return;
-            const found = allSavedBills.find(b => b.challanNo.toString() === no.toString());
-            if (found) {
-                document.getElementById('challanDate').value = found.date || '';
-                document.getElementById('partyName').value = found.partyName || 'NIHAR';
-                document.getElementById('partyAddress').value = found.partyAddress || '';
-                if(found.contact1) document.getElementById('contact1').value = found.contact1;
-                if(found.contact2) document.getElementById('contact2').value = found.contact2;
-                initTable(found.rows || []);
-            }
-        }
+            const editDocId = document.getElementById('editDocId').value;
+            const srcChallan = document.getElementById('sourceChallan').value.trim();
+            const mode = document.getElementById('sizeMode').value;
 
-        // Save Bill with Over-Quantity Alert Check
-        window.saveBillToCloud = async function() {
-            const challanNo = document.getElementById('challanNo').value.trim();
-            if (!challanNo) {
-                alert("Bill Challan No. zaroori hai!");
-                return;
-            }
+            let sizesObj = {};
+            let rowTotal = 0;
 
-            const rows = [];
-            let currentBillTotal = 0;
-
-            document.querySelectorAll('#billTableBody tr').forEach(tr => {
-                const subChallan = tr.querySelector('.row-sub').value.trim();
-                const style = tr.querySelector('.row-style').value.trim();
-                const print = tr.querySelector('.row-print').value.trim();
-                const item = tr.querySelector('.row-item').value.trim();
-                
-                let sizes = {};
-                let rowSum = 0;
+            if (mode === 'individual') {
                 sizeKeys.forEach(sz => {
-                    const v = tr.querySelector(`.row-${sz}`).value.trim();
-                    if (v && parseInt(v) > 0) {
-                        sizes[sz] = parseInt(v);
-                        rowSum += parseInt(v);
+                    const val = parseInt(document.getElementById('sz_' + sz).value) || 0;
+                    sizesObj[sz] = val;
+                    rowTotal += val;
+                });
+            } else {
+                let totalInput = parseInt(document.getElementById('liveTotal').innerText) || 0;
+                rowTotal = totalInput;
+                sizeKeys.forEach(sz => sizesObj[sz] = 'ALL');
+            }
+
+            if (selectedCuttingItem) {
+                let existingSent = 0;
+                billbookList.forEach(b => {
+                    if (b.sourceChallan.toUpperCase() === selectedCuttingItem.challanNo.toUpperCase() && b.docId !== editDocId) {
+                        existingSent += b.total;
                     }
                 });
 
-                if (subChallan || style || print || item || rowSum > 0) {
-                    rows.push({ subChallan, style, print, item, sizes });
-                    currentBillTotal += rowSum;
-
-                    // Over-Quantity Alert Check against Cutting
-                    if (subChallan) {
-                        const cuttingMatch = cuttingList.find(c => c.challanNo.toUpperCase() === subChallan.toUpperCase() || c.challanNo.toUpperCase() === 'NH-' + subChallan.toUpperCase());
-                        if (cuttingMatch) {
-                            let alreadySent = 0;
-                            allSavedBills.forEach(b => {
-                                if (b.challanNo !== challanNo && b.rows) {
-                                    b.rows.forEach(r => {
-                                        if (r.subChallan && r.subChallan.toUpperCase() === cuttingMatch.challanNo.toUpperCase()) {
-                                            sizeKeys.forEach(sz => { if (r.sizes && r.sizes[sz]) alreadySent += parseInt(r.sizes[sz]) || 0; });
-                                        }
-                                    });
-                                }
-                            });
-
-                            if ((alreadySent + rowSum) > cuttingMatch.total) {
-                                alert(`⚠️ OVER-QUANTITY ALERT!\nCutting Challan (${cuttingMatch.challanNo}) mein total ${cuttingMatch.total} pcs hi hain.\n(Pehle ja chuka hai: ${alreadySent}, Aap bhej rahe hain: ${rowSum}). Limit cross ho rahi hai!`);
-                            }
-                        }
-                    }
+                if ((existingSent + rowTotal) > selectedCuttingItem.total) {
+                    alert(`⚠️ OVER-QUANTITY ALERT!\nCutting mein is challan ke sirf ${selectedCuttingItem.total} pcs hain.\n(Pehle ja chuka hai: ${existingSent} pcs, Aap bhej rahe hain: ${rowTotal} pcs).\nTotal limit cross ho rahi hai!`);
+                    saveBtn.disabled = false;
+                    saveBtn.innerText = "✔ Save BillBook Entry";
+                    return;
                 }
-            });
+            }
 
-            const billData = {
-                challanNo,
-                date: document.getElementById('challanDate').value,
-                partyName: document.getElementById('partyName').value.trim(),
-                partyAddress: document.getElementById('partyAddress').value.trim(),
-                contact1: document.getElementById('contact1').value.trim(),
-                contact2: document.getElementById('contact2').value.trim(),
-                rows,
-                grandTotal: parseInt(document.getElementById('grandTotalQty').innerText) || 0,
-                updatedAt: Date.now()
+            const entry = {
+                billChallanNo: document.getElementById('billChallanNo').value.trim(),
+                date: document.getElementById('billDate').value,
+                partyName: "NIHAR",
+                sourceChallan: srcChallan,
+                styleNo: document.getElementById('styleInput').value.trim(),
+                printNo: document.getElementById('printNo').value.trim(),
+                itemName: document.getElementById('itemName').value.trim(),
+                sizes: sizesObj,
+                total: rowTotal
             };
 
             try {
-                await setDoc(doc(db, "ssf_billbook_records", `bill_${challanNo}`), billData);
-                alert(`Challan #${challanNo} successfully cloud par save ho gaya!`);
-                fetchBills();
+                if (editDocId) {
+                    await updateDoc(doc(db, "ssf_billbook_nihar_records", editDocId), entry);
+                    alert("BillBook Entry updated successfully!");
+                    resetForm();
+                } else {
+                    entry.createdAt = Date.now();
+                    await addDoc(billbookCollection, entry);
+                    this.reset();
+                    resetDefaults();
+                }
             } catch (err) {
-                alert("Save nahi ho paya!");
+                alert("Data save nahi ho paya!");
+                console.error(err);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = editDocId ? "✔ Update Entry" : "✔ Save BillBook Entry";
             }
+        });
+
+        window.editRow = function(docId) {
+            const item = billbookList.find(i => i.docId === docId);
+            if (!item) return;
+
+            document.getElementById('editDocId').value = item.docId;
+            document.getElementById('billChallanNo').value = item.billChallanNo;
+            document.getElementById('billDate').value = item.date || '';
+            document.getElementById('sourceChallan').value = item.sourceChallan || '';
+            document.getElementById('styleInput').value = item.styleNo || '';
+            document.getElementById('printNo').value = item.printNo || '';
+            document.getElementById('itemName').value = item.itemName || '';
+
+            if (typeof item.sizes.S === 'string' && item.sizes.S === 'ALL') {
+                document.getElementById('sizeMode').value = 'all';
+                toggleSizeMode();
+                document.getElementById('liveTotal').innerText = item.total;
+            } else {
+                document.getElementById('sizeMode').value = 'individual';
+                toggleSizeMode();
+                sizeKeys.forEach(sz => {
+                    const val = item.sizes[sz] || 0;
+                    document.getElementById('sz_' + sz).value = val === 0 ? '' : val;
+                });
+                calcTotal();
+            }
+
+            document.getElementById('formTitleText').innerHTML = `<span>✏️ Edit BillBook Entry (Bill: ${item.billChallanNo})</span>`;
+            document.getElementById('saveBtn').innerText = "✔ Update Entry";
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        window.openHistoryModal = function() {
-            document.getElementById('historyModal').classList.remove('hidden');
-            renderHistoryList(allSavedBills);
-        }
-        window.closeHistoryModal = function() {
-            document.getElementById('historyModal').classList.add('hidden');
-        }
+        window.renderTable = function() {
+            const tbody = document.getElementById('sheetBody');
+            const queryText = document.getElementById('searchBox').value.toLowerCase();
+            tbody.innerHTML = '';
 
-        function renderHistoryList(bills) {
-            const container = document.getElementById('historyList');
-            if (bills.length === 0) {
-                container.innerHTML = `<p class="text-slate-400 text-center py-4">Koi saved bill nahi mila.</p>`;
-                return;
-            }
-            container.innerHTML = '';
-            bills.forEach(b => {
-                container.innerHTML += `
-                    <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg flex justify-between items-center text-xs">
-                        <div>
-                            <b>Challan #${b.challanNo}</b> — <span class="text-blue-700">${b.partyName || 'NIHAR'}</span><br>
-                            <span class="text-slate-500">Date: ${b.date} | Total Qty: <b>${b.grandTotal || 0} Pcs</b></span>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="loadBillToForm('${b.challanNo}')" class="bg-blue-600 text-white px-2.5 py-1 rounded font-bold">Open</button>
-                            <button onclick="deleteBill('${b.id}')" class="bg-red-600 text-white px-2.5 py-1 rounded font-bold">Delete</button>
-                        </div>
-                    </div>
+            let grandTotal = 0;
+            let visibleCount = 0;
+
+            billbookList.forEach((item, index) => {
+                const searchStr = `${item.billChallanNo} ${item.sourceChallan} ${item.styleNo} ${item.partyName}`.toLowerCase();
+                if (queryText && !searchStr.includes(queryText)) return;
+
+                visibleCount++;
+                grandTotal += item.total;
+
+                let sizeCellsHTML = '';
+                if (typeof item.sizes.S === 'string' && item.sizes.S === 'ALL') {
+                    sizeCellsHTML = `<td colspan="8" class="text-center font-bold bg-amber-50 text-amber-800">ALL SIZES COMBINED</td>`;
+                } else {
+                    sizeKeys.forEach(sz => {
+                        let val = item.sizes[sz] || 0;
+                        let displayVal = val === 0 ? '<span class="text-slate-300">0</span>' : val;
+                        sizeCellsHTML += `<td class="text-center font-medium">${displayVal}</td>`;
+                    });
+                }
+
+                const tr = `
+                    <tr class="hover:bg-blue-50 transition">
+                        <td class="text-center font-bold bg-slate-50">${index + 1}</td>
+                        <td class="font-bold text-center text-teal-700">${item.billChallanNo}</td>
+                        <td class="text-center">${item.date}</td>
+                        <td class="font-semibold">${item.partyName}</td>
+                        <td class="text-center font-semibold text-blue-600">${item.sourceChallan}</td>
+                        <td class="text-center font-semibold">${item.styleNo}</td>
+                        <td>${item.printNo}</td>
+                        <td>${item.itemName}</td>
+                        ${sizeCellsHTML}
+                        <td class="text-center font-bold bg-amber-50 text-slate-900">${item.total}</td>
+                        <td class="text-center space-x-1">
+                            <button onclick="editRow('${item.docId}')" class="text-amber-600 hover:text-amber-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-amber-50" title="Edit">✏️</button>
+                            <button onclick="deleteRow('${item.docId}')" class="text-red-600 hover:text-red-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50" title="Delete">✖</button>
+                        </td>
+                    </tr>
                 `;
+                tbody.innerHTML += tr;
             });
+
+            if (visibleCount === 0) {
+                tbody.innerHTML = `<tr><td colspan="18" class="text-center py-8 text-slate-400">Koi billbook entry nahi mili.</td></tr>`;
+            }
+
+            document.getElementById('entryCount').innerText = visibleCount;
+            document.getElementById('grandTotalPcs').innerText = grandTotal;
         }
 
-        window.loadBillToForm = function(no) {
-            const found = allSavedBills.find(b => b.challanNo.toString() === no.toString());
-            if (found) {
-                document.getElementById('challanNo').value = found.challanNo;
-                document.getElementById('challanDate').value = found.date || '';
-                document.getElementById('partyName').value = found.partyName || 'NIHAR';
-                document.getElementById('partyAddress').value = found.partyAddress || '';
-                if(found.contact1) document.getElementById('contact1').value = found.contact1;
-                if(found.contact2) document.getElementById('contact2').value = found.contact2;
-                initTable(found.rows || []);
-                closeHistoryModal();
+        window.deleteRow = async function(docId) {
+            if (confirm('Kya aap is BillBook entry ko delete karna chahte hain?')) {
+                try {
+                    await deleteDoc(doc(db, "ssf_billbook_nihar_records", docId));
+                } catch (err) {
+                    alert("Delete karne mein error aaya!");
+                }
             }
         }
-
-        window.deleteBill = async function(id) {
-            if (confirm("Kya aap is bill ko delete karna chahte hain?")) {
-                await deleteDoc(doc(db, "ssf_billbook_records", id));
-                fetchBills().then(() => renderHistoryList(allSavedBills));
-            }
-        }
-
-        window.filterHistory = function() {
-            const qVal = document.getElementById('searchHistory').value.toLowerCase();
-            const filtered = allSavedBills.filter(b => b.challanNo.toLowerCase().includes(qVal));
-            renderHistoryList(filtered);
-        }
-
-        initTable();
     </script>
 </body>
 </html>
