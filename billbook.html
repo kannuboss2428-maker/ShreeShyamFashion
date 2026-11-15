@@ -25,7 +25,10 @@
                 <span class="text-2xl">📖</span>
                 <div>
                     <h1 class="text-lg font-bold tracking-wide text-amber-400">SHREE SHYAM FASHION</h1>
-                    <p class="text-xs text-slate-400">BillBook (Party: NIHAR)</p>
+                    <div class="flex items-center gap-2">
+                        <p class="text-xs text-slate-400">BillBook (Party: NIHAR)</p>
+                        <span id="syncStatus" class="text-[11px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded-full font-medium">⏳ Connecting Cloud...</span>
+                    </div>
                 </div>
             </div>
             <a href="cutting.html" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition">✂️ Cutting Register</a>
@@ -147,20 +150,26 @@
         </div>
     </div>
 
+    <!-- Firebase SDK & Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, onSnapshot, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
 
-        const app = initializeApp({
+        const firebaseConfig = {
             apiKey: "AIzaSyCOmvNfkMXcbLATJlN6tiaCCUBN9vfyf-s",
             authDomain: "shree-shyam-fashion.firebaseapp.com",
             projectId: "shree-shyam-fashion",
             storageBucket: "shree-shyam-fashion.firebasestorage.app",
             messagingSenderId: "270444185899",
-            appId: "1:270444185899:web:c21de116d358c09a859d6e",
-            measurementId: "G-BBE8D4ENTY"
-        });
+            appId: "1:270444185899:web:899ef1a3101d5979859d6e",
+            measurementId: "G-JR47FJ2Q1G"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
         const db = getFirestore(app);
+        
         const billbookCollection = collection(db, "ssf_billbook_nihar_records");
         const cuttingCollection = collection(db, "ssf_cutting_records");
 
@@ -178,7 +187,12 @@
             });
         });
 
-        window.resetDefaults = () => { document.getElementById('billDate').valueAsDate = new Date(); document.getElementById('liveTotal').innerText = '0'; selectedCuttingItem = null; }
+        window.resetDefaults = () => { 
+            document.getElementById('billDate').valueAsDate = new Date(); 
+            document.getElementById('liveTotal').innerText = '0'; 
+            document.getElementById('dispatchTotalQty').value = '';
+            selectedCuttingItem = null; 
+        }
         resetDefaults();
 
         window.autofillFromCutting = () => {
@@ -200,24 +214,15 @@
             }
         }
 
-        // Auto-split quantity across user-selected sizes (e.g. L, M, XL, XXL)
         window.distributeQty = () => {
             let totalQty = parseInt(document.getElementById('dispatchTotalQty').value) || 0;
-            // Find which size boxes currently have non-zero or active focus, or check non-zero values
             let activeSizes = [];
             sizeKeys.forEach(sz => {
                 let el = document.getElementById('sz_' + sz);
                 if (parseInt(el.value) > 0) activeSizes.push(sz);
             });
 
-            // If no sizes are typed yet, default select all standard sizes or let user click/type. 
-            // Better approach: If user hasn't typed in individual size boxes yet, distribute equally across S, M, L, XL etc if desired, 
-            // OR if user manually changes individual size boxes, respect them. 
-            // Let's implement: If user types in total qty, distribute it evenly among whichever sizes have inputs > 0, 
-            // or if all are 0, distribute evenly across S, M, L, XL, XXL if they want. Let's check active sizes:
             if (activeSizes.length === 0) {
-                // Default pick standard popular ones if none selected, or user can select by typing 1 in desired boxes first.
-                // Let's make it smarter: distribute equally among fields that are greater than 0, else default to M, L, XL, XXL.
                 activeSizes = ['M', 'L', 'XL', 'XXL'];
             }
 
@@ -242,17 +247,31 @@
             billbookList = [];
             snapshot.forEach(docSnap => billbookList.push({ docId: docSnap.id, ...docSnap.data() }));
             document.getElementById('syncStatus').innerText = "🟢 Cloud Live Synced";
+            document.getElementById('syncStatus').className = "text-[11px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-medium";
             renderTable();
             if (document.getElementById('sourceChallan').value) autofillFromCutting();
+        }, (error) => {
+            console.error("Firebase Error:", error);
+            document.getElementById('syncStatus').innerText = "🔴 Connection Error";
+            document.getElementById('syncStatus').className = "text-[11px] bg-red-500/20 text-red-300 px-2 py-0.5 rounded-full font-medium";
         });
 
         document.getElementById('billbookForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.disabled = true;
+            saveBtn.innerText = "⏳ Saving...";
+
             const editDocId = document.getElementById('editDocId').value;
             const srcChallan = document.getElementById('sourceChallan').value.trim();
             const cuttingMatch = cuttingList.find(c => c.challanNo.toUpperCase() === srcChallan.toUpperCase() || c.challanNo.toUpperCase().endsWith('-' + srcChallan.toUpperCase()));
             
-            if (!cuttingMatch) { alert("⚠️ Invalid Cutting Challan No!"); return; }
+            if (!cuttingMatch) { 
+                alert("⚠️ Invalid Cutting Challan No!"); 
+                saveBtn.disabled = false;
+                saveBtn.innerText = "✔ Save BillBook Entry";
+                return; 
+            }
 
             let sizesObj = {}, rowTotal = 0;
             sizeKeys.forEach(sz => {
@@ -261,7 +280,12 @@
                 rowTotal += val;
             });
 
-            if (rowTotal <= 0) { alert("⚠️ Enter valid pieces!"); return; }
+            if (rowTotal <= 0) { 
+                alert("⚠️ Enter valid pieces!"); 
+                saveBtn.disabled = false;
+                saveBtn.innerText = "✔ Save BillBook Entry";
+                return; 
+            }
 
             const entry = {
                 billChallanNo: document.getElementById('billChallanNo').value.trim(),
@@ -274,8 +298,24 @@
                 sizes: sizesObj, total: rowTotal
             };
 
-            if (editDocId) { await updateDoc(doc(db, "ssf_billbook_nihar_records", editDocId), entry); alert("Updated!"); location.reload(); }
-            else { entry.createdAt = Date.now(); await addDoc(billbookCollection, entry); e.target.reset(); resetDefaults(); }
+            try {
+                if (editDocId) { 
+                    await updateDoc(doc(db, "ssf_billbook_nihar_records", editDocId), entry); 
+                    alert("Updated successfully!"); 
+                    location.reload(); 
+                } else { 
+                    entry.createdAt = Date.now(); 
+                    await addDoc(billbookCollection, entry); 
+                    e.target.reset(); 
+                    resetDefaults(); 
+                }
+            } catch (err) {
+                alert("Data save nahi ho paya!");
+                console.error(err);
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = editDocId ? "✔ Update Entry" : "✔ Save BillBook Entry";
+            }
         });
 
         window.editRow = (docId) => {
@@ -330,7 +370,15 @@
             if (visibleCount === 0) tbody.innerHTML = `<tr><td colspan="18" class="text-center py-8 text-slate-400">No billbook records found.</td></tr>`;
         }
 
-        window.deleteRow = async (docId) => { if (confirm('Delete?')) await deleteDoc(doc(db, "ssf_billbook_nihar_records", docId)); }
+        window.deleteRow = async (docId) => { 
+            if (confirm('Kya aap delete karna chahte hain?')) {
+                try {
+                    await deleteDoc(doc(db, "ssf_billbook_nihar_records", docId));
+                } catch (err) {
+                    alert("Delete karne mein error aaya!");
+                }
+            } 
+        }
     </script>
 </body>
 </html>
