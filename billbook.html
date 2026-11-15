@@ -35,29 +35,11 @@
                 <a href="cutting.html" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
                     ✂️ Cutting Register
                 </a>
-                <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-semibold transition">
-                    ⬅ Dashboard
-                </a>
             </div>
         </div>
     </nav>
 
     <div class="max-w-[98%] mx-auto py-5 space-y-6">
-
-        <!-- Search & Status Bar for Pending/Done -->
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-4">
-            <div>
-                <h3 class="font-bold text-slate-800 text-sm">🔍 Check Pending / Done Status</h3>
-                <p class="text-xs text-slate-500">Challan No ya Style No daalkar check karein kitna maal gaya aur kitna pending hai.</p>
-            </div>
-            <div class="flex gap-2">
-                <input type="text" id="checkInput" placeholder="e.g. NH-5 or SD-101" class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-48 focus:outline-none focus:border-blue-500 font-semibold">
-                <button onclick="checkPendingDone()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-1.5 rounded-lg text-xs font-bold shadow">Check Status</button>
-            </div>
-        </div>
-
-        <!-- Status Result Box -->
-        <div id="statusResultBox" class="hidden bg-slate-900 text-white p-4 rounded-xl shadow-lg border border-slate-700 space-y-2"></div>
 
         <!-- BillBook Entry Form -->
         <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
@@ -89,19 +71,19 @@
                     </div>
                 </div>
 
-                <!-- Item Details (Auto-Filled & Locked/Editable) -->
+                <!-- Item Details (Auto-Filled) -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Style No. *</label>
-                        <input type="text" id="styleInput" placeholder="SD-101" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none font-semibold bg-slate-100" readonly>
+                        <input type="text" id="styleInput" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-100 font-semibold" readonly>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Print No. *</label>
-                        <input type="text" id="printNo" placeholder="Print-55" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none bg-slate-100" readonly>
+                        <input type="text" id="printNo" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-100" readonly>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Item Name *</label>
-                        <input type="text" id="itemName" placeholder="Midi / Kurti Set" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none bg-slate-100" readonly>
+                        <input type="text" id="itemName" required class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-slate-100" readonly>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-600 mb-1">Size Selection Mode *</label>
@@ -115,42 +97,18 @@
                 <!-- Size Matrix Input -->
                 <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
                     <div class="flex justify-between items-center mb-2">
-                        <label class="block text-xs font-bold text-slate-700 uppercase">Qty (Size-Wise Pieces - Enter Dispatch Qty)</label>
+                        <label class="block text-xs font-bold text-slate-700 uppercase">Qty (Size-Wise Pieces - Dispatch Qty)</label>
                         <span id="cuttingLimitInfo" class="text-xs text-blue-700 font-bold">Cutting Limit: Select a challan first</span>
                     </div>
                     <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 items-center" id="sizeInputsContainer">
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">S</span>
-                            <input type="number" min="0" id="sz_S" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">M</span>
-                            <input type="number" min="0" id="sz_M" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">L</span>
-                            <input type="number" min="0" id="sz_L" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">XL</span>
-                            <input type="number" min="0" id="sz_XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">XXL</span>
-                            <input type="number" min="0" id="sz_XXL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">3XL</span>
-                            <input type="number" min="0" id="sz_3XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">4XL</span>
-                            <input type="number" min="0" id="sz_4XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
-                        <div>
-                            <span class="block text-center text-xs font-bold text-slate-600">5XL</span>
-                            <input type="number" min="0" id="sz_5XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white">
-                        </div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">S</span><input type="number" min="0" id="sz_S" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">M</span><input type="number" min="0" id="sz_M" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">L</span><input type="number" min="0" id="sz_L" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">XL</span><input type="number" min="0" id="sz_XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">XXL</span><input type="number" min="0" id="sz_XXL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">3XL</span><input type="number" min="0" id="sz_3XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">4XL</span><input type="number" min="0" id="sz_4XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
+                        <div><span class="block text-center text-xs font-bold text-slate-600">5XL</span><input type="number" min="0" id="sz_5XL" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
                         <div class="bg-blue-600 text-white rounded-lg p-1.5 text-center shadow-sm">
                             <span class="block text-[10px] uppercase font-semibold opacity-90">Total Pcs</span>
                             <span id="liveTotal" class="text-lg font-bold">0</span>
@@ -159,15 +117,9 @@
                 </div>
 
                 <div class="flex justify-end gap-3">
-                    <button type="button" id="cancelEditBtn" onclick="resetForm()" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hidden">
-                        Cancel Edit
-                    </button>
-                    <button type="reset" onclick="setTimeout(resetDefaults, 10)" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50">
-                        Reset
-                    </button>
-                    <button type="submit" id="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-bold shadow transition">
-                        ✔ Save BillBook Entry
-                    </button>
+                    <button type="button" id="cancelEditBtn" onclick="resetForm()" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600 hidden">Cancel Edit</button>
+                    <button type="reset" onclick="setTimeout(resetDefaults, 10)" class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-600">Reset</button>
+                    <button type="submit" id="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-bold shadow">✔ Save BillBook Entry</button>
                 </div>
             </form>
         </div>
@@ -177,14 +129,10 @@
             <div class="p-4 border-b border-slate-200 flex flex-wrap justify-between items-center gap-3 bg-slate-50">
                 <div class="flex items-center gap-4">
                     <h3 class="font-bold text-slate-800">📊 BillBook Records (NIHAR Master Sheet)</h3>
-                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">
-                        Total Entries: <span id="entryCount">0</span>
-                    </span>
-                    <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">
-                        Grand Total Pcs: <span id="grandTotalPcs">0</span>
-                    </span>
+                    <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">Total Entries: <span id="entryCount">0</span></span>
+                    <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2.5 py-1 rounded-full">Grand Total Pcs: <span id="grandTotalPcs">0</span></span>
                 </div>
-                <input type="text" id="searchBox" onkeyup="renderTable()" placeholder="🔍 Search Bill Challan, Source Challan, Style..." class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-64 focus:outline-none focus:border-blue-500">
+                <input type="text" id="searchBox" onkeyup="renderTable()" placeholder="🔍 Search Bill Challan, Source Challan..." class="border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-64 focus:outline-none focus:border-blue-500">
             </div>
 
             <div class="overflow-x-auto">
@@ -224,10 +172,9 @@
                 </table>
             </div>
         </div>
-
     </div>
 
-    <!-- Firebase SDK & App Logic -->
+    <!-- Firebase Script -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, addDoc, updateDoc, onSnapshot, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -248,9 +195,7 @@
         const cuttingCollection = collection(db, "ssf_cutting_records");
 
         const sizeKeys = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
-        let billbookList = [];
-        let cuttingList = [];
-        let selectedCuttingItem = null;
+        let billbookList = [], cuttingList = [], selectedCuttingItem = null;
 
         onSnapshot(query(cuttingCollection, orderBy("createdAt", "asc")), (snapshot) => {
             cuttingList = [];
@@ -277,7 +222,6 @@
             document.getElementById('formTitleText').innerHTML = '<span>➕ Create New BillBook Challan (For NIHAR)</span>';
             document.getElementById('saveBtn').innerText = "✔ Save BillBook Entry";
             document.getElementById('cancelEditBtn').classList.add('hidden');
-            document.getElementById('partyName').value = "NIHAR";
             resetDefaults();
         }
 
@@ -286,14 +230,11 @@
             const container = document.getElementById('sizeInputsContainer');
             if (mode === 'all') {
                 container.innerHTML = `
-                    <div class="col-span-8 bg-amber-50 p-3 rounded border text-center font-bold text-slate-700 text-sm">
-                        ALL Sizes Selected
-                    </div>
+                    <div class="col-span-8 bg-amber-50 p-3 rounded border text-center font-bold text-slate-700 text-sm">ALL Sizes Selected</div>
                     <div class="bg-blue-600 text-white rounded-lg p-1.5 text-center shadow-sm">
                         <span class="block text-[10px] uppercase font-semibold opacity-90">Total Pcs</span>
                         <span id="liveTotal" class="text-lg font-bold">0</span>
-                    </div>
-                `;
+                    </div>`;
             } else {
                 container.innerHTML = `
                     <div><span class="block text-center text-xs font-bold text-slate-600">S</span><input type="number" min="0" id="sz_S" value="0" oninput="calcTotal()" class="size-input w-full border border-slate-300 rounded p-1.5 text-center text-sm bg-white"></div>
@@ -307,8 +248,7 @@
                     <div class="bg-blue-600 text-white rounded-lg p-1.5 text-center shadow-sm">
                         <span class="block text-[10px] uppercase font-semibold opacity-90">Total Pcs</span>
                         <span id="liveTotal" class="text-lg font-bold">0</span>
-                    </div>
-                `;
+                    </div>`;
             }
             calcTotal();
         }
@@ -330,8 +270,7 @@
                 document.getElementById('styleInput').value = found.styleNo;
                 document.getElementById('printNo').value = found.printName;
                 document.getElementById('itemName').value = found.itemName;
-                
-                // Calculate already sent pcs for this cutting challan
+
                 let sentSoFar = 0;
                 const editId = document.getElementById('editDocId').value;
                 billbookList.forEach(b => {
@@ -340,8 +279,7 @@
                     }
                 });
                 let remaining = found.total - sentSoFar;
-
-                document.getElementById('cuttingLimitInfo').innerHTML = `Cutting Total: <b class="text-slate-900">${found.total} Pcs</b> | Already Sent: <b class="text-emerald-700">${sentSoFar} Pcs</b> | Remaining: <b class="text-rose-700">${remaining} Pcs</b>`;
+                document.getElementById('cuttingLimitInfo').innerHTML = `Cutting Total: <b>${found.total} Pcs</b> | Sent: <b class="text-emerald-700">${sentSoFar} Pcs</b> | Remaining: <b class="text-rose-700">${remaining} Pcs</b>`;
             } else {
                 selectedCuttingItem = null;
                 document.getElementById('styleInput').value = '';
@@ -357,10 +295,7 @@
             if (mode === 'individual') {
                 sizeKeys.forEach(sz => {
                     const el = document.getElementById('sz_' + sz);
-                    if (el) {
-                        const val = parseInt(el.value) || 0;
-                        sum += val;
-                    }
+                    if (el) sum += (parseInt(el.value) || 0);
                 });
             }
             document.getElementById('liveTotal').innerText = sum;
@@ -371,62 +306,10 @@
             snapshot.forEach((docSnap) => {
                 billbookList.push({ docId: docSnap.id, ...docSnap.data() });
             });
-
             document.getElementById('syncStatus').innerText = "🟢 Cloud Live Synced";
-            document.getElementById('syncStatus').className = "text-[11px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-medium";
             renderTable();
-            if (document.getElementById('sourceChallan').value) {
-                autofillFromCutting();
-            }
-        }, (error) => {
-            console.error("Firebase Error:", error);
-            document.getElementById('syncStatus').innerText = "🔴 Connection Error";
+            if (document.getElementById('sourceChallan').value) autofillFromCutting();
         });
-
-        window.checkPendingDone = function() {
-            const queryVal = document.getElementById('checkInput').value.trim().toUpperCase();
-            const box = document.getElementById('statusResultBox');
-            if (!queryVal) {
-                box.classList.add('hidden');
-                return;
-            }
-
-            const cuttingMatch = cuttingList.find(c => c.challanNo.toUpperCase().includes(queryVal) || c.styleNo.toUpperCase().includes(queryVal));
-            if (!cuttingMatch) {
-                box.innerHTML = `<p class="text-red-400 font-semibold">Koi cutting record nahi mila is query ke liye!</p>`;
-                box.classList.remove('hidden');
-                return;
-            }
-
-            const sentRecords = billbookList.filter(b => b.sourceChallan.toUpperCase() === cuttingMatch.challanNo.toUpperCase() || b.styleNo.toUpperCase() === cuttingMatch.styleNo.toUpperCase());
-            let sentTotal = 0;
-            sentRecords.forEach(r => sentTotal += r.total);
-
-            let pending = cuttingMatch.total - sentTotal;
-            if (pending < 0) pending = 0;
-
-            box.innerHTML = `
-                <div class="flex justify-between items-center border-b border-slate-700 pb-2">
-                    <span class="font-bold text-amber-400">📊 Status Report for Cutting Challan: ${cuttingMatch.challanNo} (${cuttingMatch.styleNo})</span>
-                    <button onclick="document.getElementById('statusResultBox').classList.add('hidden')" class="text-red-400 font-bold text-sm">✖ Close</button>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-2">
-                    <div class="bg-slate-800 p-2.5 rounded border border-slate-700">
-                        <span class="block text-slate-400">Total Cut Pcs (Cutting):</span>
-                        <strong class="text-base text-white">${cuttingMatch.total} Pcs</strong>
-                    </div>
-                    <div class="bg-emerald-950/60 p-2.5 rounded border border-emerald-800">
-                        <span class="block text-emerald-300">Done (NIHAR ko Gaya):</span>
-                        <strong class="text-base text-emerald-400">${sentTotal} Pcs</strong>
-                    </div>
-                    <div class="bg-rose-950/60 p-2.5 rounded border border-rose-800">
-                        <span class="block text-rose-300">Pending (Abhi Bacha hai):</span>
-                        <strong class="text-base text-rose-400">${pending} Pcs</strong>
-                    </div>
-                </div>
-            `;
-            box.classList.remove('hidden');
-        }
 
         document.getElementById('billbookForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -438,19 +321,15 @@
             const srcChallan = document.getElementById('sourceChallan').value.trim();
             const mode = document.getElementById('sizeMode').value;
 
-            // Ensure cutting item is found
             const cuttingMatch = cuttingList.find(c => c.challanNo.toUpperCase() === srcChallan.toUpperCase() || c.challanNo.toUpperCase() === 'NH-' + srcChallan.toUpperCase() || c.challanNo.toUpperCase().endsWith('-' + srcChallan.toUpperCase()));
-            
             if (!cuttingMatch) {
-                alert("⚠️ Invalid Cutting Challan No! Pehle Cutting Register mein ye challan hona zaroori hai.");
+                alert("⚠️ Invalid Cutting Challan No! Pehle Cutting Register mein entry karein.");
                 saveBtn.disabled = false;
                 saveBtn.innerText = "✔ Save BillBook Entry";
                 return;
             }
 
-            let sizesObj = {};
-            let rowTotal = 0;
-
+            let sizesObj = {}, rowTotal = 0;
             if (mode === 'individual') {
                 sizeKeys.forEach(sz => {
                     const val = parseInt(document.getElementById('sz_' + sz).value) || 0;
@@ -458,8 +337,7 @@
                     rowTotal += val;
                 });
             } else {
-                let totalInput = parseInt(document.getElementById('liveTotal').innerText) || 0;
-                rowTotal = totalInput;
+                rowTotal = parseInt(document.getElementById('liveTotal').innerText) || 0;
                 sizeKeys.forEach(sz => sizesObj[sz] = 'ALL');
             }
 
@@ -478,8 +356,7 @@
             });
 
             if ((existingSent + rowTotal) > cuttingMatch.total) {
-                let remainingAllowed = cuttingMatch.total - existingSent;
-                alert(`⚠️ OVER-QUANTITY ALERT!\nCutting mein is challan (${cuttingMatch.challanNo}) ke total ${cuttingMatch.total} pcs hain.\n(Pehle ja chuka hai: ${existingSent} pcs, Bacha hai: ${remainingAllowed} pcs).\nAap abhi ${rowTotal} pcs bhej rahe hain jo limit se zyada hai!`);
+                alert(`⚠️ OVER-QUANTITY ALERT!\nCutting mein total ${cuttingMatch.total} pcs hain (Bacha hai: ${cuttingMatch.total - existingSent} pcs). Aap limit se zyada bhej rahe hain!`);
                 saveBtn.disabled = false;
                 saveBtn.innerText = "✔ Save BillBook Entry";
                 return;
@@ -500,7 +377,7 @@
             try {
                 if (editDocId) {
                     await updateDoc(doc(db, "ssf_billbook_nihar_records", editDocId), entry);
-                    alert("BillBook Entry updated successfully!");
+                    alert("Updated successfully!");
                     resetForm();
                 } else {
                     entry.createdAt = Date.now();
@@ -509,8 +386,7 @@
                     resetDefaults();
                 }
             } catch (err) {
-                alert("Data save nahi ho paya!");
-                console.error(err);
+                alert("Error saving!");
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerText = editDocId ? "✔ Update Entry" : "✔ Save BillBook Entry";
@@ -520,7 +396,6 @@
         window.editRow = function(docId) {
             const item = billbookList.find(i => i.docId === docId);
             if (!item) return;
-
             document.getElementById('editDocId').value = item.docId;
             document.getElementById('billChallanNo').value = item.billChallanNo;
             document.getElementById('billDate').value = item.date || '';
@@ -540,11 +415,9 @@
                 });
                 calcTotal();
             }
-
-            document.getElementById('formTitleText').innerHTML = `<span>✏️ Edit BillBook Entry (Bill: ${item.billChallanNo})</span>`;
+            document.getElementById('formTitleText').innerHTML = `<span>✏️ Edit BillBook (Bill: ${item.billChallanNo})</span>`;
             document.getElementById('saveBtn').innerText = "✔ Update Entry";
             document.getElementById('cancelEditBtn').classList.remove('hidden');
-
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -552,22 +425,17 @@
             const tbody = document.getElementById('sheetBody');
             const queryText = document.getElementById('searchBox').value.toLowerCase();
             tbody.innerHTML = '';
-
-            let grandTotal = 0;
-            let visibleCount = 0;
+            let grandTotal = 0, visibleCount = 0;
 
             billbookList.forEach((item, index) => {
-                const searchStr = `${item.billChallanNo} ${item.sourceChallan} ${item.styleNo} ${item.partyName}`.toLowerCase();
+                const searchStr = `${item.billChallanNo} ${item.sourceChallan} ${item.styleNo}`.toLowerCase();
                 if (queryText && !searchStr.includes(queryText)) return;
-
                 visibleCount++;
                 grandTotal += item.total;
 
-                // Calculate cumulative done and pending for this source cutting challan up to this entry
                 const cuttingMatch = cuttingList.find(c => c.challanNo.toUpperCase() === item.sourceChallan.toUpperCase());
                 const totalCuttingPcs = cuttingMatch ? cuttingMatch.total : item.total;
 
-                // Calculate total sent for this source challan across all entries up to current
                 let cumulativeDone = 0;
                 billbookList.forEach((b, idxNum) => {
                     if (b.sourceChallan.toUpperCase() === item.sourceChallan.toUpperCase() && idxNum <= index) {
@@ -584,12 +452,11 @@
                 } else {
                     sizeKeys.forEach(sz => {
                         let val = item.sizes[sz] || 0;
-                        let displayVal = val === 0 ? '<span class="text-slate-300">0</span>' : val;
-                        sizeCellsHTML += `<td class="text-center font-medium">${displayVal}</td>`;
+                        sizeCellsHTML += `<td class="text-center font-medium">${val === 0 ? '<span class="text-slate-300">0</span>' : val}</td>`;
                     });
                 }
 
-                const tr = `
+                tbody.innerHTML += `
                     <tr class="hover:bg-blue-50 transition">
                         <td class="text-center font-bold bg-slate-50">${index + 1}</td>
                         <td class="font-bold text-center text-teal-700">${item.billChallanNo}</td>
@@ -601,32 +468,22 @@
                         <td>${item.itemName}</td>
                         ${sizeCellsHTML}
                         <td class="text-center font-bold bg-amber-50 text-slate-900">${item.total}</td>
-                        <td class="text-center font-bold bg-emerald-50 text-emerald-800">${item.total} <span class="text-[10px] text-slate-400 font-normal">(Tot: ${cumulativeDone})</span></td>
+                        <td class="text-center font-bold bg-emerald-50 text-emerald-800">${item.total} <span class="text-[10px] text-slate-400">(Tot: ${cumulativeDone})</span></td>
                         <td class="text-center font-bold bg-rose-50 text-rose-700">${pendingPcs}</td>
                         <td class="text-center space-x-1">
-                            <button onclick="editRow('${item.docId}')" class="text-amber-600 hover:text-amber-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-amber-50" title="Edit">✏️</button>
-                            <button onclick="deleteRow('${item.docId}')" class="text-red-600 hover:text-red-800 font-bold text-xs px-1.5 py-0.5 rounded hover:bg-red-50" title="Delete">✖</button>
+                            <button onclick="editRow('${item.docId}')" class="text-amber-600 hover:text-amber-800 font-bold text-xs px-1.5 py-0.5 rounded">✏️</button>
+                            <button onclick="deleteRow('${item.docId}')" class="text-red-600 hover:text-red-800 font-bold text-xs px-1.5 py-0.5 rounded">✖</button>
                         </td>
-                    </tr>
-                `;
-                tbody.innerHTML += tr;
+                    </tr>`;
             });
-
-            if (visibleCount === 0) {
-                tbody.innerHTML = `<tr><td colspan="20" class="text-center py-8 text-slate-400">Koi billbook entry nahi mili.</td></tr>`;
-            }
-
+            if (visibleCount === 0) tbody.innerHTML = `<tr><td colspan="20" class="text-center py-8 text-slate-400">Koi billbook entry nahi mili.</td></tr>`;
             document.getElementById('entryCount').innerText = visibleCount;
             document.getElementById('grandTotalPcs').innerText = grandTotal;
         }
 
         window.deleteRow = async function(docId) {
-            if (confirm('Kya aap is BillBook entry ko delete karna chahte hain?')) {
-                try {
-                    await deleteDoc(doc(db, "ssf_billbook_nihar_records", docId));
-                }gha catch (err) {
-                    alert("Delete karne mein error aaya!");
-                }
+            if (confirm('Delete karna chahte hain?')) {
+                await deleteDoc(doc(db, "ssf_billbook_nihar_records", docId));
             }
         }
     </script>
