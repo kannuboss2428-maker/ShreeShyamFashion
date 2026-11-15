@@ -80,37 +80,18 @@
                     </div>
                 </div>
 
-                <!-- Total Dispatch Qty Box -->
+                <!-- Total Dispatch Qty Box (ALL SIZES) -->
                 <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-200 flex flex-wrap justify-between items-center gap-4">
                     <div>
-                        <label class="block text-xs font-bold text-indigo-900 mb-1">📦 Total Dispatch Quantity (Enter Pcs to Auto-Split across selected sizes below):</label>
+                        <label class="block text-xs font-bold text-indigo-900 mb-1">📦 Total Dispatch Quantity (ALL SIZES):</label>
                         <span id="cuttingLimitInfo" class="text-xs text-blue-700 font-bold">Cutting Limit: Select a challan first</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <input type="number" id="dispatchTotalQty" placeholder="e.g. 150" min="1" oninput="distributeQty()" class="border-2 border-indigo-400 rounded-lg px-3 py-2 text-base font-bold w-36 text-center bg-white shadow-inner">
+                        <input type="number" id="dispatchTotalQty" placeholder="e.g. 150" min="1" required class="border-2 border-indigo-400 rounded-lg px-3 py-2 text-base font-bold w-36 text-center bg-white shadow-inner focus:outline-none">
                     </div>
                 </div>
 
-                <!-- Size Matrix Manual/Auto Input -->
-                <div class="bg-slate-50 p-3 rounded-lg border">
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Select Sizes & Qty (You can select any combination: L, M, XL, XXL, etc.)</label>
-                    <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2 items-center">
-                        <div><span class="block text-center text-xs font-bold">S</span><input type="number" min="0" id="sz_S" value="0" oninput="calcTotal()" class="size-input w-full border rounded p-1.5 text-center text-sm bg-white"></div>
-                        <div><span class="block text-center text-xs font-bold">M</span><input type="number" min="0" id="sz_M" value="0" oninput="calcTotal()" class="size-input w-full border rounded p-1.5 text-center text-sm bg-white"></div>
-                        <div><span class="block text-center text-xs font-bold">L</span><input type="number" min="0" id="sz_L" value="0" oninput="calcTotal()" class="size-input w-full border rounded p-1.5 text-center text-sm bg-white"></div>
-                        <div><span class="block text-center text-xs font-bold">XL</span><input type="number" min="0" id="sz_XL" value="0" oninput="calcTotal()" class="size-input w-full border rounded p-1.5 text-center text-sm bg-white"></div>
-                        <div><span class="block text-center text-xs font-bold">XXL</span><input type="number" min="0" id="sz_XXL" value="0" oninput="calcTotal()" class="size-input w-full border rounded p-1.5 text-center text-sm bg-white"></div>
-                        <div><span class="block text-center text-xs font-bold">3XL</span><input type="number" min="0" id="sz_3XL" value="0" oninput="calcTotal()" class="size-input w-full border rounded p-1.5 text-center text-sm bg-white"></div>
-                        <div><span class="block text-center text-xs font-bold">4XL</span><input type="number" min="0" id="sz_4XL" value="0" oninput="calcTotal()" class="size-input w-full border rounded p-1.5 text-center text-sm bg-white"></div>
-                        <div><span class="block text-center text-xs font-bold">5XL</span><input type="number" min="0" id="sz_5XL" value="0" oninput="calcTotal()" class="size-input w-full border rounded p-1.5 text-center text-sm bg-white"></div>
-                        <div class="bg-blue-600 text-white rounded-lg p-1.5 text-center shadow-sm">
-                            <span class="block text-[10px] uppercase font-semibold">Total Pcs</span>
-                            <span id="liveTotal" class="text-lg font-bold">0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-end gap-3">
+                <div class="flex justify-end gap-3 pt-2">
                     <button type="button" id="cancelEditBtn" onclick="resetForm()" class="px-4 py-2 border rounded-lg text-sm font-medium hidden">Cancel</button>
                     <button type="reset" onclick="setTimeout(resetDefaults, 10)" class="px-4 py-2 border rounded-lg text-sm font-medium">Reset</button>
                     <button type="submit" id="saveBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-bold shadow">✔ Save BillBook Entry</button>
@@ -133,17 +114,19 @@
                     <thead>
                         <tr class="bg-slate-800 text-white text-center text-xs">
                             <th colspan="8" class="bg-teal-600 font-bold">BILLBOOK INFO</th>
-                            <th colspan="8" class="bg-orange-600 font-bold">QTY (SIZE-WISE)</th>
-                            <th colspan="2" class="bg-slate-700 font-bold no-print">ACTION</th>
+                            <th colspan="1" class="bg-orange-600 font-bold">SIZE</th>
+                            <th colspan="1" class="bg-amber-500 font-bold">TOTAL PCS</th>
+                            <th colspan="1" class="bg-slate-700 font-bold no-print">ACTION</th>
                         </tr>
                         <tr class="bg-teal-200 text-slate-900 font-bold text-center text-xs">
                             <th>S.no</th><th>Bill Challan No</th><th>Date</th><th>Party</th><th>Source Challan</th><th>Style No</th><th>Print No</th><th>Item Name</th>
-                            <th class="bg-sky-200">S</th><th class="bg-sky-200">M</th><th class="bg-sky-200">L</th><th class="bg-sky-200">XL</th><th class="bg-sky-200">XXL</th><th class="bg-sky-200">3XL</th><th class="bg-sky-200">4XL</th><th class="bg-sky-200">5XL</th>
-                            <th class="bg-amber-200">Total</th><th class="no-print">Action</th>
+                            <th class="bg-amber-100">Size</th>
+                            <th class="bg-amber-200">Total Pcs</th>
+                            <th class="no-print">Action</th>
                         </tr>
                     </thead>
                     <tbody id="sheetBody" class="bg-white divide-y">
-                        <tr><td colspan="18" class="text-center py-8 text-slate-400">Loading...</td></tr>
+                        <tr><td colspan="11" class="text-center py-8 text-slate-400">Loading...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -173,7 +156,6 @@
         const billbookCollection = collection(db, "ssf_billbook_nihar_records");
         const cuttingCollection = collection(db, "ssf_cutting_records");
 
-        const sizeKeys = ['S', 'M', 'L', 'XL', 'XXL', '3XL', '4XL', '5XL'];
         let billbookList = [], cuttingList = [], selectedCuttingItem = null;
 
         onSnapshot(query(cuttingCollection, orderBy("createdAt", "asc")), (snapshot) => {
@@ -189,9 +171,9 @@
 
         window.resetDefaults = () => { 
             document.getElementById('billDate').valueAsDate = new Date(); 
-            document.getElementById('liveTotal').innerText = '0'; 
             document.getElementById('dispatchTotalQty').value = '';
             selectedCuttingItem = null; 
+            document.getElementById('cuttingLimitInfo').innerText = "Cutting Limit: Select a challan first";
         }
         resetDefaults();
 
@@ -212,35 +194,6 @@
                 document.getElementById('styleInput').value = ''; document.getElementById('printNo').value = ''; document.getElementById('itemName').value = '';
                 document.getElementById('cuttingLimitInfo').innerText = "Cutting Challan not found!";
             }
-        }
-
-        window.distributeQty = () => {
-            let totalQty = parseInt(document.getElementById('dispatchTotalQty').value) || 0;
-            let activeSizes = [];
-            sizeKeys.forEach(sz => {
-                let el = document.getElementById('sz_' + sz);
-                if (parseInt(el.value) > 0) activeSizes.push(sz);
-            });
-
-            if (activeSizes.length === 0) {
-                activeSizes = ['M', 'L', 'XL', 'XXL'];
-            }
-
-            let baseVal = Math.floor(totalQty / activeSizes.length);
-            let remainder = totalQty % activeSizes.length;
-
-            sizeKeys.forEach(sz => { document.getElementById('sz_' + sz).value = 0; });
-            activeSizes.forEach((sz, idx) => {
-                let val = baseVal + (idx < remainder ? 1 : 0);
-                document.getElementById('sz_' + sz).value = val;
-            });
-            calcTotal();
-        }
-
-        window.calcTotal = () => {
-            let sum = 0;
-            sizeKeys.forEach(sz => { sum += (parseInt(document.getElementById('sz_' + sz).value) || 0); });
-            document.getElementById('liveTotal').innerText = sum;
         }
 
         onSnapshot(query(billbookCollection, orderBy("createdAt", "asc")), (snapshot) => {
@@ -273,13 +226,7 @@
                 return; 
             }
 
-            let sizesObj = {}, rowTotal = 0;
-            sizeKeys.forEach(sz => {
-                let val = parseInt(document.getElementById('sz_' + sz).value) || 0;
-                sizesObj[sz] = val;
-                rowTotal += val;
-            });
-
+            let rowTotal = parseInt(document.getElementById('dispatchTotalQty').value) || 0;
             if (rowTotal <= 0) { 
                 alert("⚠️ Enter valid pieces!"); 
                 saveBtn.disabled = false;
@@ -295,7 +242,8 @@
                 styleNo: cuttingMatch.styleNo,
                 printNo: cuttingMatch.printName,
                 itemName: cuttingMatch.itemName,
-                sizes: sizesObj, total: rowTotal
+                sizes: "ALL SIZES", 
+                total: rowTotal
             };
 
             try {
@@ -325,9 +273,8 @@
             document.getElementById('billChallanNo').value = item.billChallanNo;
             document.getElementById('billDate').value = item.date || '';
             document.getElementById('sourceChallan').value = item.sourceChallan || '';
+            document.getElementById('dispatchTotalQty').value = item.total;
             autofillFromCutting();
-            sizeKeys.forEach(sz => { document.getElementById('sz_' + sz).value = item.sizes[sz] || 0; });
-            calcTotal();
             document.getElementById('cancelEditBtn').classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -343,12 +290,6 @@
                 visibleCount++;
                 grandTotal += item.total;
 
-                let sizeCellsHTML = '';
-                sizeKeys.forEach(sz => {
-                    let val = item.sizes[sz] || 0;
-                    sizeCellsHTML += `<td class="text-center font-medium">${val === 0 ? '<span class="text-slate-300">0</span>' : val}</td>`;
-                });
-
                 tbody.innerHTML += `
                     <tr class="hover:bg-blue-50 transition">
                         <td class="text-center font-bold bg-slate-50">${index + 1}</td>
@@ -359,15 +300,15 @@
                         <td class="text-center font-semibold">${item.styleNo}</td>
                         <td>${item.printNo}</td>
                         <td>${item.itemName}</td>
-                        ${sizeCellsHTML}
-                        <td class="text-center font-bold bg-amber-50 text-slate-900">${item.total}</td>
+                        <td class="text-center font-bold bg-amber-50 text-amber-800">ALL SIZES</td>
+                        <td class="text-center font-bold bg-amber-100 text-slate-900">${item.total}</td>
                         <td class="text-center space-x-1 no-print">
                             <button onclick="editRow('${item.docId}')" class="text-amber-600 font-bold text-xs px-1.5 py-0.5">✏️</button>
                             <button onclick="deleteRow('${item.docId}')" class="text-red-600 font-bold text-xs px-1.5 py-0.5">✖</button>
                         </td>
                     </tr>`;
             });
-            if (visibleCount === 0) tbody.innerHTML = `<tr><td colspan="18" class="text-center py-8 text-slate-400">No billbook records found.</td></tr>`;
+            if (visibleCount === 0) tbody.innerHTML = `<tr><td colspan="11" class="text-center py-8 text-slate-400">No billbook records found.</td></tr>`;
         }
 
         window.deleteRow = async (docId) => { 
